@@ -59,6 +59,15 @@ if errorlevel 1 (
 )
 
 echo.
+echo Admin kullanicisi kontrol ediliyor...
+call npm run admin:ensure
+if errorlevel 1 (
+  echo HATA: Admin kullanicisi olusturulamadi.
+  pause
+  exit /b 1
+)
+
+echo.
 echo Uygulama baslatiliyor...
 echo Bu bilgisayardan: http://localhost:3000
 echo Ayni agdaki bilgisayarlardan: http://BILGISAYAR-IP:3000
