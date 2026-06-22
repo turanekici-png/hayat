@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { signSession } from "@/lib/auth-server";
+import { ensureEnvAdminUser } from "@/lib/admin-bootstrap";
 import { createHash } from "crypto";
 
 function getBaseUrl(req: Request) {
@@ -46,6 +47,8 @@ export async function POST(req: Request) {
   if (!username || !password) {
     return NextResponse.redirect(redirectUrl(req, "/admin/login"));
   }
+
+  await ensureEnvAdminUser();
 
   const user = await prisma.adminUser.findFirst({
     where: {
