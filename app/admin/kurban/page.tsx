@@ -6,6 +6,9 @@ import { AdminShell } from "../AdminShell";
 const labels: Record<string, string> = { NEW: "Yeni", PAID: "Ödendi", ASSIGNED: "Atandı", COMPLETED: "Tamamlandı", CANCELLED: "İptal" };
 const typeLabels: Record<string, string> = { KURBAN: "Kurban", ADAK: "Adak", AKIKA: "Akika", SUKUR: "Şükür" };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AdminKurbanPage() {
   const orders = await prisma.sacrificeOrder.findMany({ orderBy: { createdAt: "desc" } });
 

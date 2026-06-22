@@ -5,7 +5,8 @@ import { Footer } from "@/components/Footer";
 import { GalleryLightboxGrid } from "@/components/GalleryLightboxGrid";
 import { getSectionGroupLabel, getSectionsByType } from "@/lib/site-content";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type AllImagesSearchParams = Promise<{ galeri?: string | string[] }>;
 

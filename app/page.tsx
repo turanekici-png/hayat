@@ -14,7 +14,8 @@ import { prisma } from "@/lib/prisma";
 import { ArrowRight, Heart, ChevronRight, ShieldCheck, CalendarDays, Megaphone } from "lucide-react";
 import type { CSSProperties } from "react";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type SectionSlide = {
   src: string;

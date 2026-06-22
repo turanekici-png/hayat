@@ -4,6 +4,9 @@ import { AdminShell } from "../AdminShell";
 import { deleteApplication, updateApplicationStatus } from "../actions";
 import { ClipboardList, Download, Eye, Save, Trash2 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const statusLabels: Record<string, string> = {
   NEW: "Yeni başvuru",
   IN_REVIEW: "İncelemede",

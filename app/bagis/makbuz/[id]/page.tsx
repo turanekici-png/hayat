@@ -5,6 +5,9 @@ import { getDonationTypeLabel } from "@/lib/donation-types";
 import { prisma } from "@/lib/prisma";
 import { CheckCircle2, Download, HeartHandshake } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function DonationReceiptPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const donation = await prisma.donation.findUnique({ where: { id } });

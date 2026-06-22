@@ -4,6 +4,9 @@ import { AdminShell } from "../AdminShell";
 import { createAnnouncement, deleteAnnouncement, seedDefaultAnnouncements, updateAnnouncement } from "../actions";
 import { BellRing, CheckCircle2, Megaphone, Pin, PlusCircle, Save, Trash2 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const types = [
   ["GENEL", "Genel Duyuru"],
   ["ACIL", "Acil Duyuru"],

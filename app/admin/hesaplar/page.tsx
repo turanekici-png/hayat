@@ -9,6 +9,9 @@ Hesap Adı: Hayat Ağacı Derneği
 IBAN: TR
 Açıklama: Bağış`;
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function BankAccountsAdminPage() {
   const page = await prisma.policyPage.findUnique({ where: { type: "BANK_ACCOUNTS" } }).catch(() => null);
 

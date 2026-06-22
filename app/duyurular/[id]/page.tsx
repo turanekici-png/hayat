@@ -4,7 +4,8 @@ import { Footer } from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
 import { CalendarDays } from "lucide-react";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function AnnouncementDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

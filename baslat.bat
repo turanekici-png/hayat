@@ -10,9 +10,9 @@ echo =============================================
 echo   HayatDer Web Platformu Baslatiliyor
 echo =============================================
 
-for /f "tokens=5" %%P in ('netstat -ano ^| findstr /r /c:":4000 .*LISTENING"') do (
+for /f "tokens=5" %%P in ('netstat -ano ^| findstr /r /c:":3000 .*LISTENING"') do (
   echo.
-  echo Uygulama zaten calisiyor: http://localhost:4000
+  echo Uygulama zaten calisiyor: http://localhost:3000
   echo Yeniden baslatmak icin once mevcut pencereyi kapatin.
   pause
   exit /b 0
@@ -49,11 +49,8 @@ if errorlevel 1 (
 )
 
 echo.
-echo Veritabani senkronize ediliyor...
-if not exist prisma\hayat.db (
-  type nul > prisma\hayat.db
-)
-call npx.cmd prisma db push --skip-generate
+echo Veritabani gocleri uygulaniyor...
+call npx.cmd prisma migrate deploy
 if errorlevel 1 (
   echo HATA: Veritabani baglantisi basarisiz oldu.
   echo .env icindeki DATABASE_URL satirini kontrol edin.
@@ -63,9 +60,9 @@ if errorlevel 1 (
 
 echo.
 echo Uygulama baslatiliyor...
-echo Bu bilgisayardan: http://localhost:4000
-echo Ayni agdaki bilgisayarlardan: http://BILGISAYAR-IP:4000
-echo Yonetim paneli: http://localhost:4000/admin
+echo Bu bilgisayardan: http://localhost:3000
+echo Ayni agdaki bilgisayarlardan: http://BILGISAYAR-IP:3000
+echo Yonetim paneli: http://localhost:3000/admin
 echo.
 call npm run dev
 pause

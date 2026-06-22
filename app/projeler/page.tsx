@@ -1,7 +1,8 @@
 ﻿import { FolderHeart } from "lucide-react";
 import { SectionIndexPage } from "@/components/SectionIndexPage";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default function ProjectsPage() {
   return (

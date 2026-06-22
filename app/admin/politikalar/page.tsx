@@ -11,6 +11,9 @@ const labels: Record<string, string> = {
   COOKIE: "Çerez Politikası"
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function PolicyAdminPage() {
   const policies = await prisma.policyPage.findMany({ orderBy: { createdAt: "asc" } });
   return (

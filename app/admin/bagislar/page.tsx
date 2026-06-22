@@ -1,6 +1,9 @@
 import { AdminShell } from "../AdminShell";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 async function getDonations() {
   return prisma.donation.findMany({
     orderBy: { createdAt: "desc" },

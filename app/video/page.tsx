@@ -5,7 +5,8 @@ import { Footer } from "@/components/Footer";
 import { VideoLightboxGrid } from "@/components/VideoLightboxGrid";
 import { getSectionGroupLabel, getSectionsByType } from "@/lib/site-content";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type VideoSearchParams = Promise<{ video?: string | string[] }>;
 

@@ -4,6 +4,9 @@ import { Footer } from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
 import { SearchCheck } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const statusLabels: Record<string, string> = {
   NEW: "Başvuru alındı",
   IN_REVIEW: "İncelemede",

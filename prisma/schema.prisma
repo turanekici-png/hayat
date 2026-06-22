@@ -3,14 +3,11 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// SQLite does not support enums, so we will use String for these fields.
-// The previous enums were: DonationStatus, DonationType, SectionType, SectionLayout, 
-// SectionTheme, ApplicationStatus, ApplicationAidType, SacrificeStatus, SacrificeType, 
-// PolicyType, AnnouncementType.
+// Enum-like fields are stored as String values for compatibility with existing data.
 
 model Donation {
   id              String         @id @default(cuid())

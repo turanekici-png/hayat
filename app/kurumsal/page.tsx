@@ -1,7 +1,8 @@
 ﻿import { ShieldCheck } from "lucide-react";
 import { SectionIndexPage, isCorporateSection } from "@/components/SectionIndexPage";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default function CorporatePage() {
   return (

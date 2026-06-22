@@ -4,7 +4,8 @@ import { Header } from "@/components/Header";
 import { DonationForm } from "@/components/DonationForm";
 import { getActiveDonationTypes } from "@/lib/donation-types";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type BagisSearchParams = Promise<{ odeme?: string | string[]; mesaj?: string | string[] }>;
 

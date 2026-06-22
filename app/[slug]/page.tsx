@@ -28,7 +28,8 @@ const fallbackPolicies: Record<string, { title: string; content: string; label?:
   }
 };
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function PolicyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
