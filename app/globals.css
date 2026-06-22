@@ -1,0 +1,241 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+html { scroll-behavior: smooth; }
+
+body { 
+  background:#f7fafc; 
+  color:#445668; 
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  word-spacing: 0;
+}
+
+/* Precisely Matching Target Site Aesthetics */
+.shadow-stk {
+  box-shadow: 0 18px 45px rgba(15, 39, 63, 0.07);
+  border-radius: 8px;
+}
+
+.shadow-stk-hover {
+  box-shadow: 0 22px 55px rgba(15, 39, 63, 0.12);
+}
+
+.corporate-panel {
+  border: 1px solid #dbe6ee;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.corporate-section {
+  border-top: 1px solid #e6eef4;
+}
+
+.corporate-kicker {
+  letter-spacing: 0.12em;
+}
+
+.tracking-tight,
+.tracking-widest,
+[class*="tracking-["] {
+  letter-spacing: 0 !important;
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  min-width: 0;
+}
+
+.progress-bar-container {
+  height: 5px;
+  background: #f0f0f0;
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #6FB744;
+  border-radius: 100px;
+  transition: width 1s ease-in-out;
+}
+
+@keyframes auto-scroll-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes announcement-scroll-up {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+.auto-scroll-row {
+  mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+}
+
+.auto-scroll-track {
+  animation: auto-scroll-left 34s linear infinite;
+  will-change: transform;
+}
+
+.auto-scroll-row:hover .auto-scroll-track,
+.auto-scroll-row:focus-within .auto-scroll-track {
+  animation-play-state: paused;
+}
+
+.auto-scroll-set {
+  padding-right: 1.5rem;
+}
+
+.announcement-scroll-window {
+  mask-image: linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+  contain: paint;
+}
+
+.announcement-scroll-track {
+  animation: announcement-scroll-up 26s linear infinite;
+  padding-bottom: 0.75rem;
+  will-change: transform;
+}
+
+.announcement-scroll-window:hover .announcement-scroll-track,
+.announcement-scroll-window:focus-within .announcement-scroll-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auto-scroll-track {
+    animation: none;
+  }
+
+  .announcement-scroll-track {
+    animation: none;
+  }
+}
+
+/* Quick Donation Bar Overlay Effect */
+.quick-donation-overlap {
+  margin-top: -65px;
+  position: relative;
+  z-index: 50;
+}
+
+/* Header & Footer Refinements */
+header {
+  border-bottom: 1px solid #dfe8ef;
+}
+
+footer {
+  background-color: #343f52;
+  color: #cacfe3;
+}
+
+footer h3 {
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Selection Color */
+::selection {
+  background-color: rgba(111, 183, 68, 0.7);
+  color: #fff;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f6f7f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6FB744;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 1024px) {
+  .quick-donation-overlap {
+    margin-top: 0;
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 0.88rem;
+    line-height: 1.65;
+  }
+
+  h1,
+  h2,
+  h3 {
+    overflow-wrap: anywhere;
+  }
+
+  .auto-scroll-row {
+    overflow-x: auto;
+    padding-bottom: 0.75rem;
+    mask-image: none;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .auto-scroll-track {
+    animation: none;
+    width: max-content;
+  }
+
+  .auto-scroll-set {
+    padding-right: 1rem;
+  }
+
+  .auto-scroll-set + .auto-scroll-set {
+    display: none;
+  }
+
+  .announcement-scroll-window {
+    mask-image: none;
+  }
+
+  .announcement-scroll-track {
+    animation-duration: 34s;
+  }
+}

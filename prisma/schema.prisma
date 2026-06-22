@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite does not support enums, so we will use String for these fields.
+// The previous enums were: DonationStatus, DonationType, SectionType, SectionLayout, 
+// SectionTheme, ApplicationStatus, ApplicationAidType, SacrificeStatus, SacrificeType, 
+// PolicyType, AnnouncementType.
+
+model Donation {
+  id              String         @id @default(cuid())
+  receiptNo       String?        @unique
+  fullName        String
+  phone           String?
+  email           String?
+  amount          Float
+  type            String         @default("GENEL_BAGIS")
+  description     String?
+  status          String         @default("PENDING")
+  paymentProvider String         @default("demo")
+  paymentRef      String?        @unique
+  kvkkConsent     Boolean        @default(false)
+  privacyConsent  Boolean        @default(false)
+  refundConsent   Boolean        @default(false)
+  consentAt       DateTime?
+  ipAddress       String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model DonationType {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  label       String
+  description String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model News {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  summary   String
+  content   String
+  imageUrl  String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Campaign {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  target      Float?
+  imageUrl    String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SiteSection {
+  id                   String        @id @default(cuid())
+  title                String
+  subtitle             String?
+  body                 String?
+  badge                String?
+  imageUrl             String?
+  imageAlt             String?
+  href                 String?
+  buttonLabel          String?
+  secondaryHref        String?
+  secondaryButtonLabel String?
+  type                 String        @default("CUSTOM")
+  layout               String        @default("CARD")
+  theme                String        @default("LIGHT")
+  isActive             Boolean       @default(true)
+  sortOrder            Int           @default(0)
+  titleSize            Int           @default(32)
+  subtitleSize         Int           @default(14)
+  bodySize             Int           @default(16)
+  titleColor           String?
+  subtitleColor        String?
+  bodyColor            String?
+  textAlign            String        @default("left")
+  contentWidth         String        @default("normal")
+  paddingY             Int           @default(56)
+  cardWidth            String        @default("normal")
+  minHeight            Int?
+  cardPadding          Int           @default(32)
+  marginTop            Int           @default(0)
+  marginBottom         Int           @default(0)
+  borderRadius         Int           @default(32)
+  borderColor          String?
+  backgroundColor      String?
+  images               SiteSectionImage[]
+  customTitle          String?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+}
+
+model SiteSectionImage {
+  id        String      @id @default(cuid())
+  sectionId String
+  section   SiteSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String?
+  sortOrder Int         @default(0)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  title     String?
+  url       String
+  filename  String
+  mimeType  String
+  size      Int
+  createdAt DateTime @default(now())
+}
+
+model AidApplication {
+  id             String                @id @default(cuid())
+  applicationNo  String?               @unique
+  fullName       String
+  nationalId     String?
+  phone          String
+  email          String?
+  city           String?
+  district       String?
+  address        String?
+  householdCount Int?
+  monthlyIncome  Float?
+  employment     String?
+  vehicleInfo    String?
+  iban           String?
+  aidType        String                @default("GIDA")
+  description    String
+  status         String                @default("NEW")
+  adminNote      String?
+  trackingNote   String?
+  documents      ApplicationDocument[]
+  smsLogs        SmsLog[]
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+}
+
+model ApplicationDocument {
+  id            String         @id @default(cuid())
+  applicationId String
+  application   AidApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  label         String?
+  url           String
+  filename      String
+  mimeType      String
+  size          Int
+  createdAt     DateTime       @default(now())
+}
+
+model SmsLog {
+  id            String          @id @default(cuid())
+  applicationId String?
+  application   AidApplication? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  phone         String
+  message       String
+  provider      String          @default("demo")
+  status        String          @default("READY")
+  createdAt     DateTime        @default(now())
+}
+
+model SacrificeOrder {
+  id        String          @id @default(cuid())
+  orderNo   String          @unique
+  fullName  String
+  phone     String?
+  email     String?
+  shares    Int             @default(1)
+  amount    Float?
+  type      String          @default("KURBAN")
+  note      String?
+  status    String          @default("NEW")
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model PolicyPage {
+  id        String     @id @default(cuid())
+  type      String     @unique
+  title     String
+  slug      String     @unique
+  content   String
+  isActive  Boolean    @default(true)
+  updatedAt DateTime   @updatedAt
+  createdAt DateTime   @default(now())
+}
+
+model Announcement {
+  id        String           @id @default(cuid())
+  title     String
+  content   String
+  type      String           @default("GENEL")
+  isActive  Boolean          @default(true)
+  isPinned  Boolean          @default(false)
+  startDate DateTime?
+  endDate   DateTime?
+  sortOrder Int              @default(0)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model PopupSetting {
+  id           String   @id @default(cuid())
+  title        String
+  content      String
+  imageUrl     String?
+  imageAlt     String?
+  buttonLabel  String?
+  buttonUrl    String?
+  isActive     Boolean  @default(false)
+  showOnce     Boolean  @default(true)
+  delaySeconds Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SectionGroupLabel {
+  id        String   @id @default(cuid())
+  type      String   @unique
+  label     String
+  updatedAt DateTime @updatedAt
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  fullName     String
+  username     String?  @unique
+  email        String   @unique
+  role         String   @default("EDITOR")
+  passwordHash String
+  isActive     Boolean  @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

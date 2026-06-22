@@ -1,0 +1,259 @@
+import { AdminShell } from "../AdminShell";
+import { prisma } from "@/lib/prisma";
+
+async function getDonations() {
+  return prisma.donation.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 100,
+    select: {
+      id: true,
+      createdAt: true,
+      fullName: true,
+      amount: true,
+      type: true,
+      description: true,
+      status: true,
+      paymentRef: true
+    }
+  });
+}
+
+type DonationRow = Awaited<ReturnType<typeof getDonations>>[number];
+
+const statusLabels: Record<string, string> = {
+  PAID: "Ödendi",
+  PENDING: "Bekliyor",
+  FAILED: "Başarısız",
+  CANCELLED: "İptal"
+};
+
+const statusColors: Record<string, string> = {
+  PAID: "#6fb744",
+  PENDING: "#f4b740",
+  FAILED: "#ef4444",
+  CANCELLED: "#64748b"
+};
+
+function currency(value: number) {
+  return new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2 }).format(value);
+}
+
+function statusLabel(status: string) {
+  return statusLabels[status] || status;
+}
+
+function statusColor(status: string) {
+  return statusColors[status] || "#2563eb";
+}
+
+function donationSummary(donations: DonationRow[]) {
+  const totalAmount = donations.reduce((sum, donation) => sum + donation.amount, 0);
+  const paidDonations = donations.filter((donation) => donation.status === "PAID");
+  const paidAmount = paidDonations.reduce((sum, donation) => sum + donation.amount, 0);
+  const averageAmount = donations.length ? totalAmount / donations.length : 0;
+  const successRate = donations.length ? Math.round((paidDonations.length / donations.length) * 100) : 0;
+
+  const statusItems = Object.entries(
+    donations.reduce<Record<string, number>>((acc, donation) => {
+      acc[donation.status] = (acc[donation.status] || 0) + 1;
+      return acc;
+    }, {})
+  ).map(([status, count]) => ({ status, count }));
+
+  const typeItems = Object.entries(
+    donations.reduce<Record<string, number>>((acc, donation) => {
+      acc[donation.type] = (acc[donation.type] || 0) + donation.amount;
+      return acc;
+    }, {})
+  )
+    .map(([type, amount]) => ({ type, amount }))
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 6);
+
+  const monthFormatter = new Intl.DateTimeFormat("tr-TR", { month: "short" });
+  const monthItems = Object.entries(
+    donations.reduce<Record<string, { label: string; amount: number; count: number }>>((acc, donation) => {
+      const key = `${donation.createdAt.getFullYear()}-${String(donation.createdAt.getMonth() + 1).padStart(2, "0")}`;
+      if (!acc[key]) {
+        acc[key] = { label: monthFormatter.format(donation.createdAt), amount: 0, count: 0 };
+      }
+      acc[key].amount += donation.amount;
+      acc[key].count += 1;
+      return acc;
+    }, {})
+  )
+    .sort(([a], [b]) => a.localeCompare(b))
+    .slice(-6)
+    .map(([, value]) => value);
+
+  return { totalAmount, paidAmount, averageAmount, successRate, statusItems, typeItems, monthItems };
+}
+
+function StatCard({ label, value, hint }: { label: string; value: string; hint: string }) {
+  return (
+    <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <p className="text-xs font-black uppercase tracking-[.18em] text-slate-400">{label}</p>
+      <b className="mt-3 block text-3xl font-black text-hayat-dark">{value}</b>
+      <p className="mt-2 text-sm font-semibold text-slate-500">{hint}</p>
+    </div>
+  );
+}
+
+function DonationAnalytics({ donations }: { donations: DonationRow[] }) {
+  const summary = donationSummary(donations);
+  const maxMonthAmount = Math.max(...summary.monthItems.map((item) => item.amount), 1);
+  const maxTypeAmount = Math.max(...summary.typeItems.map((item) => item.amount), 1);
+  const totalStatusCount = Math.max(summary.statusItems.reduce((sum, item) => sum + item.count, 0), 1);
+  let statusOffset = 0;
+
+  return (
+    <section className="mt-8 space-y-5">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <StatCard label="Toplam bağış" value={`${currency(summary.totalAmount)} TL`} hint={`Son ${donations.length} kayıt toplamı`} />
+        <StatCard label="Ödenen tutar" value={`${currency(summary.paidAmount)} TL`} hint="PAID durumundaki bağışlar" />
+        <StatCard label="Ortalama bağış" value={`${currency(summary.averageAmount)} TL`} hint="Kayıt başına ortalama" />
+        <StatCard label="Başarı oranı" value={`%${summary.successRate}`} hint="Ödenen kayıt / toplam kayıt" />
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-[1fr_1.1fr]">
+        <div className="rounded-3xl bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-black text-hayat-dark">Durum dağılımı</h2>
+          <p className="mt-1 text-sm font-semibold text-slate-500">Bağış kayıtlarının ödeme durumlarına göre analizi</p>
+
+          <div className="mt-6 grid items-center gap-6 sm:grid-cols-[180px_1fr]">
+            <svg viewBox="0 0 42 42" className="mx-auto h-44 w-44 -rotate-90" aria-label="Durum dağılımı grafiği">
+              <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#edf2f7" strokeWidth="7" />
+              {summary.statusItems.map((item) => {
+                const percent = (item.count / totalStatusCount) * 100;
+                const circle = (
+                  <circle
+                    key={item.status}
+                    cx="21"
+                    cy="21"
+                    r="15.915"
+                    fill="transparent"
+                    stroke={statusColor(item.status)}
+                    strokeDasharray={`${percent} ${100 - percent}`}
+                    strokeDashoffset={-statusOffset}
+                    strokeWidth="7"
+                  />
+                );
+                statusOffset += percent;
+                return circle;
+              })}
+            </svg>
+
+            <div className="space-y-3">
+              {summary.statusItems.length ? summary.statusItems.map((item) => (
+                <div key={item.status} className="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 p-3">
+                  <span className="flex items-center gap-2 text-sm font-black text-slate-700">
+                    <span className="h-3 w-3 rounded-full" style={{ backgroundColor: statusColor(item.status) }} />
+                    {statusLabel(item.status)}
+                  </span>
+                  <b className="text-hayat-dark">{item.count}</b>
+                </div>
+              )) : (
+                <p className="rounded-2xl bg-slate-50 p-4 text-sm font-bold text-slate-500">Henüz bağış kaydı yok.</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-3xl bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-black text-hayat-dark">Aylık bağış hacmi</h2>
+          <p className="mt-1 text-sm font-semibold text-slate-500">Son 6 ay içindeki tutar hareketi</p>
+          <div className="mt-6 flex h-64 items-end gap-3 rounded-2xl bg-slate-50 p-4">
+            {summary.monthItems.length ? summary.monthItems.map((item) => (
+              <div key={item.label} className="flex h-full min-w-0 flex-1 flex-col justify-end gap-2">
+                <div className="flex min-h-10 items-end justify-center rounded-t-xl bg-hayat-green" style={{ height: `${Math.max((item.amount / maxMonthAmount) * 100, 8)}%` }}>
+                  <span className="mb-2 text-[10px] font-black text-white">{item.count}</span>
+                </div>
+                <div className="text-center">
+                  <p className="truncate text-xs font-black text-hayat-dark">{item.label}</p>
+                  <p className="truncate text-[10px] font-bold text-slate-500">{currency(item.amount)} TL</p>
+                </div>
+              </div>
+            )) : (
+              <div className="flex h-full w-full items-center justify-center text-sm font-bold text-slate-500">Henüz grafik oluşturacak bağış kaydı yok.</div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-3xl bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-black text-hayat-dark">Bağış türlerine göre tutar</h2>
+        <p className="mt-1 text-sm font-semibold text-slate-500">En yüksek hacimli bağış türleri</p>
+        <div className="mt-6 space-y-3">
+          {summary.typeItems.length ? summary.typeItems.map((item) => (
+            <div key={item.type} className="grid gap-2 md:grid-cols-[180px_1fr_120px] md:items-center">
+              <b className="text-sm text-hayat-dark">{item.type}</b>
+              <div className="h-4 overflow-hidden rounded-full bg-slate-100">
+                <div className="h-full rounded-full bg-hayat-blue" style={{ width: `${Math.max((item.amount / maxTypeAmount) * 100, 4)}%` }} />
+              </div>
+              <span className="text-sm font-black text-slate-600 md:text-right">{currency(item.amount)} TL</span>
+            </div>
+          )) : (
+            <p className="rounded-2xl bg-slate-50 p-4 text-sm font-bold text-slate-500">Henüz bağış türü analizi için kayıt yok.</p>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default async function AdminDonations({ searchParams }: { searchParams: Promise<{ secret?: string }> }) {
+  const params = await searchParams;
+
+  if (params.secret !== process.env.ADMIN_SECRET) {
+    return (
+      <AdminShell activePath="/admin/bagislar" contentClassName="max-w-7xl">
+        <section className="rounded-[2rem] bg-white p-10 font-bold text-slate-600 shadow-sm">Yetkisiz erişim.</section>
+      </AdminShell>
+    );
+  }
+
+  const donations = await getDonations();
+
+  return (
+    <AdminShell activePath="/admin/bagislar" contentClassName="max-w-7xl">
+      <h1 className="text-3xl font-black">Bağış Kayıtları</h1>
+      <p className="mt-2 text-slate-500">Son 100 bağış kaydı</p>
+
+      <DonationAnalytics donations={donations} />
+
+      <div className="mt-8 overflow-x-auto rounded-3xl bg-white shadow-sm">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-hayat-dark text-white">
+            <tr>
+              <th className="p-4">Tarih</th>
+              <th>Ad Soyad</th>
+              <th>Tutar</th>
+              <th>Tür</th>
+              <th>Açıklama</th>
+              <th>Durum</th>
+              <th>Ref</th>
+            </tr>
+          </thead>
+          <tbody>
+            {donations.map((donation) => (
+              <tr key={donation.id} className="border-b">
+                <td className="p-4">{donation.createdAt.toLocaleString("tr-TR")}</td>
+                <td>{donation.fullName}</td>
+                <td>{currency(donation.amount)} TL</td>
+                <td>{donation.type}</td>
+                <td>{donation.description}</td>
+                <td><span className="rounded-full bg-slate-100 px-3 py-1 font-bold">{statusLabel(donation.status)}</span></td>
+                <td>{donation.paymentRef}</td>
+              </tr>
+            ))}
+            {!donations.length && (
+              <tr>
+                <td colSpan={7} className="p-8 text-center font-bold text-slate-500">Henüz bağış kaydı yok.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </AdminShell>
+  );
+}
