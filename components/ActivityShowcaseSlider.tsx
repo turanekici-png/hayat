@@ -92,7 +92,7 @@ export function ActivityShowcaseSlider({
 
   if (splitMedia) {
     return (
-      <div className="relative grid min-h-[360px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk md:min-h-[520px] lg:grid-cols-[minmax(0,.95fr)_minmax(0,1.05fr)]">
+      <div className="relative grid overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk lg:grid-cols-[minmax(0,.95fr)_minmax(0,1.05fr)]">
         <div className="z-10 flex min-w-0 flex-col justify-center px-5 py-8 sm:px-8 lg:px-12">
           <div className="max-w-2xl">
             {(current.badge || current.subtitle) && (
@@ -119,39 +119,34 @@ export function ActivityShowcaseSlider({
           </div>
         </div>
 
-        <div className="relative min-h-[260px] bg-white md:min-h-[520px]">
-          {items.map((item, index) => {
-            const image = item.slides[0];
-            return image ? (
-              <img
-                key={item.id}
-                src={image.src}
-                alt={image.alt}
-                loading={index === 0 ? "eager" : "lazy"}
-                decoding="async"
-                fetchPriority={index === 0 ? "high" : "auto"}
-                className={`absolute inset-0 h-full w-full bg-white object-contain transition-all duration-1000 ${
-                  index === active ? "scale-100 opacity-100" : "scale-100 opacity-0"
-                }`}
-              />
-            ) : null;
-          })}
-          {!activeImage && <div className="absolute inset-0 bg-[#eef5f8]" />}
+        <div className="relative flex min-w-0 flex-col items-center justify-center bg-white">
+          {activeImage ? (
+            <img
+              key={`${current.id}-${activeImage.src}`}
+              src={activeImage.src}
+              alt={activeImage.alt}
+              loading={active === 0 ? "eager" : "lazy"}
+              decoding="async"
+              fetchPriority={active === 0 ? "high" : "auto"}
+              className="block h-auto max-h-[72vh] w-full bg-white object-contain"
+            />
+          ) : (
+            <div className="min-h-[260px] w-full bg-[#eef5f8]" />
+          )}
+          {items.length > 1 && (
+            <div className="flex w-full justify-center gap-2 bg-white py-5">
+              {items.map((item, index) => (
+                <button
+                  key={`${item.id}-dot`}
+                  type="button"
+                  aria-label={`${index + 1}. ${dotLabel}`}
+                  onClick={() => setActive(index)}
+                  className={`h-2.5 rounded-full transition-all ${index === active ? "w-9 bg-hayat-blue shadow-stk" : "w-2.5 bg-hayat-blue/30 hover:bg-hayat-blue/60"}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
-
-        {items.length > 1 && (
-          <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 gap-2">
-            {items.map((item, index) => (
-              <button
-                key={`${item.id}-dot`}
-                type="button"
-                aria-label={`${index + 1}. ${dotLabel}`}
-                onClick={() => setActive(index)}
-                className={`h-2.5 rounded-full transition-all ${index === active ? "w-9 bg-hayat-blue shadow-stk" : "w-2.5 bg-hayat-blue/30 hover:bg-hayat-blue/60"}`}
-              />
-            ))}
-          </div>
-        )}
       </div>
     );
   }

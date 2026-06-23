@@ -40,7 +40,9 @@ function revalidateSiteContent() {
   revalidateTag("site-content");
   revalidatePath("/", "layout");
   revalidatePath("/");
+  revalidatePath("/", "page");
   revalidatePath("/admin");
+  revalidatePath("/admin", "page");
 }
 
 function redirectWithRefresh(target: string) {

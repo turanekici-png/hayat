@@ -515,7 +515,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
               {/* Listeleme ve Düzenleme Alanı */}
               <div>
                 {selectedGroupItems.length > 0 ? (
-                  selectedGroupItems.map((section) => <SectionEditor key={section.id} section={section} media={safeMedia} />)
+                  selectedGroupItems.map((section) => <SectionEditor key={`${section.id}-${section.updatedAt.getTime()}`} section={section} media={safeMedia} />)
                 ) : (
                   <div className="flex min-h-[200px] flex-col items-center justify-center rounded-[1.5rem] border-2 border-dashed border-slate-200 bg-white p-10 text-center">
                      <LayoutDashboard className="text-slate-300 mb-3" size={48} />
