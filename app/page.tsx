@@ -221,7 +221,7 @@ export default async function HomePage() {
         {heroNewsItems.length > 0 && (
           <section className="relative overflow-hidden border-b border-[#d5e4ec]" style={{ backgroundColor: heroNewsLead?.backgroundColor || "#eef5f8", paddingTop: `${heroNewsLead?.paddingY || 0}px`, paddingBottom: `${heroNewsLead?.paddingY || 0}px` }}>
             <div className={`mx-auto ${heroNewsLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"} px-5 py-1 sm:px-8 lg:px-10`}>
-              <ActivityShowcaseSlider items={heroNewsItems} defaultHref="/haberler" defaultButtonLabel="Haberi İncele" dotLabel="haber" showDefaultButton />
+              <ActivityShowcaseSlider items={heroNewsItems} defaultHref="/haberler" defaultButtonLabel="Haberi İncele" dotLabel="haber" showDefaultButton splitMedia />
             </div>
           </section>
         )}

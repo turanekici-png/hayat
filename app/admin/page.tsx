@@ -212,7 +212,7 @@ function SectionEditor({ section, media }: { section: SiteSectionWithImages; med
             ))}
             <label className="block rounded-xl border-2 border-dashed border-hayat-green/30 bg-hayat-soft p-4 font-bold text-slate-700">
               Bu alanın kendi medya kütüphanesine resim/video yükle
-              <input name="newSectionImageFiles" type="file" accept="image/*,video/*" multiple className="mt-3 w-full rounded-xl bg-white p-3 font-normal" />
+              <input name="newSectionImageFiles" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png,video/mp4,video/webm,video/ogg,video/quicktime" multiple className="mt-3 w-full rounded-xl bg-white p-3 font-normal" />
               <span className="mt-2 block text-xs font-normal text-slate-500">Seçilen dosyalar sadece bu alanın medya listesine kaydedilir.</span>
             </label>
             {!isMediaOnly && [0, 1, 2].map((index) => (
@@ -674,7 +674,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                   <p className="mt-2 text-slate-500">Yüklediğiniz medyalar, alanlardaki Medya Seç penceresinde otomatik listelenir.</p>
                   <form action={uploadMedia} className="mt-5 space-y-3">
                     <input name="title" placeholder="Medya başlığı" className="w-full rounded-2xl border p-3" />
-                    <input name="file" type="file" accept="image/*,video/*" required className="w-full rounded-2xl border p-3" />
+                    <input name="file" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png,video/mp4,video/webm,video/ogg,video/quicktime" required className="w-full rounded-2xl border p-3" />
                     <button className="w-full rounded-2xl bg-hayat-blue px-6 py-3 font-black text-white"><ImagePlus className="mr-2 inline" size={18} /> Medya Yükle</button>
                   </form>
                 </div>

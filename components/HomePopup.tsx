@@ -15,13 +15,29 @@ type PopupData = {
   delaySeconds: number;
 } | null;
 
+function safelyGetStorageItem(key: string) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function safelySetStorageItem(key: string, value: string) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    return;
+  }
+}
+
 export function HomePopup({ popup }: { popup: PopupData }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (!popup) return;
     const storageKey = `hayat-popup-seen-${popup.id}`;
-    if (popup.showOnce && window.localStorage.getItem(storageKey) === "1") return;
+    if (popup.showOnce && safelyGetStorageItem(storageKey) === "1") return;
     const timer = window.setTimeout(() => setOpen(true), Math.max(0, popup.delaySeconds || 0) * 1000);
     return () => window.clearTimeout(timer);
   }, [popup]);
@@ -29,7 +45,7 @@ export function HomePopup({ popup }: { popup: PopupData }) {
   if (!popup || !open) return null;
 
   const closePopup = () => {
-    if (popup.showOnce) window.localStorage.setItem(`hayat-popup-seen-${popup.id}`, "1");
+    if (popup.showOnce) safelySetStorageItem(`hayat-popup-seen-${popup.id}`, "1");
     setOpen(false);
   };
 

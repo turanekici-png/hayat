@@ -17,6 +17,16 @@ type SectionTheme = string;
 type SectionType = string;
 
 const uploadDir = path.join(process.cwd(), "public", "uploads");
+const allowedUploadExtensions = new Set([".jpg", ".jpeg", ".png", ".mp4", ".webm", ".ogg", ".mov"]);
+
+function isAllowedUpload(file: File) {
+  const extension = path.extname(file.name).toLowerCase();
+  return (
+    file.type.startsWith("image/") ||
+    file.type.startsWith("video/") ||
+    allowedUploadExtensions.has(extension)
+  );
+}
 
 function revalidateDonationTypes() {
   revalidateTag("donation-types");
@@ -166,7 +176,7 @@ function sectionPayload(formData: FormData) {
 }
 
 async function saveUploadedSectionImage(sectionId: string, file: File, sortOrder: number) {
-  if ((!file.type.startsWith("image/") && !file.type.startsWith("video/")) || file.size === 0) return;
+  if (!isAllowedUpload(file) || file.size === 0) return;
   if (file.size > 80 * 1024 * 1024) return;
 
   await mkdir(uploadDir, { recursive: true });
@@ -513,7 +523,7 @@ export async function duplicateSection(formData: FormData) {
 export async function uploadMedia(formData: FormData) {
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) return;
-  if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) return;
+  if (!isAllowedUpload(file)) return;
   if (file.size > 80 * 1024 * 1024) return;
 
   await mkdir(uploadDir, { recursive: true });
