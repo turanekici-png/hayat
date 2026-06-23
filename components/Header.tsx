@@ -25,27 +25,27 @@ export function Header() {
         </div>
       </div>
 
-      <div className="mx-auto flex h-16 max-w-[1320px] items-center justify-between gap-3 px-3 sm:h-20 sm:px-5 lg:h-[88px] lg:px-10">
-        <div className="flex min-w-0 items-center gap-3 lg:gap-6">
+      <div className="mx-auto flex h-16 max-w-[1500px] items-center justify-between gap-3 px-3 sm:h-20 sm:px-5 lg:h-[88px] lg:px-10">
+        <div className="flex min-w-0 flex-1 items-center gap-3 lg:gap-5">
           <Link href="/" className="flex shrink-0 items-center rounded-md bg-white p-2 shadow-sm transition hover:-translate-y-0.5" aria-label="Hayat Ağacı Derneği ana sayfa">
             <img src="/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" className="h-10 w-[104px] rounded-sm object-contain sm:h-14 sm:w-[140px] lg:h-[72px] lg:w-[180px]" />
           </Link>
 
-          <nav className="hidden items-center gap-1 xl:flex">
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0 xl:flex 2xl:gap-1">
             {nav.map(([label, href]) => (
-              <Link key={label} href={href} className="whitespace-nowrap rounded-md px-4 py-2.5 text-base font-extrabold text-white transition-all hover:bg-hayat-green hover:text-white">
+              <Link key={label} href={href} className="whitespace-nowrap rounded-md px-2.5 py-2.5 text-sm font-extrabold text-white transition-all hover:bg-hayat-green hover:text-white 2xl:px-3.5 2xl:text-base">
                 {label}
               </Link>
             ))}
           </nav>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3 lg:gap-4">
-          <div className="hidden h-10 w-10 cursor-pointer items-center justify-center rounded-full text-white transition-colors hover:bg-hayat-green lg:flex">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <div className="hidden h-10 w-10 cursor-pointer items-center justify-center rounded-full text-white transition-colors hover:bg-hayat-green 2xl:flex">
             <Search size={19} />
           </div>
 
-          <Link href="/bagis" className="group flex h-11 items-center gap-2 rounded-md bg-hayat-green px-3 text-sm font-black text-white shadow-green transition-all hover:-translate-y-0.5 hover:bg-hayat-greenDark active:scale-95 sm:h-12 sm:px-5 lg:h-auto lg:px-8 lg:py-4">
+          <Link href="/bagis" className="group flex h-11 items-center gap-2 rounded-md bg-hayat-green px-3 text-sm font-black text-white shadow-green transition-all hover:-translate-y-0.5 hover:bg-hayat-greenDark active:scale-95 sm:h-12 sm:px-5 lg:h-auto lg:px-6 lg:py-4 2xl:px-8">
             <Heart size={18} fill="currentColor" />
             <span className="hidden sm:inline">BAĞIŞ YAP</span>
           </Link>
