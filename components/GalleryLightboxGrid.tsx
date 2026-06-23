@@ -39,7 +39,7 @@ export function GalleryLightboxGrid({ images }: { images: GalleryImage[] }) {
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {images.map((image) => (
           <button key={image.id} type="button" onClick={() => setSelectedImage(image)} className="group overflow-hidden rounded-lg border border-[#dfe7ed] bg-white text-left shadow-stk outline-none transition hover:-translate-y-1 hover:shadow-stk-hover focus-visible:ring-4 focus-visible:ring-hayat-green/30">
-            <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-72 w-full object-cover transition duration-500 group-hover:scale-105" />
+            <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-72 w-full bg-white object-contain transition duration-500" />
           </button>
         ))}
       </div>

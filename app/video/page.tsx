@@ -101,7 +101,7 @@ export default async function VideosPage({ searchParams }: { searchParams: Video
                           coverIsVideo ? (
                             <video src={cover.src} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" preload="metadata" muted />
                           ) : (
-                            <img src={cover.src} alt={cover.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                            <img src={cover.src} alt={cover.title} loading="lazy" decoding="async" className="h-full w-full bg-white object-contain transition duration-500" />
                           )
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-white">

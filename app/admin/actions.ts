@@ -26,6 +26,13 @@ function revalidateDonationTypes() {
   revalidatePath("/admin");
 }
 
+function revalidateSiteContent() {
+  revalidateTag("site-content");
+  revalidatePath("/", "layout");
+  revalidatePath("/");
+  revalidatePath("/admin");
+}
+
 function textValue(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" && value.trim() ? value.trim() : undefined;
@@ -246,9 +253,7 @@ export async function seedDefaultSections() {
   // Böylece kullanıcı panelden sildiği/pasif yaptığı alanları yanlışlıkla tekrar geri getirmez.
   const count = await prisma.siteSection.count();
   if (count > 0) {
-    revalidatePath("/", "layout");
-    revalidatePath("/");
-    revalidatePath("/admin");
+    revalidateSiteContent();
     redirect("/admin");
   }
 
@@ -274,9 +279,7 @@ export async function seedDefaultSections() {
       }
     });
   }
-  revalidatePath("/", "layout");
-  revalidatePath("/");
-  revalidatePath("/admin");
+  revalidateSiteContent();
   redirect("/admin");
 }
 
@@ -371,9 +374,7 @@ const managedHomepageSections = [
 export async function ensureHomepageManagedSections() {
   await ensureManagedSectionsOnce();
 
-  revalidatePath("/", "layout");
-  revalidatePath("/");
-  revalidatePath("/admin");
+  revalidateSiteContent();
   redirect("/admin?sayfa=anasayfa");
 }
 
@@ -427,18 +428,14 @@ export async function saveStatsSection(formData: FormData) {
     await prisma.siteSection.create({ data });
   }
 
-  revalidatePath("/", "layout");
-  revalidatePath("/");
-  revalidatePath("/admin");
+  revalidateSiteContent();
   redirect("/admin?sayfa=istatistik#bugune-kadar");
 }
 
 export async function createSection(formData: FormData) {
   const section = await prisma.siteSection.create({ data: sectionPayload(formData) });
   await syncSectionImages(section.id, formData);
-  revalidatePath("/", "layout");
-  revalidatePath("/");
-  revalidatePath("/admin");
+  revalidateSiteContent();
   redirectToSectionTab(formData);
 }
 
@@ -447,9 +444,7 @@ export async function updateSection(formData: FormData) {
   if (!id) return;
   await prisma.siteSection.update({ where: { id }, data: sectionPayload(formData) });
   await syncSectionImages(id, formData);
-  revalidatePath("/", "layout");
-  revalidatePath("/");
-  revalidatePath("/admin");
+  revalidateSiteContent();
   redirectToSectionTab(formData);
 }
 
@@ -457,9 +452,7 @@ export async function deleteSection(formData: FormData) {
   const id = textValue(formData, "id");
   if (!id) return;
   await prisma.siteSection.delete({ where: { id } });
-  revalidatePath("/", "layout");
-  revalidatePath("/");
-  revalidatePath("/admin");
+  revalidateSiteContent();
   redirectToSectionTab(formData);
 }
 
@@ -513,9 +506,7 @@ export async function duplicateSection(formData: FormData) {
       }
     }
   });
-  revalidatePath("/", "layout");
-  revalidatePath("/");
-  revalidatePath("/admin");
+  revalidateSiteContent();
   redirectToSectionTab(formData);
 }
 
@@ -666,8 +657,7 @@ export async function saveGroupLabel(formData: FormData) {
     create: { type, label }
   });
 
-  revalidatePath("/admin");
-  revalidatePath("/");
+  revalidateSiteContent();
 }
 
 export async function saveGroupLabels(formData: FormData) {
@@ -686,8 +676,7 @@ export async function saveGroupLabels(formData: FormData) {
     });
   }
 
-  revalidatePath("/");
-  revalidatePath("/admin");
+  revalidateSiteContent();
 }
 
 export async function createDonationType(formData: FormData) {

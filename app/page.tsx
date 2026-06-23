@@ -387,7 +387,7 @@ export default async function HomePage() {
                 {videoMediaItems.map((item) => {
                   return (
                     <article key={item.id} className={`relative aspect-video shrink-0 snap-start ${cardWidthClass(item.section)} overflow-hidden bg-hayat-dark shadow-2xl`} style={cardStyle(item.section, { padding: "0px" })}>
-                      <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full object-cover" videoClassName="h-full w-full object-cover" />
+                      <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-contain" videoClassName="h-full w-full bg-black object-contain" />
                     </article>
                   );
                 })}
@@ -412,7 +412,7 @@ export default async function HomePage() {
                 {galleryMediaItems.map((item) => {
                   return (
                     <article key={item.id} className={`relative h-[220px] shrink-0 snap-start ${cardWidthClass(item.section)} overflow-hidden bg-hayat-soft sm:h-[280px]`} style={cardStyle(item.section, { padding: "0px" })}>
-                      <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full object-cover" videoClassName="h-full w-full object-cover" />
+                      <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-contain" videoClassName="h-full w-full bg-black object-contain" />
                     </article>
                   );
                 })}

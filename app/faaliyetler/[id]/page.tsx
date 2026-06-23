@@ -28,7 +28,7 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
               <CalendarDays size={32} />
             </div>
           </div>
-          {image && <img src={image} alt={section.imageAlt || section.title} className="mt-8 w-full rounded-lg object-cover" />}
+          {image && <img src={image} alt={section.imageAlt || section.title} className="mt-8 max-h-[620px] w-full rounded-lg bg-white object-contain" />}
           <div className="mt-8 whitespace-pre-line rounded-[1.5rem] bg-slate-50 p-6 text-lg font-semibold leading-9 text-slate-700 md:p-8">
             {section.body}
           </div>

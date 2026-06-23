@@ -93,7 +93,7 @@ export function ExpandableCard({
               </button>
             </div>
             {imageUrl && (
-              <img src={imageUrl} alt={imageAlt || title} loading="lazy" decoding="async" className="max-h-[520px] w-full object-cover" />
+              <img src={imageUrl} alt={imageAlt || title} loading="lazy" decoding="async" className="max-h-[520px] w-full bg-white object-contain" />
             )}
             <div className="p-6 md:p-10">
               <p className="whitespace-pre-line text-base font-semibold leading-8 text-[#607081] md:text-xl md:leading-10">{content}</p>

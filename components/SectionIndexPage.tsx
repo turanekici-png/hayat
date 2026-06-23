@@ -87,7 +87,7 @@ export async function SectionIndexPage({
             <div className="mx-auto grid max-w-[1320px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk lg:grid-cols-[1.05fr_.95fr]">
               <div className="min-h-[260px] bg-hayat-soft sm:min-h-[360px]">
                 {sectionImages(featured)[0] ? (
-                  <img src={sectionImages(featured)[0].src} alt={sectionImages(featured)[0].alt} loading="eager" decoding="async" fetchPriority="high" className="h-full min-h-[260px] w-full object-cover sm:min-h-[360px]" />
+                  <img src={sectionImages(featured)[0].src} alt={sectionImages(featured)[0].alt} loading="eager" decoding="async" fetchPriority="high" className="h-full min-h-[260px] w-full bg-white object-contain sm:min-h-[360px]" />
                 ) : (
                   <div className="flex h-full min-h-[360px] items-center justify-center text-hayat-blue">
                     <Icon size={64} />
@@ -122,7 +122,7 @@ export async function SectionIndexPage({
               const card = (
                 <ExpandableCard title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label={itemLabel} className="cursor-zoom-in overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover">
                   {image ? (
-                    <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-64 w-full object-cover" />
+                    <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-64 w-full bg-white object-contain" />
                   ) : (
                     <div className="flex h-64 w-full items-center justify-center bg-hayat-soft text-hayat-blue">
                       <ImageIcon size={44} />

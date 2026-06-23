@@ -17,7 +17,7 @@ export function MediaLightboxTile({
   src,
   alt,
   isVideo = false,
-  className = "h-full w-full object-cover",
+  className = "h-full w-full bg-white object-contain",
   videoClassName,
   emptyText = "Medya eklenmedi"
 }: MediaLightboxTileProps) {
@@ -61,7 +61,7 @@ export function MediaLightboxTile({
             </span>
           </>
         ) : (
-          <img src={src} alt={alt} loading="lazy" decoding="async" className={`${className} transition duration-500 group-hover:scale-105`} />
+          <img src={src} alt={alt} loading="lazy" decoding="async" className={`${className} transition duration-500`} />
         )}
       </button>
 
