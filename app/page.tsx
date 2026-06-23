@@ -65,10 +65,13 @@ function safeAlign(value?: string | null): CSSProperties["textAlign"] {
   return value === "center" || value === "right" || value === "justify" ? value : "left";
 }
 function headingStyle(section: any, fallbackColor = "#1f3444", fallbackSize = 32): CSSProperties {
-  return { color: section?.titleColor || fallbackColor, fontSize: section?.titleSize ? `clamp(1.875rem, 8vw, ${section.titleSize}px)` : undefined, textAlign: safeAlign(section?.textAlign) };
+  return { color: section?.titleColor || fallbackColor, fontSize: `${section?.titleSize || fallbackSize}px`, textAlign: safeAlign(section?.textAlign) };
+}
+function subtitleStyle(section: any, fallbackColor = "#6FB744", fallbackSize = 14): CSSProperties {
+  return { color: section?.subtitleColor || fallbackColor, fontSize: `${section?.subtitleSize || fallbackSize}px`, textAlign: safeAlign(section?.textAlign) };
 }
 function bodyStyle(section: any, fallbackColor = "#607081", fallbackSize = 16): CSSProperties {
-  return { color: section?.bodyColor || fallbackColor, fontSize: section?.bodySize ? `${section.bodySize}px` : undefined, textAlign: safeAlign(section?.textAlign), whiteSpace: "pre-line" };
+  return { color: section?.bodyColor || fallbackColor, fontSize: `${section?.bodySize || fallbackSize}px`, textAlign: safeAlign(section?.textAlign), whiteSpace: "pre-line" };
 }
 function sectionStyle(section: any, fallbackPaddingY = 56): CSSProperties {
   const paddingY = Math.min(section?.paddingY ?? fallbackPaddingY, 24);
@@ -181,6 +184,13 @@ export default async function HomePage() {
     badge: item.badge,
     href: item.href || `/faaliyetler/${item.id}`,
     buttonLabel: item.buttonLabel,
+    titleSize: item.titleSize,
+    subtitleSize: item.subtitleSize,
+    bodySize: item.bodySize,
+    titleColor: item.titleColor,
+    subtitleColor: item.subtitleColor,
+    bodyColor: item.bodyColor,
+    textAlign: item.textAlign,
     slides: sectionSlides(item)
   }));
   const heroNewsItems = heroNews.map((item) => ({
@@ -191,6 +201,13 @@ export default async function HomePage() {
     badge: item.badge,
     href: item.href || `/haberler/${item.id}`,
     buttonLabel: item.buttonLabel,
+    titleSize: item.titleSize,
+    subtitleSize: item.subtitleSize,
+    bodySize: item.bodySize,
+    titleColor: item.titleColor,
+    subtitleColor: item.subtitleColor,
+    bodyColor: item.bodyColor,
+    textAlign: item.textAlign,
     slides: sectionSlides(item)
   }));
 
@@ -221,7 +238,7 @@ export default async function HomePage() {
         {heroNewsItems.length > 0 && (
           <section className="relative overflow-hidden border-b border-[#d5e4ec]" style={{ backgroundColor: heroNewsLead?.backgroundColor || "#eef5f8", paddingTop: `${heroNewsLead?.paddingY || 0}px`, paddingBottom: `${heroNewsLead?.paddingY || 0}px` }}>
             <div className={`mx-auto ${heroNewsLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"} px-5 py-1 sm:px-8 lg:px-10`}>
-              <ActivityShowcaseSlider items={heroNewsItems} defaultHref="/haberler" defaultButtonLabel="Haberi İncele" dotLabel="haber" showDefaultButton splitMedia />
+              <ActivityShowcaseSlider items={heroNewsItems} defaultHref="/haberler" defaultButtonLabel="Haberi İncele" dotLabel="haber" showDefaultButton splitMedia showBody={false} />
             </div>
           </section>
         )}
@@ -231,7 +248,7 @@ export default async function HomePage() {
           <div className={`mx-auto ${quickDonation?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"} rounded-lg border border-white/25 bg-hayat-green p-4 shadow-green sm:p-6 md:p-8`} style={cardStyle(quickDonation, { backgroundColor: "#6FB744", borderRadius: 8, padding: 24 })}>
             <div className="mb-6 text-center">
               <h2 className="text-2xl font-black leading-tight text-white md:text-3xl" style={quickDonation ? headingStyle(quickDonation, "#ffffff", 32) : undefined}>{quickDonation?.title || "Hızlı Bağış"}</h2>
-              {quickDonation?.subtitle && <p className="mt-2 text-sm font-bold text-white/85" style={quickDonation ? bodyStyle(quickDonation, "rgba(255,255,255,.85)", 15) : undefined}>{quickDonation.subtitle}</p>}
+              {quickDonation?.subtitle && <p className="mt-2 text-sm font-bold text-white/85" style={quickDonation ? subtitleStyle(quickDonation, "rgba(255,255,255,.85)", 15) : undefined}>{quickDonation.subtitle}</p>}
             </div>
             <form action="/bagis" method="GET" className="grid gap-5 md:grid-cols-[1.15fr_1.15fr_auto]">
               <select name="type" className="h-14 rounded-md border border-white/30 bg-white px-5 text-sm font-black text-hayat-ink outline-hayat-blue shadow-stk">
@@ -353,12 +370,12 @@ export default async function HomePage() {
                   <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label="Proje" className={`group shrink-0 snap-start ${cardWidthClass(item)} cursor-zoom-in overflow-hidden border border-[#e9eef2] bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover`} style={cardStyle(item, { padding: "0px" })}>
                     {slides.length > 0 && (
                       <div className="relative h-56 overflow-hidden bg-hayat-soft">
-                        <HeroImageSlider images={slides} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} />
-                        <span className="absolute left-5 top-5 rounded-md bg-white px-4 py-2 text-[10px] font-black uppercase tracking-widest text-hayat-green shadow-stk">{item.badge || "Aktif Proje"}</span>
+                        <HeroImageSlider images={slides} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} fitToParent />
+                        <span className="absolute left-5 top-5 rounded-md bg-white px-4 py-2 text-[10px] font-black uppercase tracking-widest text-hayat-green shadow-stk" style={subtitleStyle(item, "#6FB744", 10)}>{item.badge || "Aktif Proje"}</span>
                       </div>
                     )}
                     <div className="p-6">
-                      {slides.length === 0 && <p className="mb-4 text-[10px] font-black uppercase tracking-widest text-hayat-green">{item.badge || "Aktif Proje"}</p>}
+                      {slides.length === 0 && <p className="mb-4 text-[10px] font-black uppercase tracking-widest text-hayat-green" style={subtitleStyle(item, "#6FB744", 10)}>{item.badge || "Aktif Proje"}</p>}
                       <h3 className="min-h-[4rem] text-2xl font-black leading-tight text-[#1f3444]" style={headingStyle(item, "#1f3444", 24)}>{item.title}</h3>
                       <div className="mt-4 min-h-[100px]">
                         <ExpandableText title={item.title} text={item.body} className="text-sm font-semibold leading-8 text-[#607081]" style={bodyStyle(item, "#607081", 14)} />
@@ -438,7 +455,7 @@ export default async function HomePage() {
                   <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={firstSlide(item)?.src} imageAlt={firstSlide(item)?.alt} label="Blog" className={`group ${cardWidthClass(item)} shrink-0 snap-start cursor-zoom-in overflow-hidden border border-[#e9eef2] bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover`} style={cardStyle(item, { padding: "0px" })}>
                     {firstSlide(item, undefined) && (
                       <div className="h-64 overflow-hidden bg-hayat-soft">
-                        <HeroImageSlider images={sectionSlides(item, undefined, item.title)} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} />
+                        <HeroImageSlider images={sectionSlides(item, undefined, item.title)} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} fitToParent />
                       </div>
                     )}
                     <div className="p-7">
@@ -477,7 +494,7 @@ export default async function HomePage() {
                   <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={firstSlide(item)?.src} imageAlt={firstSlide(item)?.alt} label="Hikaye" className={`group ${cardWidthClass(item)} shrink-0 snap-start cursor-zoom-in overflow-hidden border border-[#e9eef2] bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover`} style={cardStyle(item, { padding: "0px" })}>
                     {firstSlide(item, undefined) && (
                       <div className="h-64 overflow-hidden bg-hayat-soft">
-                        <HeroImageSlider images={sectionSlides(item, undefined, item.title)} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} />
+                        <HeroImageSlider images={sectionSlides(item, undefined, item.title)} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} fitToParent />
                       </div>
                     )}
                     <div className="p-7">
@@ -516,7 +533,7 @@ export default async function HomePage() {
                   <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={firstSlide(item)?.src} imageAlt={firstSlide(item)?.alt} label={item.badge || "Özel"} className={`group ${cardWidthClass(item)} shrink-0 snap-start cursor-zoom-in overflow-hidden border border-[#e9eef2] bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover`} style={cardStyle(item, { padding: "0px" })}>
                     {firstSlide(item, undefined) && (
                       <div className="h-64 overflow-hidden bg-hayat-soft">
-                        <HeroImageSlider images={sectionSlides(item, undefined, item.title)} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} />
+                        <HeroImageSlider images={sectionSlides(item, undefined, item.title)} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} fitToParent />
                       </div>
                     )}
                     <div className="p-7">
@@ -545,7 +562,7 @@ export default async function HomePage() {
               {mainCorporate?.layout !== "MINIMAL" && mainCorporate?.layout === "SPLIT" && (
                 <div className="col-span-1 w-full max-w-[430px] h-full overflow-hidden bg-white shadow-stk rounded-lg" style={{ borderColor: mainCorporate?.borderColor || "transparent", borderWidth: mainCorporate?.borderColor ? "1px" : "0px" }}>
                   <div className="h-full min-h-[360px] overflow-hidden">
-                    <HeroImageSlider images={sectionSlides(mainCorporate, undefined, corporateTitle)} className="h-full w-full" showOverlay={false} />
+                    <HeroImageSlider images={sectionSlides(mainCorporate, undefined, corporateTitle)} className="h-full w-full" showOverlay={false} fitToParent />
                   </div>
                 </div>
               )}
@@ -596,7 +613,7 @@ export default async function HomePage() {
           <section className="px-5 py-6 text-white sm:px-8 lg:px-10" style={{ backgroundColor: statsSection?.backgroundColor || "#6FB744" }}>
             <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-4">
               <div className="min-w-0">
-                <h2 className="mt-1 text-2xl font-black leading-tight md:text-4xl lg:text-5xl" style={statsSection ? { ...headingStyle(statsSection, "#ffffff", 44), fontSize: statsSection.titleSize ? `clamp(1.5rem, 7vw, ${Math.min(statsSection.titleSize, 44)}px)` : undefined } : undefined}>{statsSection?.title || "Desteklerinizle büyüyen iyilik ağı"}</h2>
+                <h2 className="mt-1 text-2xl font-black leading-tight md:text-4xl lg:text-5xl" style={statsSection ? headingStyle(statsSection, "#ffffff", 44) : undefined}>{statsSection?.title || "Desteklerinizle büyüyen iyilik ağı"}</h2>
               </div>
               <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-3">
                 {stats.map(([value, label]) => (

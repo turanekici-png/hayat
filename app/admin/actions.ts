@@ -43,6 +43,12 @@ function revalidateSiteContent() {
   revalidatePath("/admin");
 }
 
+function redirectWithRefresh(target: string) {
+  const [pathAndQuery, hash] = target.split("#");
+  const separator = pathAndQuery.includes("?") ? "&" : "?";
+  redirect(`${pathAndQuery}${separator}_r=${Date.now()}${hash ? `#${hash}` : ""}`);
+}
+
 function textValue(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" && value.trim() ? value.trim() : undefined;
@@ -179,21 +185,25 @@ async function saveUploadedSectionImage(sectionId: string, file: File, sortOrder
   if (!isAllowedUpload(file) || file.size === 0) return;
   if (file.size > 80 * 1024 * 1024) return;
 
-  await mkdir(uploadDir, { recursive: true });
-  const bytes = Buffer.from(await file.arrayBuffer());
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
-  const filename = `${Date.now()}-${sectionId.slice(0, 6)}-${safeName}`;
-  const diskPath = path.join(uploadDir, filename);
-  await writeFile(diskPath, bytes);
+  try {
+    await mkdir(uploadDir, { recursive: true });
+    const bytes = Buffer.from(await file.arrayBuffer());
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
+    const filename = `${Date.now()}-${sectionId.slice(0, 6)}-${safeName}`;
+    const diskPath = path.join(uploadDir, filename);
+    await writeFile(diskPath, bytes);
 
-  await prisma.siteSectionImage.create({
-    data: {
-      sectionId,
-      url: `/uploads/${filename}`,
-      alt: file.name,
-      sortOrder
-    }
-  });
+    await prisma.siteSectionImage.create({
+      data: {
+        sectionId,
+        url: `/uploads/${filename}`,
+        alt: file.name,
+        sortOrder
+      }
+    });
+  } catch (error) {
+    console.error("saveUploadedSectionImage failed", error);
+  }
 }
 
 async function syncSectionImages(sectionId: string, formData: FormData) {
@@ -255,7 +265,7 @@ async function syncSectionImages(sectionId: string, formData: FormData) {
 
 function redirectToSectionTab(formData: FormData) {
   const type = textValue(formData, "type") || "HERO";
-  redirect(`/admin?sayfa=anasayfa&alan=${encodeURIComponent(type)}#anasayfa-alanlari`);
+  redirectWithRefresh(`/admin?sayfa=anasayfa&alan=${encodeURIComponent(type)}#anasayfa-alanlari`);
 }
 
 export async function seedDefaultSections() {
@@ -264,7 +274,7 @@ export async function seedDefaultSections() {
   const count = await prisma.siteSection.count();
   if (count > 0) {
     revalidateSiteContent();
-    redirect("/admin");
+    redirectWithRefresh("/admin");
   }
 
   for (const section of fallbackSections) {
@@ -290,7 +300,7 @@ export async function seedDefaultSections() {
     });
   }
   revalidateSiteContent();
-  redirect("/admin");
+  redirectWithRefresh("/admin");
 }
 
 const managedHomepageSections = [
@@ -385,7 +395,7 @@ export async function ensureHomepageManagedSections() {
   await ensureManagedSectionsOnce();
 
   revalidateSiteContent();
-  redirect("/admin?sayfa=anasayfa");
+  redirectWithRefresh("/admin?sayfa=anasayfa");
 }
 
 
@@ -400,7 +410,7 @@ export async function savePopupSetting(formData: FormData) {
   revalidatePath("/", "layout");
   revalidatePath("/");
   revalidatePath("/admin");
-  redirect("/admin?sayfa=popup#popup-ayarlari");
+  redirectWithRefresh("/admin?sayfa=popup#popup-ayarlari");
 }
 
 export async function saveStatsSection(formData: FormData) {
@@ -439,7 +449,7 @@ export async function saveStatsSection(formData: FormData) {
   }
 
   revalidateSiteContent();
-  redirect("/admin?sayfa=istatistik#bugune-kadar");
+  redirectWithRefresh("/admin?sayfa=istatistik#bugune-kadar");
 }
 
 export async function createSection(formData: FormData) {
@@ -521,41 +531,59 @@ export async function duplicateSection(formData: FormData) {
 }
 
 export async function uploadMedia(formData: FormData) {
+  let redirectTo = "/admin?sayfa=medya&medyaDurum=ok#medya";
   const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) return;
-  if (!isAllowedUpload(file)) return;
-  if (file.size > 80 * 1024 * 1024) return;
-
-  await mkdir(uploadDir, { recursive: true });
-  const bytes = Buffer.from(await file.arrayBuffer());
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
-  const filename = `${Date.now()}-${safeName}`;
-  const diskPath = path.join(uploadDir, filename);
-  await writeFile(diskPath, bytes);
-  await prisma.mediaAsset.create({
-    data: {
-      title: textValue(formData, "title"),
-      url: `/uploads/${filename}`,
-      filename,
-      mimeType: file.type,
-      size: file.size
+  try {
+    if (!(file instanceof File) || file.size === 0) {
+      redirectTo = "/admin?sayfa=medya&medyaHata=Dosya%20se%C3%A7ilemedi#medya";
+    } else if (!isAllowedUpload(file)) {
+      redirectTo = "/admin?sayfa=medya&medyaHata=Sadece%20JPG%2C%20PNG%20ve%20video%20dosyalar%C4%B1%20y%C3%BCkleyin#medya";
+    } else if (file.size > 80 * 1024 * 1024) {
+      redirectTo = "/admin?sayfa=medya&medyaHata=Dosya%20boyutu%2080MB%20%C3%BCst%C3%BCnde%20olamaz#medya";
+    } else {
+      await mkdir(uploadDir, { recursive: true });
+      const bytes = Buffer.from(await file.arrayBuffer());
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
+      const filename = `${Date.now()}-${safeName}`;
+      const diskPath = path.join(uploadDir, filename);
+      await writeFile(diskPath, bytes);
+      await prisma.mediaAsset.create({
+        data: {
+          title: textValue(formData, "title"),
+          url: `/uploads/${filename}`,
+          filename,
+          mimeType: file.type,
+          size: file.size
+        }
+      });
+      revalidatePath("/admin");
     }
-  });
-  revalidatePath("/admin");
-  redirect("/admin?sayfa=medya#medya");
+  } catch (error) {
+    console.error("uploadMedia failed", error);
+    redirectTo = "/admin?sayfa=medya&medyaHata=Medya%20y%C3%BCklenirken%20hata%20olu%C5%9Ftu#medya";
+  }
+  redirectWithRefresh(redirectTo);
 }
 
 export async function deleteMedia(formData: FormData) {
+  let redirectTo = "/admin?sayfa=medya#medya";
   const id = textValue(formData, "id");
-  if (!id) return;
-  const media = await prisma.mediaAsset.findUnique({ where: { id } });
-  if (!media) return;
-  await prisma.mediaAsset.delete({ where: { id } });
   try {
-    await unlink(path.join(process.cwd(), "public", media.url));
-  } catch {}
-  revalidatePath("/admin");
-  redirect("/admin?sayfa=medya#medya");
+    if (id) {
+      const media = await prisma.mediaAsset.findUnique({ where: { id } });
+      if (media) {
+        await prisma.mediaAsset.delete({ where: { id } });
+        try {
+          await unlink(path.join(process.cwd(), "public", media.url));
+        } catch {}
+        revalidatePath("/admin");
+      }
+    }
+  } catch (error) {
+    console.error("deleteMedia failed", error);
+    redirectTo = "/admin?sayfa=medya&medyaHata=Medya%20silinirken%20hata%20olu%C5%9Ftu#medya";
+  }
+  redirectWithRefresh(redirectTo);
 }
 
 export async function updateApplicationStatus(formData: FormData) {
@@ -603,7 +631,7 @@ export async function seedDefaultPolicies() {
   }
   revalidatePath("/admin/politikalar");
   revalidatePath("/");
-  redirect("/admin/politikalar");
+  redirectWithRefresh("/admin/politikalar");
 }
 
 export async function updatePolicyPage(formData: FormData) {
@@ -630,14 +658,14 @@ export async function seedDefaultAnnouncements() {
   }
   revalidatePath("/");
   revalidatePath("/admin/duyurular");
-  redirect("/admin/duyurular");
+  redirectWithRefresh("/admin/duyurular");
 }
 
 export async function createAnnouncement(formData: FormData) {
   await prisma.announcement.create({ data: announcementPayload(formData) });
   revalidatePath("/");
   revalidatePath("/admin/duyurular");
-  redirect("/admin/duyurular");
+  redirectWithRefresh("/admin/duyurular");
 }
 
 export async function updateAnnouncement(formData: FormData) {
@@ -668,6 +696,7 @@ export async function saveGroupLabel(formData: FormData) {
   });
 
   revalidateSiteContent();
+  redirectToSectionTab(formData);
 }
 
 export async function saveGroupLabels(formData: FormData) {
@@ -717,7 +746,7 @@ export async function createDonationType(formData: FormData) {
   });
 
   revalidateDonationTypes();
-  redirect("/admin?sayfa=bagis#bagis-turleri");
+  redirectWithRefresh("/admin?sayfa=bagis#bagis-turleri");
 }
 
 export async function updateDonationType(formData: FormData) {
@@ -738,7 +767,7 @@ export async function updateDonationType(formData: FormData) {
   });
 
   revalidateDonationTypes();
-  redirect("/admin?sayfa=bagis#bagis-turleri");
+  redirectWithRefresh("/admin?sayfa=bagis#bagis-turleri");
 }
 
 export async function updateDonationTypesBulk(formData: FormData) {
@@ -797,7 +826,7 @@ export async function updateDonationTypesBulk(formData: FormData) {
   }
 
   revalidateDonationTypes();
-  redirect("/admin?sayfa=bagis#bagis-turleri");
+  redirectWithRefresh("/admin?sayfa=bagis#bagis-turleri");
 }
 
 export async function deleteDonationType(formData: FormData) {
@@ -807,13 +836,13 @@ export async function deleteDonationType(formData: FormData) {
   await prisma.donationType.delete({ where: { id } });
 
   revalidateDonationTypes();
-  redirect("/admin?sayfa=bagis#bagis-turleri");
+  redirectWithRefresh("/admin?sayfa=bagis#bagis-turleri");
 }
 
 export async function seedDonationTypes() {
   await ensureDefaultDonationTypes();
   revalidateDonationTypes();
-  redirect("/admin?sayfa=bagis#bagis-turleri");
+  redirectWithRefresh("/admin?sayfa=bagis#bagis-turleri");
 }
 
 export async function createAdminUser(formData: FormData) {
@@ -837,7 +866,7 @@ export async function createAdminUser(formData: FormData) {
   }).catch(() => null);
 
   revalidateAdminUsers();
-  redirect("/admin?sayfa=kullanicilar#admin-kullanicilar");
+  redirectWithRefresh("/admin?sayfa=kullanicilar#admin-kullanicilar");
 }
 
 export async function updateAdminUser(formData: FormData) {
@@ -865,7 +894,7 @@ export async function updateAdminUser(formData: FormData) {
   }).catch(() => null);
 
   revalidateAdminUsers();
-  redirect("/admin?sayfa=kullanicilar#admin-kullanicilar");
+  redirectWithRefresh("/admin?sayfa=kullanicilar#admin-kullanicilar");
 }
 
 export async function deleteAdminUser(formData: FormData) {
@@ -875,6 +904,6 @@ export async function deleteAdminUser(formData: FormData) {
   await prisma.adminUser.delete({ where: { id } }).catch(() => null);
 
   revalidateAdminUsers();
-  redirect("/admin?sayfa=kullanicilar#admin-kullanicilar");
+  redirectWithRefresh("/admin?sayfa=kullanicilar#admin-kullanicilar");
 }
 

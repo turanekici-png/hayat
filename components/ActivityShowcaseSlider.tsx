@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import type { CSSProperties } from "react";
 
 type ActivitySlide = {
   src: string;
@@ -17,8 +18,44 @@ type ActivityShowcaseItem = {
   badge?: string | null;
   href?: string | null;
   buttonLabel?: string | null;
+  titleSize?: number | null;
+  subtitleSize?: number | null;
+  bodySize?: number | null;
+  titleColor?: string | null;
+  subtitleColor?: string | null;
+  bodyColor?: string | null;
+  textAlign?: string | null;
   slides: ActivitySlide[];
 };
+
+function safeAlign(value?: string | null): CSSProperties["textAlign"] {
+  return value === "center" || value === "right" || value === "justify" ? value : "left";
+}
+
+function titleStyle(item: ActivityShowcaseItem, fallbackColor = "#007bb8", fallbackSize = 56): CSSProperties {
+  return {
+    color: item.titleColor || fallbackColor,
+    fontSize: `${item.titleSize || fallbackSize}px`,
+    textAlign: safeAlign(item.textAlign)
+  };
+}
+
+function subtitleStyle(item: ActivityShowcaseItem, fallbackColor = "#6FB744", fallbackSize = 11): CSSProperties {
+  return {
+    color: item.subtitleColor || fallbackColor,
+    fontSize: `${item.subtitleSize || fallbackSize}px`,
+    textAlign: safeAlign(item.textAlign)
+  };
+}
+
+function bodyStyle(item: ActivityShowcaseItem, fallbackColor = "#334b5f", fallbackSize = 18): CSSProperties {
+  return {
+    color: item.bodyColor || fallbackColor,
+    fontSize: `${item.bodySize || fallbackSize}px`,
+    textAlign: safeAlign(item.textAlign),
+    whiteSpace: "pre-line"
+  };
+}
 
 export function ActivityShowcaseSlider({
   items,
@@ -26,7 +63,8 @@ export function ActivityShowcaseSlider({
   defaultButtonLabel = "Faaliyeti İncele",
   dotLabel = "faaliyet",
   showDefaultButton = false,
-  splitMedia = false
+  splitMedia = false,
+  showBody = true
 }: {
   items: ActivityShowcaseItem[];
   defaultHref?: string;
@@ -34,6 +72,7 @@ export function ActivityShowcaseSlider({
   dotLabel?: string;
   showDefaultButton?: boolean;
   splitMedia?: boolean;
+  showBody?: boolean;
 }) {
   const [active, setActive] = useState(0);
   const current = items[active] || items[0];
@@ -58,14 +97,14 @@ export function ActivityShowcaseSlider({
           <div className="max-w-2xl">
             {(current.badge || current.subtitle) && (
               <div className="mb-4 inline-flex w-fit items-center rounded-md border border-[#dfe7ed] bg-white px-3 py-2 text-[10px] font-black uppercase text-hayat-green shadow-stk sm:px-4 sm:py-2.5 sm:text-[11px]">
-                {current.badge || current.subtitle}
+                <span style={subtitleStyle(current)}>{current.badge || current.subtitle}</span>
               </div>
             )}
-            <h3 className="text-3xl font-black leading-[1.12] text-hayat-blue sm:text-4xl md:text-5xl xl:text-6xl">
+            <h3 className="text-3xl font-black leading-[1.12] text-hayat-blue sm:text-4xl md:text-5xl xl:text-6xl" style={titleStyle(current)}>
               {current.title}
             </h3>
-            {body && (
-              <p className="mt-4 line-clamp-4 whitespace-pre-line text-sm font-semibold leading-7 text-[#334b5f] sm:mt-7 md:text-lg md:leading-8">
+            {showBody && body && (
+              <p className="mt-4 line-clamp-4 whitespace-pre-line text-sm font-semibold leading-7 text-[#334b5f] sm:mt-7 md:text-lg md:leading-8" style={bodyStyle(current)}>
                 {body}
               </p>
             )}
@@ -143,14 +182,14 @@ export function ActivityShowcaseSlider({
         <div className="max-w-3xl">
           {(current.badge || current.subtitle) && (
             <div className="mb-4 inline-flex w-fit items-center rounded-md border border-white/60 bg-white/95 px-3 py-2 text-[10px] font-black uppercase text-hayat-green shadow-stk sm:mb-7 sm:px-4 sm:py-2.5 sm:text-[11px]">
-              {current.badge || current.subtitle}
+              <span style={subtitleStyle(current)}>{current.badge || current.subtitle}</span>
             </div>
           )}
-          <h3 className="max-w-3xl text-3xl font-black leading-[1.12] text-hayat-blue sm:text-4xl md:text-5xl xl:text-6xl">
+          <h3 className="max-w-3xl text-3xl font-black leading-[1.12] text-hayat-blue sm:text-4xl md:text-5xl xl:text-6xl" style={titleStyle(current)}>
             {current.title}
           </h3>
-          {body && (
-            <p className="mt-4 line-clamp-4 max-w-2xl whitespace-pre-line text-sm font-semibold leading-7 text-[#334b5f] sm:mt-7 md:text-lg md:leading-8">
+          {showBody && body && (
+            <p className="mt-4 line-clamp-4 max-w-2xl whitespace-pre-line text-sm font-semibold leading-7 text-[#334b5f] sm:mt-7 md:text-lg md:leading-8" style={bodyStyle(current)}>
               {body}
             </p>
           )}

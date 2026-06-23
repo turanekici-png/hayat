@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 
 type MediaItem = {
@@ -30,6 +30,11 @@ export function MediaField({
 }) {
   const [value, setValue] = useState(defaultValue || "");
   const [open, setOpen] = useState(false);
+  const safeMedia = media.filter((item) => typeof item.url === "string" && item.url.trim().length > 0);
+
+  useEffect(() => {
+    setValue(defaultValue || "");
+  }, [defaultValue]);
 
   return (
     <>
@@ -78,9 +83,9 @@ export function MediaField({
             </div>
 
             <div className="max-h-[68vh] overflow-y-auto p-5">
-              {media.length > 0 ? (
+              {safeMedia.length > 0 ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  {media.map((item) => (
+                  {safeMedia.map((item) => (
                     <button
                       key={item.id}
                       type="button"

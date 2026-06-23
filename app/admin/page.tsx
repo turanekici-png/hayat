@@ -355,7 +355,16 @@ function AdminUserEditor({ user }: { user: AdminUser }) {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-type AdminSearchParams = Promise<{ alan?: string | string[]; sayfa?: string | string[] }>;
+type AdminSearchParams = Promise<{
+  alan?: string | string[];
+  sayfa?: string | string[];
+  medyaDurum?: string | string[];
+  medyaHata?: string | string[];
+}>;
+
+function searchParamValue(value?: string | string[]) {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 function tabHref(type: string) {
   return `?sayfa=anasayfa&alan=${type}#anasayfa-alanlari`;
@@ -367,11 +376,13 @@ function adminPageHref(page: string) {
 
 export default async function AdminPage({ searchParams }: { searchParams: AdminSearchParams }) {
   const params = await searchParams;
-  const rawSelectedAdminPage = Array.isArray(params.sayfa) ? params.sayfa[0] : params.sayfa;
+  const rawSelectedAdminPage = searchParamValue(params.sayfa);
   const selectedAdminPage = adminPages.find((page) => page.key === rawSelectedAdminPage) || adminPages[0];
   const SelectedAdminPageIcon = selectedAdminPage.icon;
-  const rawSelectedGroupType = Array.isArray(params.alan) ? params.alan[0] : params.alan;
+  const rawSelectedGroupType = searchParamValue(params.alan);
   const selectedGroup = groups.find((group) => group.type === rawSelectedGroupType) || groups[0];
+  const mediaStatus = searchParamValue(params.medyaDurum);
+  const mediaError = searchParamValue(params.medyaHata);
 
   const [sections, media, donationTypes, adminUsers, totals, popup, groupLabels] = await Promise.all([
     prisma.siteSection.findMany({
@@ -396,6 +407,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
     prisma.popupSetting.findFirst({ orderBy: { updatedAt: "desc" } }),
     prisma.sectionGroupLabel.findMany()
   ]);
+  const safeMedia = media.filter((item) => item.url.trim().length > 0);
   const [sectionCount, activeSectionCount, mediaCount, donationCount, applicationCount, newApplicationCount, sacrificeCount, announcementCount] = totals;
   const selectedGroupItems = sections.filter((section) => section.type === selectedGroup.type);
   const selectedGroupLabel = groupLabels.find((label) => label.type === selectedGroup.type)?.label || selectedGroup.title;
@@ -503,7 +515,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
               {/* Listeleme ve Düzenleme Alanı */}
               <div>
                 {selectedGroupItems.length > 0 ? (
-                  selectedGroupItems.map((section) => <SectionEditor key={section.id} section={section} media={media} />)
+                  selectedGroupItems.map((section) => <SectionEditor key={section.id} section={section} media={safeMedia} />)
                 ) : (
                   <div className="flex min-h-[200px] flex-col items-center justify-center rounded-[1.5rem] border-2 border-dashed border-slate-200 bg-white p-10 text-center">
                      <LayoutDashboard className="text-slate-300 mb-3" size={48} />
@@ -672,6 +684,8 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                 <div className="rounded-[1.4rem] bg-white p-4 shadow-sm">
                   <h2 className="flex items-center gap-2 text-2xl font-black text-hayat-dark"><UploadCloud className="text-hayat-green" /> Resim / video yükle</h2>
                   <p className="mt-2 text-slate-500">Yüklediğiniz medyalar, alanlardaki Medya Seç penceresinde otomatik listelenir.</p>
+                  {mediaError && <p className="mt-4 rounded-2xl border border-red-100 bg-red-50 p-3 text-sm font-bold text-red-700">{mediaError}</p>}
+                  {mediaStatus === "ok" && <p className="mt-4 rounded-2xl border border-green-100 bg-green-50 p-3 text-sm font-bold text-green-700">Medya başarıyla yüklendi.</p>}
                   <form action={uploadMedia} className="mt-5 space-y-3">
                     <input name="title" placeholder="Medya başlığı" className="w-full rounded-2xl border p-3" />
                     <input name="file" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png,video/mp4,video/webm,video/ogg,video/quicktime" required className="w-full rounded-2xl border p-3" />
@@ -681,7 +695,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                 <div className="rounded-[1.4rem] bg-white p-4 shadow-sm">
                   <h2 className="flex items-center gap-2 text-2xl font-black text-hayat-dark"><LibraryBig className="text-hayat-green" /> Medya kütüphanesi</h2>
                   <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3">
-                    {media.map((m) => (
+                    {safeMedia.map((m) => (
                       <div key={m.id} className="rounded-2xl border bg-slate-50 p-2">
                         {isVideoMedia(m.url, m.mimeType) ? (
                           <video src={m.url} className="h-28 w-full rounded-xl object-cover" controls preload="metadata" />
@@ -692,7 +706,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                         <form action={deleteMedia} className="mt-2"><input type="hidden" name="id" value={m.id} /><button className="w-full rounded-xl bg-red-50 px-3 py-2 text-xs font-black text-red-600">Medyayı Sil</button></form>
                       </div>
                     ))}
-                    {!media.length && <p className="text-slate-500">Henüz medya yüklenmedi.</p>}
+                    {!safeMedia.length && <p className="text-slate-500">Henüz medya yüklenmedi.</p>}
                   </div>
                 </div>
               </section>
@@ -705,7 +719,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                   {popup?.id && <input type="hidden" name="id" defaultValue={popup.id} />}
                   <input name="title" defaultValue={popup?.title || ""} placeholder="Popup başlığı" className="rounded-xl border p-3 md:col-span-6" />
                   <div className="md:col-span-4">
-                    <MediaField name="imageUrl" defaultValue={popup?.imageUrl || ""} placeholder="Medya yolu: /uploads/resim.jpg" media={media} inputClassName="w-full rounded-xl border p-3" />
+                    <MediaField name="imageUrl" defaultValue={popup?.imageUrl || ""} placeholder="Medya yolu: /uploads/resim.jpg" media={safeMedia} inputClassName="w-full rounded-xl border p-3" />
                   </div>
                   <input name="delaySeconds" defaultValue={popup?.delaySeconds ?? 1} placeholder="Gecikme sn." className="rounded-xl border p-3 md:col-span-2" />
                   <input name="imageAlt" defaultValue={popup?.imageAlt || ""} placeholder="Medya açıklaması" className="rounded-xl border p-3 md:col-span-4" />

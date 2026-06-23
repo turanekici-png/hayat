@@ -10,11 +10,13 @@ type HeroSlide = {
 export function HeroImageSlider({
   images,
   className,
-  showOverlay = true
+  showOverlay = true,
+  fitToParent = false
 }: {
   images: HeroSlide[];
   className?: string;
   showOverlay?: boolean;
+  fitToParent?: boolean;
 }) {
   const slides = images.length ? images : [{ src: "/brand/hayat-agaci-logo.jpg", alt: "Hayat Ağacı Derneği" }];
   const [active, setActive] = useState(0);
@@ -28,7 +30,7 @@ export function HeroImageSlider({
   }, [slides.length]);
 
   return (
-    <div className={`relative h-full min-h-[360px] overflow-hidden rounded-lg border border-white bg-hayat-soft shadow-stk lg:min-h-full ${className || ""}`}>
+    <div className={`relative h-full overflow-hidden rounded-lg border border-white bg-hayat-soft shadow-stk ${fitToParent ? "min-h-0" : "min-h-[360px] lg:min-h-full"} ${className || ""}`}>
       {slides.map((slide, index) => (
         <img
           key={`${slide.src}-${index}`}
