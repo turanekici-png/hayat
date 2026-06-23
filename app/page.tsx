@@ -10,6 +10,7 @@ import { ActivityShowcaseSlider } from "@/components/ActivityShowcaseSlider";
 import { MediaLightboxTile } from "@/components/MediaLightboxTile";
 import { getHomeSections, allByType, firstByType } from "@/lib/site-content";
 import { getActiveDonationTypes } from "@/lib/donation-types";
+import { normalizeMediaUrl } from "@/lib/media-url";
 import { prisma } from "@/lib/prisma";
 import { ArrowRight, Heart, ChevronRight, ShieldCheck, CalendarDays, Megaphone } from "lucide-react";
 import type { CSSProperties } from "react";
@@ -35,18 +36,19 @@ function sectionSlides(section: any, fallbackSrc?: string, fallbackAlt?: string)
   const images = Array.isArray(section?.images) ? section.images : [];
   const slides: SectionSlide[] = images
     .filter((image: any) => image?.url)
-    .map((image: any) => ({ src: image.url, alt: image.alt || section?.imageAlt || section?.title || fallbackAlt || "Görsel" }));
+    .map((image: any) => ({ src: normalizeMediaUrl(image.url) || image.url, alt: image.alt || section?.imageAlt || section?.title || fallbackAlt || "Görsel" }));
 
   if (section?.type === "HERO") {
     if (!section?.imageUrl) return slides;
+    const imageUrl = normalizeMediaUrl(section.imageUrl) || section.imageUrl;
     return [
-      { src: section.imageUrl, alt: section.imageAlt || section.title || fallbackAlt || "Görsel" },
-      ...slides.filter((slide) => slide.src !== section.imageUrl)
+      { src: imageUrl, alt: section.imageAlt || section.title || fallbackAlt || "Görsel" },
+      ...slides.filter((slide) => slide.src !== imageUrl)
     ];
   }
 
   if (slides.length) return slides;
-  if (section?.imageUrl && section.type !== "HERO") return [{ src: section.imageUrl, alt: section.imageAlt || section.title || fallbackAlt || "Görsel" }];
+  if (section?.imageUrl && section.type !== "HERO") return [{ src: normalizeMediaUrl(section.imageUrl) || section.imageUrl, alt: section.imageAlt || section.title || fallbackAlt || "Görsel" }];
   if (fallbackSrc) return [{ src: fallbackSrc, alt: fallbackAlt || section?.title || "Görsel" }];
   return [];
 }

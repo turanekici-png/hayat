@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { ExpandableCard } from "@/components/ExpandableCard";
 import { ExpandableText } from "@/components/ExpandableText";
 import { getHomeSections, getSectionGroupLabel, getSectionsByType, type HomeSection } from "@/lib/site-content";
+import { normalizeMediaUrl } from "@/lib/media-url";
 
 type SectionIndexPageProps = {
   type?: string;
@@ -26,10 +27,10 @@ function sectionImages(section: HomeSection) {
   const images = Array.isArray(section.images) ? section.images : [];
   const slides = images
     .filter((image) => image.url)
-    .map((image) => ({ src: image.url, alt: image.alt || section.imageAlt || section.title }));
+    .map((image) => ({ src: normalizeMediaUrl(image.url) || image.url, alt: image.alt || section.imageAlt || section.title }));
 
   if (slides.length) return slides;
-  if (section.imageUrl) return [{ src: section.imageUrl, alt: section.imageAlt || section.title }];
+  if (section.imageUrl) return [{ src: normalizeMediaUrl(section.imageUrl) || section.imageUrl, alt: section.imageAlt || section.title }];
   return [];
 }
 
