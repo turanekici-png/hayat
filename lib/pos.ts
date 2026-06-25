@@ -42,7 +42,7 @@ const VAKIF_3D_PROVISION_ENDPOINT = "https://boa.vakifkatilim.com.tr/VirtualPOS.
 const VAKIF_COMMON_PAYMENT_ENDPOINT = "https://boa.vakifkatilim.com.tr/VirtualPOS.Gateway/CommonPaymentPage/CommonPaymentPage";
 
 function requiredEnv(name: string) {
-  const value = process.env[name];
+  const value = process.env[name]?.trim();
   if (!value) throw new Error(`${name} POS ayarı eksik.`);
   return value;
 }
@@ -82,7 +82,31 @@ function twoDigit(value: string | number | undefined) {
 }
 
 function siteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:4000";
+  return (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/+$/, "");
+}
+
+function validateVakifCallbackBaseUrl() {
+  const baseUrl = siteUrl();
+  let parsedUrl: URL;
+
+  try {
+    parsedUrl = new URL(baseUrl);
+  } catch {
+    throw new Error("NEXT_PUBLIC_SITE_URL geçerli ve dışarıdan erişilebilir bir adres olmalı.");
+  }
+
+  const allowInsecure = process.env.VAKIF_POS_ALLOW_INSECURE_CALLBACKS === "true";
+  const localHostNames = new Set(["localhost", "127.0.0.1", "::1"]);
+
+  if (!allowInsecure && parsedUrl.protocol !== "https:") {
+    throw new Error("Canlı Vakıf Katılım POS için NEXT_PUBLIC_SITE_URL HTTPS olmalı.");
+  }
+
+  if (!allowInsecure && localHostNames.has(parsedUrl.hostname)) {
+    throw new Error("Canlı Vakıf Katılım POS callback adresi localhost olamaz.");
+  }
+
+  return baseUrl;
 }
 
 function vakifSettings() {
@@ -151,7 +175,7 @@ function formValue(formData: FormData, names: string[]) {
 }
 
 function urlsFor(paymentRef: string, donationId: string) {
-  const baseUrl = siteUrl();
+  const baseUrl = validateVakifCallbackBaseUrl();
   return {
     okUrl: `${baseUrl}/api/pos/vakifkatilim/3d/ok?donationId=${encodeURIComponent(donationId)}&paymentRef=${encodeURIComponent(paymentRef)}`,
     failUrl: `${baseUrl}/api/pos/vakifkatilim/3d/fail?donationId=${encodeURIComponent(donationId)}&paymentRef=${encodeURIComponent(paymentRef)}`
@@ -201,7 +225,7 @@ function autoSubmitForm(action: string, fields: Record<string, string | number>)
 }
 
 function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
-  const { merchantId, userName, hashPassword } = vakifSettings();
+  const { merchantId, customerId, userName, hashPassword } = vakifSettings();
   const endpoint = process.env.VAKIF_POS_COMMON_PAYMENT_ENDPOINT || VAKIF_COMMON_PAYMENT_ENDPOINT;
   const paymentRef = vakifOrderId(input.donationId);
   const amount = normalizeAmount(input.amount);
@@ -225,11 +249,16 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
       UserName: userName,
       HashPassword: hashPassword,
       MerchantId: merchantId,
+      CustomerId: customerId,
       MerchantOrderId: paymentRef,
+      InstallmentCount: "0",
       Amount: amount,
+      DisplayAmount: amount,
+      FECAmount: "0",
       FECCurrencyCode: currencyCode,
       OkUrl: okUrl,
       FailUrl: failUrl,
+      APIVersion: "1.0.0",
       PaymentType: "1",
       TransactionSecurity: "3",
       HashData: hashData
