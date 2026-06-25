@@ -26,8 +26,33 @@ model Donation {
   refundConsent   Boolean        @default(false)
   consentAt       DateTime?
   ipAddress       String?
+  paymentLogs     PaymentLog[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+}
+
+model PaymentLog {
+  id              String    @id @default(cuid())
+  donationId      String?
+  donation        Donation? @relation(fields: [donationId], references: [id], onDelete: SetNull)
+  provider        String    @default("vakifkatilim")
+  event           String
+  status          String
+  paymentRef      String?
+  responseCode    String?
+  message         String?
+  requestMethod   String?
+  callbackUrl     String?
+  ipAddress       String?
+  requestData     String?
+  responseData    String?
+  details         String?
+  createdAt       DateTime  @default(now())
+
+  @@index([createdAt])
+  @@index([donationId])
+  @@index([paymentRef])
+  @@index([status])
 }
 
 model DonationType {

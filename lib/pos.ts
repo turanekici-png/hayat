@@ -22,6 +22,7 @@ export type PosStartResult = {
   paymentRef: string;
   redirectUrl: string;
   paymentHtml?: string;
+  requestLog?: Record<string, unknown>;
   status?: "PAID" | "PENDING" | "FAILED";
 };
 
@@ -256,6 +257,17 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
     "FailUrl",
     "PaymentType"
   ];
+  const requestFields = {
+    UserName: userName,
+    HashPassword: "[redacted]",
+    MerchantId: merchantId,
+    MerchantOrderId: paymentRef,
+    Amount: amount,
+    FECCurrencyCode: currencyCode,
+    OkUrl: okUrl,
+    FailUrl: failUrl,
+    PaymentType: "1"
+  };
 
   console.info("[VakifKatilim common_page v2]", {
     endpoint,
@@ -275,16 +287,17 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
     provider: "vakifkatilim",
     paymentRef,
     redirectUrl: okUrl,
+    requestLog: {
+      method: "POST",
+      endpoint,
+      contentType: "application/x-www-form-urlencoded",
+      fields: requestFields,
+      hashPasswordLength: hashPassword.length,
+      hashPasswordIsSha1Base64: /^[A-Za-z0-9+/]{27}=$/.test(hashPassword)
+    },
     paymentHtml: autoSubmitForm(endpoint, {
-      UserName: userName,
-      HashPassword: hashPassword,
-      MerchantId: merchantId,
-      MerchantOrderId: paymentRef,
-      Amount: amount,
-      FECCurrencyCode: currencyCode,
-      OkUrl: okUrl,
-      FailUrl: failUrl,
-      PaymentType: "1"
+      ...requestFields,
+      HashPassword: hashPassword
     }),
     status: "PENDING"
   };

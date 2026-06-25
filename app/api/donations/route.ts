@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { ensureDefaultDonationTypes } from "@/lib/donation-types";
+import { writePaymentLog } from "@/lib/payment-log";
 import { startPayment } from "@/lib/pos";
 import { prisma } from "@/lib/prisma";
 
@@ -60,6 +61,22 @@ export async function POST(req: Request) {
     });
 
     try {
+      await writePaymentLog({
+        donationId: donation.id,
+        provider: process.env.POS_PROVIDER || "demo",
+        event: "PAYMENT_START_REQUESTED",
+        status: "INFO",
+        requestMethod: req.method,
+        callbackUrl: requestBaseUrl(req),
+        ipAddress,
+        details: {
+          amount: donation.amount,
+          donationType: donation.type,
+          receiptNo: donation.receiptNo,
+          posMode: process.env.VAKIF_POS_MODE || null
+        }
+      });
+
       const payment = await startPayment({
         donationId: donation.id,
         amount: String(donation.amount),
@@ -79,12 +96,39 @@ export async function POST(req: Request) {
         }
       });
 
+      await writePaymentLog({
+        donationId: donation.id,
+        provider: payment.provider,
+        event: "PAYMENT_REDIRECT_CREATED",
+        status: payment.status || "PENDING",
+        paymentRef: payment.paymentRef,
+        requestMethod: req.method,
+        callbackUrl: payment.redirectUrl,
+        ipAddress,
+        requestData: payment.requestLog || null,
+        details: {
+          amount: donation.amount,
+          hasPaymentHtml: Boolean(payment.paymentHtml),
+          requestBaseUrl: requestBaseUrl(req)
+        }
+      });
+
       return NextResponse.json({
         redirectUrl: payment.redirectUrl,
         paymentHtml: payment.paymentHtml || null
       });
     } catch (paymentError) {
       await prisma.donation.update({ where: { id: donation.id }, data: { status: "FAILED" } });
+      await writePaymentLog({
+        donationId: donation.id,
+        provider: process.env.POS_PROVIDER || "unknown",
+        event: "PAYMENT_START_FAILED",
+        status: "FAILED",
+        message: paymentError instanceof Error ? paymentError.message : "Ödeme başlatılamadı.",
+        requestMethod: req.method,
+        callbackUrl: requestBaseUrl(req),
+        ipAddress
+      });
       throw paymentError;
     }
   } catch (error) {

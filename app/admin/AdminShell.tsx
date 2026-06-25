@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Beef, ClipboardList, Eye, FileText, LayoutDashboard, Megaphone, PiggyBank, WalletCards } from "lucide-react";
+import { Activity, Beef, ClipboardList, Eye, FileText, LayoutDashboard, Megaphone, PiggyBank, WalletCards } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { prisma } from "@/lib/prisma";
@@ -16,13 +16,14 @@ const adminLinks = [
   { href: "/admin/duyurular", label: "Duyurular", icon: Megaphone },
   { href: "/admin/basvurular", label: "Yardım Başvuruları", icon: ClipboardList },
   { href: "/admin/bagislar", label: "Bağış Listesi", icon: PiggyBank },
+  { href: "/admin/odeme-loglari", label: "Ödeme Logları", icon: Activity },
   { href: "/admin/kurban", label: "Kurban Organizasyonu", icon: Beef },
   { href: "/admin/hesaplar", label: "Hesap / Banka Bilgileri", icon: WalletCards },
   { href: "/admin/politikalar", label: "KVKK / Politikalar", icon: FileText }
 ];
 
 async function getSidebarStats() {
-  const [sectionCount, activeSectionCount, mediaCount, announcementCount, applicationCount, newApplicationCount, donationCount, sacrificeCount] = await Promise.all([
+  const [sectionCount, activeSectionCount, mediaCount, announcementCount, applicationCount, newApplicationCount, donationCount, paymentLogCount, sacrificeCount] = await Promise.all([
     prisma.siteSection.count(),
     prisma.siteSection.count({ where: { isActive: true } }),
     prisma.mediaAsset.count(),
@@ -30,6 +31,7 @@ async function getSidebarStats() {
     prisma.aidApplication.count(),
     prisma.aidApplication.count({ where: { status: "NEW" } }),
     prisma.donation.count(),
+    prisma.paymentLog.count(),
     prisma.sacrificeOrder.count()
   ]);
 
@@ -41,6 +43,7 @@ async function getSidebarStats() {
     [applicationCount, "Başvuru"],
     [newApplicationCount, "Yeni"],
     [donationCount, "Bağış"],
+    [paymentLogCount, "POS Log"],
     [sacrificeCount, "Kurban"]
   ] as const;
 }
@@ -100,7 +103,7 @@ export async function AdminShell({ activePath = "/admin", children, contentClass
               </div>
               <nav className="flex flex-col gap-3">
                 {adminLinks.map(({ href, label, icon: Icon }) => {
-                  const isActive = href === "/admin";
+                  const isActive = activePath === href;
 
                   return (
                     <Link

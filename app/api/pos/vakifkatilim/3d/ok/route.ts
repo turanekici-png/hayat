@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { paymentRequestIp, safeFormDetails, writePaymentLog } from "@/lib/payment-log";
 import { completeVakifKatilim3dPayment } from "@/lib/pos";
 
 const SUCCESS_CODES = new Set(["0", "00", "000", "0000"]);
@@ -61,12 +62,38 @@ export async function POST(req: Request) {
     formValue(formData, ["ResponseMessage", "responseMessage", "Message", "message"]) ||
     readXmlTag(responseXml, "ResponseMessage");
 
+  await writePaymentLog({
+    donationId: donationId || null,
+    provider: "vakifkatilim",
+    event: "BANK_OK_CALLBACK_RECEIVED",
+    status: "INFO",
+    paymentRef,
+    responseCode,
+    message: responseMessage,
+    requestMethod: req.method,
+    callbackUrl: req.url,
+    ipAddress: paymentRequestIp(req),
+    responseData: safeFormDetails(formData)
+  });
+
   if (!paymentRef) {
     return failRedirect(req, "Ödeme referansı alınamadı.");
   }
 
   const donation = await findDonation(donationId, paymentRef);
   if (!donation) {
+    await writePaymentLog({
+      provider: "vakifkatilim",
+      event: "BANK_OK_CALLBACK_UNMATCHED",
+      status: "FAILED",
+      paymentRef,
+      responseCode,
+      message: "Bağış kaydı bulunamadı.",
+      requestMethod: req.method,
+      callbackUrl: req.url,
+      ipAddress: paymentRequestIp(req),
+      responseData: safeFormDetails(formData)
+    });
     return failRedirect(req, "Bağış kaydı bulunamadı.");
   }
 
@@ -81,6 +108,20 @@ export async function POST(req: Request) {
       await prisma.donation.update({
         where: { id: donation.id },
         data: { status: isPaid ? "PAID" : "FAILED" }
+      });
+
+      await writePaymentLog({
+        donationId: donation.id,
+        provider: "vakifkatilim",
+        event: "BANK_PAYMENT_RESULT",
+        status: isPaid ? "PAID" : "FAILED",
+        paymentRef,
+        responseCode,
+        message: responseMessage || (isPaid ? "Ödeme banka tarafından onaylandı." : "Ödeme banka tarafından onaylanmadı."),
+        requestMethod: req.method,
+        callbackUrl: req.url,
+        ipAddress: paymentRequestIp(req),
+        responseData: safeFormDetails(formData)
       });
 
       if (!isPaid) {
@@ -102,6 +143,20 @@ export async function POST(req: Request) {
       data: { status: result.status }
     });
 
+    await writePaymentLog({
+      donationId: donation.id,
+      provider: "vakifkatilim",
+      event: "BANK_PROVISION_RESULT",
+      status: result.status,
+      paymentRef,
+      responseCode,
+      message: result.responseMessage,
+      requestMethod: req.method,
+      callbackUrl: req.url,
+      ipAddress: paymentRequestIp(req),
+      responseData: safeFormDetails(formData)
+    });
+
     if (result.status !== "PAID") {
       return failRedirect(req, result.responseMessage);
     }
@@ -110,10 +165,32 @@ export async function POST(req: Request) {
   } catch (error) {
     await prisma.donation.update({ where: { id: donation.id }, data: { status: "FAILED" } });
     const message = error instanceof Error ? error.message : "Ödeme doğrulanamadı.";
+    await writePaymentLog({
+      donationId: donation.id,
+      provider: "vakifkatilim",
+      event: "BANK_CALLBACK_PROCESSING_FAILED",
+      status: "FAILED",
+      paymentRef,
+      responseCode,
+      message,
+      requestMethod: req.method,
+      callbackUrl: req.url,
+      ipAddress: paymentRequestIp(req),
+      responseData: safeFormDetails(formData)
+    });
     return failRedirect(req, message);
   }
 }
 
 export async function GET(req: Request) {
+  await writePaymentLog({
+    provider: "vakifkatilim",
+    event: "BANK_OK_CALLBACK_INVALID_METHOD",
+    status: "FAILED",
+    requestMethod: req.method,
+    callbackUrl: req.url,
+    ipAddress: paymentRequestIp(req),
+    message: "Banka dönüşü POST yerine GET olarak alındı."
+  });
   return failRedirect(req, "Banka dönüşü POST olarak alınmalıdır.");
 }

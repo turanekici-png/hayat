@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { paymentRequestIp, safeFormDetails, writePaymentLog } from "@/lib/payment-log";
 
 function redirectToDonation(req: Request, message?: string) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || new URL(req.url).origin;
@@ -45,6 +46,18 @@ export async function POST(req: Request) {
     "3D güvenli ödeme iptal edildi veya onaylanmadı.";
 
   await markFailed(donationId, paymentRef);
+  await writePaymentLog({
+    donationId: donationId || null,
+    provider: "vakifkatilim",
+    event: "BANK_FAIL_CALLBACK_RECEIVED",
+    status: "FAILED",
+    paymentRef,
+    message,
+    requestMethod: req.method,
+    callbackUrl: req.url,
+    ipAddress: paymentRequestIp(req),
+    responseData: safeFormDetails(formData)
+  });
 
   return redirectToDonation(req, message);
 }
@@ -56,6 +69,18 @@ export async function GET(req: Request) {
   const message = url.searchParams.get("ResponseMessage") || url.searchParams.get("message") || undefined;
 
   await markFailed(donationId, paymentRef);
+  await writePaymentLog({
+    donationId: donationId || null,
+    provider: "vakifkatilim",
+    event: "BANK_FAIL_CALLBACK_GET",
+    status: "FAILED",
+    paymentRef,
+    message: message || "Başarısız ödeme dönüşü GET olarak alındı.",
+    requestMethod: req.method,
+    callbackUrl: req.url,
+    ipAddress: paymentRequestIp(req),
+    responseData: Object.fromEntries(url.searchParams.entries())
+  });
 
   return redirectToDonation(req, message);
 }
