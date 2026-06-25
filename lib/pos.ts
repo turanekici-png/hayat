@@ -106,8 +106,9 @@ function vakifCallbackBaseUrl(requestBaseUrl?: string | null) {
   }
 
   const localHostNames = new Set(["localhost", "127.0.0.1", "::1"]);
+  const allowLocalCallbacks = process.env.VAKIF_POS_ALLOW_LOCAL_CALLBACKS === "true";
 
-  if (localHostNames.has(parsedUrl.hostname)) {
+  if (!allowLocalCallbacks && localHostNames.has(parsedUrl.hostname)) {
     throw new Error("Canlı Vakıf Katılım POS için dışarıdan erişilebilen site adresi gerekli.");
   }
 
