@@ -188,7 +188,15 @@ function urlsFor(paymentRef: string, donationId: string, requestBaseUrl?: string
 }
 
 function vakifOrderId(donationId: string) {
-  return `H${donationId.replace(/[^a-zA-Z0-9]/g, "").slice(-19).toUpperCase()}`;
+  const timestamp = Date.now().toString();
+  const donationHash = createHash("sha1")
+    .update(donationId)
+    .digest("hex");
+  const suffix = (Number.parseInt(donationHash.slice(0, 8), 16) % 1_000_000)
+    .toString()
+    .padStart(6, "0");
+
+  return `${timestamp}${suffix}`;
 }
 
 async function postXml(endpoint: string, xml: string) {
@@ -236,6 +244,31 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
   const amount = normalizeAmount(input.amount);
   const currencyCode = process.env.VAKIF_POS_CURRENCY_CODE || "0949";
   const { okUrl, failUrl } = urlsFor(paymentRef, input.donationId, input.callbackBaseUrl);
+  const fieldNames = [
+    "UserName",
+    "HashPassword",
+    "MerchantId",
+    "MerchantOrderId",
+    "Amount",
+    "FECCurrencyCode",
+    "OkUrl",
+    "FailUrl",
+    "PaymentType"
+  ];
+
+  console.info("[VakifKatilim common_page v2]", {
+    endpoint,
+    merchantIdLength: merchantId.length,
+    userNameLength: userName.length,
+    hashPasswordLength: hashPassword.length,
+    hashPasswordIsSha1Base64: /^[A-Za-z0-9+/]{27}=$/.test(hashPassword),
+    paymentRef,
+    amount,
+    currencyCode,
+    okUrl,
+    failUrl,
+    fieldNames
+  });
 
   return {
     provider: "vakifkatilim",
