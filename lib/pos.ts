@@ -246,40 +246,43 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
   const amount = normalizeAmount(input.amount);
   const currencyCode = process.env.VAKIF_POS_CURRENCY_CODE || "0949";
   const { okUrl, failUrl } = urlsFor(paymentRef, input.donationId, input.callbackBaseUrl);
+  const hashData = buildVakifHash({
+    merchantId,
+    merchantOrderId: paymentRef,
+    amount,
+    okUrl,
+    failUrl,
+    userName,
+    hashPassword
+  });
   const fieldNames = [
     "UserName",
-    "HashPassword",
     "MerchantId",
     "MerchantOrderId",
     "Amount",
     "FECCurrencyCode",
     "OkUrl",
     "FailUrl",
-    "PaymentType"
+    "PaymentType",
+    "TransactionSecurity",
+    "HashData"
   ];
   const requestFields = {
     UserName: userName,
-    HashPassword: "[redacted]",
     MerchantId: merchantId,
     MerchantOrderId: paymentRef,
     Amount: amount,
     FECCurrencyCode: currencyCode,
     OkUrl: okUrl,
     FailUrl: failUrl,
-    PaymentType: "1"
+    PaymentType: "1",
+    TransactionSecurity: "3",
+    HashData: hashData
   };
 
   console.info("[VakifKatilim common_page v2]", {
     endpoint,
-    merchantIdLength: merchantId.length,
-    userNameLength: userName.length,
-    hashPasswordLength: hashPassword.length,
-    hashPasswordIsSha1Base64: /^[A-Za-z0-9+/]{27}=$/.test(hashPassword),
-    paymentRef,
-    amount,
-    currencyCode,
-    okUrl,
-    failUrl,
+    ...requestFields,
     fieldNames
   });
 
@@ -291,14 +294,9 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
       method: "POST",
       endpoint,
       contentType: "application/x-www-form-urlencoded",
-      fields: requestFields,
-      hashPasswordLength: hashPassword.length,
-      hashPasswordIsSha1Base64: /^[A-Za-z0-9+/]{27}=$/.test(hashPassword)
+      fields: { ...requestFields, HashData: "[redacted]" }
     },
-    paymentHtml: autoSubmitForm(endpoint, {
-      ...requestFields,
-      HashPassword: hashPassword
-    }),
+    paymentHtml: autoSubmitForm(endpoint, requestFields),
     status: "PENDING"
   };
 }
