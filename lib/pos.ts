@@ -230,21 +230,12 @@ function autoSubmitForm(action: string, fields: Record<string, string | number>)
 }
 
 function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
-  const { merchantId, customerId, userName, hashPassword } = vakifSettings();
+  const { merchantId, userName, hashPassword } = vakifSettings();
   const endpoint = process.env.VAKIF_POS_COMMON_PAYMENT_ENDPOINT || VAKIF_COMMON_PAYMENT_ENDPOINT;
   const paymentRef = vakifOrderId(input.donationId);
   const amount = normalizeAmount(input.amount);
   const currencyCode = process.env.VAKIF_POS_CURRENCY_CODE || "0949";
   const { okUrl, failUrl } = urlsFor(paymentRef, input.donationId, input.callbackBaseUrl);
-  const hashData = buildVakifHash({
-    merchantId,
-    merchantOrderId: paymentRef,
-    amount,
-    okUrl,
-    failUrl,
-    userName,
-    hashPassword
-  });
 
   return {
     provider: "vakifkatilim",
@@ -254,19 +245,12 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
       UserName: userName,
       HashPassword: hashPassword,
       MerchantId: merchantId,
-      CustomerId: customerId,
       MerchantOrderId: paymentRef,
-      InstallmentCount: "0",
       Amount: amount,
-      DisplayAmount: amount,
-      FECAmount: "0",
       FECCurrencyCode: currencyCode,
       OkUrl: okUrl,
       FailUrl: failUrl,
-      APIVersion: "1.0.0",
-      PaymentType: "1",
-      TransactionSecurity: "3",
-      HashData: hashData
+      PaymentType: "1"
     }),
     status: "PENDING"
   };
