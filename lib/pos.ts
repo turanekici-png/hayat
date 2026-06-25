@@ -9,6 +9,7 @@ export type PosStartInput = {
   email?: string | null;
   description?: string | null;
   clientIp?: string | null;
+  callbackBaseUrl?: string | null;
   cardHolderName?: string;
   cardNumber?: string;
   expiryMonth?: string | number;
@@ -85,25 +86,29 @@ function siteUrl() {
   return (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/+$/, "");
 }
 
-function validateVakifCallbackBaseUrl() {
-  const baseUrl = siteUrl();
+function vakifCallbackBaseUrl(requestBaseUrl?: string | null) {
+  const configuredUrl = siteUrl();
+  const configuredHost = (() => {
+    try {
+      return new URL(configuredUrl).hostname;
+    } catch {
+      return "";
+    }
+  })();
+  const configuredIsLocal = ["localhost", "127.0.0.1", "::1"].includes(configuredHost);
+  const baseUrl = (configuredIsLocal && requestBaseUrl ? requestBaseUrl : configuredUrl).replace(/\/+$/, "");
   let parsedUrl: URL;
 
   try {
     parsedUrl = new URL(baseUrl);
   } catch {
-    throw new Error("NEXT_PUBLIC_SITE_URL geçerli ve dışarıdan erişilebilir bir adres olmalı.");
+    throw new Error("Ödeme dönüş adresi geçerli değil.");
   }
 
-  const allowInsecure = process.env.VAKIF_POS_ALLOW_INSECURE_CALLBACKS === "true";
   const localHostNames = new Set(["localhost", "127.0.0.1", "::1"]);
 
-  if (!allowInsecure && parsedUrl.protocol !== "https:") {
-    throw new Error("Canlı Vakıf Katılım POS için NEXT_PUBLIC_SITE_URL HTTPS olmalı.");
-  }
-
-  if (!allowInsecure && localHostNames.has(parsedUrl.hostname)) {
-    throw new Error("Canlı Vakıf Katılım POS callback adresi localhost olamaz.");
+  if (localHostNames.has(parsedUrl.hostname)) {
+    throw new Error("Canlı Vakıf Katılım POS için dışarıdan erişilebilen site adresi gerekli.");
   }
 
   return baseUrl;
@@ -174,8 +179,8 @@ function formValue(formData: FormData, names: string[]) {
   return "";
 }
 
-function urlsFor(paymentRef: string, donationId: string) {
-  const baseUrl = validateVakifCallbackBaseUrl();
+function urlsFor(paymentRef: string, donationId: string, requestBaseUrl?: string | null) {
+  const baseUrl = vakifCallbackBaseUrl(requestBaseUrl);
   return {
     okUrl: `${baseUrl}/api/pos/vakifkatilim/3d/ok?donationId=${encodeURIComponent(donationId)}&paymentRef=${encodeURIComponent(paymentRef)}`,
     failUrl: `${baseUrl}/api/pos/vakifkatilim/3d/fail?donationId=${encodeURIComponent(donationId)}&paymentRef=${encodeURIComponent(paymentRef)}`
@@ -230,7 +235,7 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
   const paymentRef = vakifOrderId(input.donationId);
   const amount = normalizeAmount(input.amount);
   const currencyCode = process.env.VAKIF_POS_CURRENCY_CODE || "0949";
-  const { okUrl, failUrl } = urlsFor(paymentRef, input.donationId);
+  const { okUrl, failUrl } = urlsFor(paymentRef, input.donationId, input.callbackBaseUrl);
   const hashData = buildVakifHash({
     merchantId,
     merchantOrderId: paymentRef,
@@ -272,7 +277,7 @@ async function startVakifKatilim3dPayment(input: PosStartInput): Promise<PosStar
   const endpoint = process.env.VAKIF_POS_3D_PAY_ENDPOINT || process.env.VAKIF_POS_ENDPOINT || VAKIF_3D_PAY_ENDPOINT;
   const paymentRef = `VKF-${input.donationId}`;
   const amount = normalizeAmount(input.amount);
-  const { okUrl, failUrl } = urlsFor(paymentRef, input.donationId);
+  const { okUrl, failUrl } = urlsFor(paymentRef, input.donationId, input.callbackBaseUrl);
 
   if (!input.cardHolderName || !input.cardNumber || !input.expiryMonth || !input.expiryYear || !input.cvv) {
     throw new Error("Kart bilgileri eksik.");

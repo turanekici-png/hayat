@@ -19,6 +19,14 @@ function clientIp(req: Request) {
   return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || null;
 }
 
+function requestBaseUrl(req: Request) {
+  const forwardedHost = req.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
+  const host = forwardedHost || req.headers.get("host");
+  const forwardedProto = req.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
+  const protocol = forwardedProto || new URL(req.url).protocol.replace(":", "");
+  return host ? `${protocol}://${host}` : new URL(req.url).origin;
+}
+
 export async function POST(req: Request) {
   try {
     const form = await req.formData();
@@ -58,7 +66,8 @@ export async function POST(req: Request) {
         fullName: donation.fullName,
         email: donation.email,
         description: donation.description,
-        clientIp: ipAddress
+        clientIp: ipAddress,
+        callbackBaseUrl: requestBaseUrl(req)
       });
 
       await prisma.donation.update({
