@@ -126,6 +126,10 @@ function vakifSettings() {
   };
 }
 
+function vakifCurrencyCode() {
+  return process.env.VAKIF_POS_CURRENCY_CODE?.trim() || "949";
+}
+
 function normalizeVakifHashPassword(value: string) {
   const trimmed = value.trim();
   const looksLikeSha1Base64 = /^[A-Za-z0-9+/]{27}=$/.test(trimmed);
@@ -240,11 +244,11 @@ function autoSubmitForm(action: string, fields: Record<string, string | number>)
 }
 
 function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
-  const { merchantId, userName, hashPassword } = vakifSettings();
+  const { merchantId, customerId, userName, hashPassword } = vakifSettings();
   const endpoint = process.env.VAKIF_POS_COMMON_PAYMENT_ENDPOINT || VAKIF_COMMON_PAYMENT_ENDPOINT;
   const paymentRef = vakifOrderId(input.donationId);
   const amount = normalizeAmount(input.amount);
-  const currencyCode = process.env.VAKIF_POS_CURRENCY_CODE || "0949";
+  const currencyCode = vakifCurrencyCode();
   const { okUrl, failUrl } = urlsFor(paymentRef, input.donationId, input.callbackBaseUrl);
   const hashData = buildVakifHash({
     merchantId,
@@ -258,24 +262,44 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
   const fieldNames = [
     "UserName",
     "MerchantId",
+    "CustomerId",
+    "SubMerchantId",
     "MerchantOrderId",
+    "InstallmentCount",
     "Amount",
+    "DisplayAmount",
+    "FECAmount",
     "FECCurrencyCode",
     "OkUrl",
     "FailUrl",
+    "ErrorUrl",
     "PaymentType",
+    "DebtId",
+    "SurchargeAmount",
+    "SGKDebtAmount",
+    "InstallmentMaturityCommisionFlag",
     "TransactionSecurity",
     "HashData"
   ];
   const requestFields = {
     UserName: userName,
     MerchantId: merchantId,
+    CustomerId: customerId,
+    SubMerchantId: "0",
     MerchantOrderId: paymentRef,
+    InstallmentCount: "0",
     Amount: amount,
+    DisplayAmount: amount,
+    FECAmount: "0",
     FECCurrencyCode: currencyCode,
     OkUrl: okUrl,
     FailUrl: failUrl,
+    ErrorUrl: failUrl,
     PaymentType: "1",
+    DebtId: "0",
+    SurchargeAmount: "0",
+    SGKDebtAmount: "0",
+    InstallmentMaturityCommisionFlag: "0",
     TransactionSecurity: "3",
     HashData: hashData
   };
@@ -337,7 +361,7 @@ ${xmlRootStart()}
   <Amount>${xmlEscape(amount)}</Amount>
   <DisplayAmount>${xmlEscape(amount)}</DisplayAmount>
   <FECAmount>0</FECAmount>
-  <FECCurrencyCode>0949</FECCurrencyCode>
+  <FECCurrencyCode>${xmlEscape(vakifCurrencyCode())}</FECCurrencyCode>
   <AdditionalData>
     <AdditionalDataList>
       <VPosAdditionalData>
