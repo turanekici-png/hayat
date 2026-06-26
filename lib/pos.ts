@@ -127,7 +127,7 @@ function vakifSettings() {
 }
 
 function vakifCurrencyCode() {
-  return process.env.VAKIF_POS_CURRENCY_CODE?.trim() || "0949";
+  return "0949";
 }
 
 function normalizeVakifHashPassword(value: string) {
@@ -278,10 +278,6 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
     "DisplayAmount",
     "FECAmount",
     "FECCurrencyCode",
-    "FecCurrencyCode",
-    "CurrencyCode",
-    "Currency",
-    "DovizKodu",
     "OkUrl",
     "FailUrl",
     "ErrorUrl",
@@ -305,10 +301,6 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
     DisplayAmount: amount,
     FECAmount: "0",
     FECCurrencyCode: currencyCode,
-    FecCurrencyCode: currencyCode,
-    CurrencyCode: currencyCode,
-    Currency: currencyCode,
-    DovizKodu: currencyCode,
     OkUrl: okUrl,
     FailUrl: failUrl,
     ErrorUrl: failUrl,
