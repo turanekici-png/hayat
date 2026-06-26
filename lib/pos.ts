@@ -96,7 +96,7 @@ function vakifCallbackBaseUrl(requestBaseUrl?: string | null) {
       return "";
     }
   })();
-  const configuredIsLocal = ["localhost", "127.0.0.1", "::1"].includes(configuredHost);
+  const configuredIsLocal = ["localhost", "127.0.0.1", "0.0.0.0", "::1"].includes(configuredHost);
   const baseUrl = (configuredIsLocal && requestBaseUrl ? requestBaseUrl : configuredUrl).replace(/\/+$/, "");
   let parsedUrl: URL;
 
@@ -106,7 +106,7 @@ function vakifCallbackBaseUrl(requestBaseUrl?: string | null) {
     throw new Error("Ödeme dönüş adresi geçerli değil.");
   }
 
-  const localHostNames = new Set(["localhost", "127.0.0.1", "::1"]);
+  const localHostNames = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1"]);
   const allowLocalCallbacks = process.env.VAKIF_POS_ALLOW_LOCAL_CALLBACKS === "true";
 
   if (!allowLocalCallbacks && localHostNames.has(parsedUrl.hostname)) {
@@ -268,6 +268,7 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
     .filter(Boolean);
   const fieldNames = [
     "UserName",
+    "HashPassword",
     "MerchantId",
     "CustomerId",
     "SubMerchantId",
@@ -285,11 +286,11 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
     "SurchargeAmount",
     "SGKDebtAmount",
     "InstallmentMaturityCommisionFlag",
-    "TransactionSecurity",
-    "HashData"
+    "TransactionSecurity"
   ];
   const requestFields = {
     UserName: userName,
+    HashPassword: hashPassword,
     MerchantId: merchantId,
     CustomerId: customerId,
     SubMerchantId: "0",
@@ -307,8 +308,7 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
     SurchargeAmount: "0",
     SGKDebtAmount: "0",
     InstallmentMaturityCommisionFlag: "0",
-    TransactionSecurity: "3",
-    HashData: hashData
+    TransactionSecurity: process.env.VAKIF_POS_TRANSACTION_SECURITY || "3"
   };
 
   console.info("[VakifKatilim common_page v2]", {
@@ -325,7 +325,8 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
       method: "POST",
       endpoint,
       contentType: "application/x-www-form-urlencoded",
-      fields: { ...requestFields, HashData: "[redacted]" },
+      fields: { ...requestFields, HashPassword: "[redacted]" },
+      hashData: "[redacted]",
       hashFields
     },
     paymentHtml: autoSubmitForm(endpoint, requestFields),
