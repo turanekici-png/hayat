@@ -432,10 +432,10 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-slate-100 py-4">
+      <main className="admin-mobile-scope min-h-screen overflow-x-hidden bg-slate-100 py-3 md:py-4">
         <div className="mx-auto w-full px-3 md:px-5 xl:px-6">
           <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)_280px]">
-            <aside className="admin-sidebar-scroll sticky top-3 max-h-[calc(100vh-1.5rem)] overflow-y-auto rounded-[1.4rem] bg-hayat-blue p-4 text-white shadow-soft">
+            <aside className="admin-sidebar-scroll rounded-[1.4rem] bg-hayat-blue p-3 text-white shadow-soft sm:p-4 lg:sticky lg:top-3 lg:max-h-[calc(100vh-1.5rem)] lg:overflow-y-auto">
               <div className="rounded-[1.1rem] bg-white/10 p-4">
                 <p className="flex items-center gap-2 font-black uppercase tracking-[.18em] text-white/80"><LayoutDashboard size={18} /> Yönetim Paneli</p>
                 <h1 className="mt-2 text-2xl font-black leading-tight">İçerik yönetimi</h1>
@@ -452,7 +452,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                 <div className="rounded-xl bg-white/10 p-3"><b className="block text-xl text-white">{sacrificeCount}</b>Kurban</div>
               </div>
 
-              <nav className="mt-4 space-y-2 text-sm font-black">
+              <nav className="mt-4 grid gap-2 text-sm font-black sm:grid-cols-2 lg:block lg:space-y-2">
                 <Link href="/" className="flex items-center justify-center gap-2 rounded-xl bg-hayat-green px-4 py-3 text-white"><Eye size={18} /> Siteyi Gör</Link>
                 <Link href="/admin/duyurular" className="block rounded-xl bg-white/10 px-4 py-2.5">Duyurular</Link>
                 <Link href="/admin/basvurular" className="block rounded-xl bg-white/10 px-4 py-2.5">Yardım Başvuruları</Link>
@@ -463,7 +463,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
               </nav>
             </aside>
 
-            <div className="space-y-4">
+            <div className="admin-panel-content min-w-0 space-y-4">
               <section className="rounded-[1.4rem] bg-white p-4 shadow-sm">
                 <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
                   <div>
@@ -734,7 +734,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
               )}
             </div>
 
-            <aside className="admin-sidebar-scroll max-h-[calc(100vh-2rem)] overflow-y-auto rounded-[1.5rem] bg-white p-5 shadow-sm xl:sticky xl:top-4">
+            <aside className="admin-sidebar-scroll hidden max-h-[calc(100vh-2rem)] overflow-y-auto rounded-[1.5rem] bg-white p-5 shadow-sm xl:sticky xl:top-4 xl:block">
               <div className="mb-5 border-b border-slate-100 pb-4">
                 <h3 className="text-lg font-black text-hayat-dark">Çalışma Alanları</h3>
                 <p className="mt-1 text-xs font-semibold text-slate-500">Düzenlemek istediğiniz bölümü seçin.</p>

@@ -54,10 +54,10 @@ export async function AdminShell({ activePath = "/admin", children, contentClass
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-slate-100 py-4">
+      <main className="admin-mobile-scope min-h-screen overflow-x-hidden bg-slate-100 py-3 md:py-4">
         <div className="mx-auto w-full px-3 md:px-5 xl:px-6">
           <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)_280px]">
-            <aside className="admin-sidebar-scroll sticky top-3 max-h-[calc(100vh-1.5rem)] overflow-y-auto rounded-[1.4rem] bg-hayat-blue p-4 text-white shadow-soft">
+            <aside className="admin-sidebar-scroll rounded-[1.4rem] bg-hayat-blue p-3 text-white shadow-soft sm:p-4 lg:sticky lg:top-3 lg:max-h-[calc(100vh-1.5rem)] lg:overflow-y-auto">
               <div className="rounded-[1.1rem] bg-white/10 p-4">
                 <p className="flex items-center gap-2 font-black uppercase tracking-[.18em] text-white/80">
                   <LayoutDashboard size={18} /> Yönetim Paneli
@@ -74,7 +74,7 @@ export async function AdminShell({ activePath = "/admin", children, contentClass
                 ))}
               </div>
 
-              <nav className="mt-4 space-y-2 text-sm font-black">
+              <nav className="mt-4 grid gap-2 text-sm font-black sm:grid-cols-2 lg:block lg:space-y-2">
                 <Link href="/" className="flex items-center justify-center gap-2 rounded-xl bg-hayat-green px-4 py-3 text-white">
                   <Eye size={18} /> Siteyi Gör
                 </Link>
@@ -94,9 +94,9 @@ export async function AdminShell({ activePath = "/admin", children, contentClass
               </nav>
             </aside>
 
-            <div className={`w-full min-w-0 ${contentClassName}`}>{children}</div>
+            <div className={`admin-panel-content w-full min-w-0 ${contentClassName}`}>{children}</div>
 
-            <aside className="admin-sidebar-scroll sticky top-3 max-h-[calc(100vh-1.5rem)] overflow-y-auto rounded-[1.5rem] bg-white p-5 shadow-sm">
+            <aside className="admin-sidebar-scroll hidden rounded-[1.5rem] bg-white p-5 shadow-sm xl:sticky xl:top-3 xl:block xl:max-h-[calc(100vh-1.5rem)] xl:overflow-y-auto">
               <div className="mb-5 border-b border-slate-100 pb-4">
                 <h3 className="text-lg font-black text-hayat-dark">Çalışma Alanları</h3>
                 <p className="mt-1 text-xs font-semibold text-slate-500">Yönetmek istediğiniz bölümü seçin.</p>

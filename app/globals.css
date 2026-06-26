@@ -239,3 +239,53 @@ footer h3 {
     animation-duration: 34s;
   }
 }
+
+/* Admin-only mobile containment */
+.admin-mobile-scope {
+  overflow-wrap: anywhere;
+}
+
+.admin-mobile-scope .admin-panel-content {
+  max-width: 100%;
+}
+
+.admin-mobile-scope pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  .admin-mobile-scope {
+    overflow-x: hidden;
+  }
+
+  .admin-mobile-scope section,
+  .admin-mobile-scope article,
+  .admin-mobile-scope form,
+  .admin-mobile-scope details,
+  .admin-mobile-scope aside {
+    max-width: 100%;
+  }
+
+  .admin-mobile-scope h1 {
+    font-size: 1.85rem;
+    line-height: 1.12;
+  }
+
+  .admin-mobile-scope h2 {
+    font-size: 1.45rem;
+    line-height: 1.18;
+  }
+
+  .admin-mobile-scope input,
+  .admin-mobile-scope select,
+  .admin-mobile-scope textarea,
+  .admin-mobile-scope button {
+    max-width: 100%;
+  }
+
+  .admin-mobile-scope table {
+    min-width: 720px;
+  }
+}
