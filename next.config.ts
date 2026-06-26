@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
     '/*': [
       './node_modules/.prisma/client/**/*',
       './node_modules/@prisma/client/**/*',
-      './prisma/**/*'
+      './prisma/**/*',
+      './public/**/*'
     ]
   },
   reactStrictMode: true,

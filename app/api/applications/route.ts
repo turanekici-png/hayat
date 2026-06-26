@@ -4,6 +4,7 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { prisma } from "@/lib/prisma";
 import { sendSms } from "@/lib/sms";
+import { publicPath } from "@/lib/public-files";
 
 const optionalNumber = z.preprocess(
   (value) => (value === "" || value === null || value === undefined ? undefined : value),
@@ -44,7 +45,7 @@ async function nextApplicationNo() {
   return `HA-${year}-${String(count + 1).padStart(6, "0")}`;
 }
 
-const uploadDir = path.join(process.cwd(), "public", "uploads", "basvurular");
+const uploadDir = publicPath("uploads", "basvurular");
 
 export async function POST(request: Request) {
   const form = await request.formData();

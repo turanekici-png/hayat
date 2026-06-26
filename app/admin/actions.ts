@@ -7,6 +7,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { mkdir, writeFile, unlink } from "fs/promises";
 import { sendSms } from "@/lib/sms";
+import { publicPath } from "@/lib/public-files";
 import path from "path";
 import { createHash } from "crypto";
 
@@ -16,7 +17,7 @@ type SectionLayout = string;
 type SectionTheme = string;
 type SectionType = string;
 
-const uploadDir = path.join(process.cwd(), "public", "uploads");
+const uploadDir = publicPath("uploads");
 const allowedUploadExtensions = new Set([".jpg", ".jpeg", ".png", ".mp4", ".webm", ".ogg", ".mov"]);
 
 function isAllowedUpload(file: File) {
@@ -576,7 +577,7 @@ export async function deleteMedia(formData: FormData) {
       if (media) {
         await prisma.mediaAsset.delete({ where: { id } });
         try {
-          await unlink(path.join(process.cwd(), "public", media.url));
+          await unlink(publicPath(...media.url.replace(/^\/+/, "").split("/")));
         } catch {}
         revalidatePath("/admin");
       }

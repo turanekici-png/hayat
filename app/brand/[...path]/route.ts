@@ -11,18 +11,14 @@ const contentTypes: Record<string, string> = {
   ".gif": "image/gif",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
-  ".mp4": "video/mp4",
-  ".mov": "video/quicktime",
-  ".ogg": "video/ogg",
   ".png": "image/png",
   ".svg": "image/svg+xml",
-  ".webm": "video/webm",
   ".webp": "image/webp"
 };
 
 export async function GET(_request: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const { path: parts } = await params;
-  const filePath = safePublicFilePath("uploads", parts || []);
+  const filePath = safePublicFilePath("brand", parts || []);
   if (!filePath) return new NextResponse("Not found", { status: 404 });
 
   try {
