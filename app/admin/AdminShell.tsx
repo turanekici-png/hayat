@@ -4,6 +4,7 @@ import { Activity, Beef, ClipboardList, Eye, FileText, LayoutDashboard, Megaphon
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { prisma } from "@/lib/prisma";
+import { AdminNavLink } from "./AdminNavLink";
 
 type AdminShellProps = {
   activePath?: string;
@@ -81,14 +82,15 @@ export async function AdminShell({ activePath = "/admin", children, contentClass
                 {adminLinks.map(({ href, label, icon: Icon }) => {
                   const isActive = activePath === href;
                   return (
-                    <Link
+                    <AdminNavLink
                       key={href}
                       href={href}
+                      aria-current={isActive ? "page" : undefined}
                       className={`flex items-center gap-2 rounded-xl px-4 py-2.5 transition-colors ${isActive ? "bg-white text-hayat-blue" : "bg-white/10 text-white hover:bg-hayat-green"}`}
                     >
                       <Icon size={16} />
                       <span>{label}</span>
-                    </Link>
+                    </AdminNavLink>
                   );
                 })}
               </nav>
@@ -106,14 +108,15 @@ export async function AdminShell({ activePath = "/admin", children, contentClass
                   const isActive = activePath === href;
 
                   return (
-                    <Link
+                    <AdminNavLink
                       key={href}
                       href={href}
+                      aria-current={isActive ? "page" : undefined}
                       className={`group flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-bold transition-all ${isActive ? "bg-hayat-blue text-white shadow-sm" : "bg-slate-50 text-slate-600 hover:bg-hayat-soft hover:text-hayat-blue"}`}
                     >
                       <Icon size={18} className={isActive ? "text-white" : "text-slate-400 group-hover:text-hayat-blue"} />
                       <span className="truncate">{label}</span>
-                    </Link>
+                    </AdminNavLink>
                   );
                 })}
               </nav>

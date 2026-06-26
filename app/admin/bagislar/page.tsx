@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AdminShell } from "../AdminShell";
 import { prisma } from "@/lib/prisma";
 
@@ -235,6 +236,7 @@ export default async function AdminDonations({ searchParams }: { searchParams: P
               <th>Açıklama</th>
               <th>Durum</th>
               <th>Ref</th>
+              <th>Makbuz</th>
             </tr>
           </thead>
           <tbody>
@@ -247,11 +249,20 @@ export default async function AdminDonations({ searchParams }: { searchParams: P
                 <td>{donation.description}</td>
                 <td><span className="rounded-full bg-slate-100 px-3 py-1 font-bold">{statusLabel(donation.status)}</span></td>
                 <td>{donation.paymentRef}</td>
+                <td>
+                  {donation.status === "PAID" ? (
+                    <Link href={`/bagis/makbuz/${donation.id}`} target="_blank" className="inline-flex rounded-full bg-hayat-green px-4 py-2 text-xs font-black text-white">
+                      Makbuz Al
+                    </Link>
+                  ) : (
+                    <span className="text-xs font-bold text-slate-400">Ödeme yok</span>
+                  )}
+                </td>
               </tr>
             ))}
             {!donations.length && (
               <tr>
-                <td colSpan={7} className="p-8 text-center font-bold text-slate-500">Henüz bağış kaydı yok.</td>
+                <td colSpan={8} className="p-8 text-center font-bold text-slate-500">Henüz bağış kaydı yok.</td>
               </tr>
             )}
           </tbody>

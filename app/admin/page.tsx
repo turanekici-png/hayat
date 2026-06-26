@@ -22,6 +22,7 @@ import {
 } from "./actions";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { AdminNavLink } from "./AdminNavLink";
 import { MediaField } from "./MediaField";
 import {
   Building2,
@@ -454,12 +455,12 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
 
               <nav className="mt-4 grid gap-2 text-sm font-black sm:grid-cols-2 lg:block lg:space-y-2">
                 <Link href="/" className="flex items-center justify-center gap-2 rounded-xl bg-hayat-green px-4 py-3 text-white"><Eye size={18} /> Siteyi Gör</Link>
-                <Link href="/admin/duyurular" className="block rounded-xl bg-white/10 px-4 py-2.5">Duyurular</Link>
-                <Link href="/admin/basvurular" className="block rounded-xl bg-white/10 px-4 py-2.5">Yardım Başvuruları</Link>
-                <Link href="/admin/bagislar" className="block rounded-xl bg-white/10 px-4 py-2.5">Bağış Listesi</Link>
-                <Link href="/admin/kurban" className="block rounded-xl bg-white/10 px-4 py-2.5">Kurban Organizasyonu</Link>
-                <Link href="/admin/hesaplar" className="block rounded-xl bg-white/10 px-4 py-2.5">Hesap / Banka Bilgileri</Link>
-                <Link href="/admin/politikalar" className="block rounded-xl bg-white/10 px-4 py-2.5">KVKK / Politikalar</Link>
+                <AdminNavLink href="/admin/duyurular" className="block rounded-xl bg-white/10 px-4 py-2.5">Duyurular</AdminNavLink>
+                <AdminNavLink href="/admin/basvurular" className="block rounded-xl bg-white/10 px-4 py-2.5">Yardım Başvuruları</AdminNavLink>
+                <AdminNavLink href="/admin/bagislar" className="block rounded-xl bg-white/10 px-4 py-2.5">Bağış Listesi</AdminNavLink>
+                <AdminNavLink href="/admin/kurban" className="block rounded-xl bg-white/10 px-4 py-2.5">Kurban Organizasyonu</AdminNavLink>
+                <AdminNavLink href="/admin/hesaplar" className="block rounded-xl bg-white/10 px-4 py-2.5">Hesap / Banka Bilgileri</AdminNavLink>
+                <AdminNavLink href="/admin/politikalar" className="block rounded-xl bg-white/10 px-4 py-2.5">KVKK / Politikalar</AdminNavLink>
               </nav>
             </aside>
 
@@ -513,7 +514,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
               </section>
 
               {/* Listeleme ve Düzenleme Alanı */}
-              <div>
+              <div id="anasayfa-alanlari">
                 {selectedGroupItems.length > 0 ? (
                   selectedGroupItems.map((section) => <SectionEditor key={`${section.id}-${section.updatedAt.getTime()}`} section={section} media={safeMedia} />)
                 ) : (
@@ -744,14 +745,15 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                   const isSelected = selectedAdminPage.key === key;
 
                   return (
-                    <Link
+                    <AdminNavLink
                       key={key}
                       href={adminPageHref(key)}
+                      aria-current={isSelected ? "page" : undefined}
                       className={`group flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-bold transition-all ${isSelected ? "bg-hayat-blue text-white shadow-sm" : "bg-slate-50 text-slate-600 hover:bg-hayat-soft hover:text-hayat-blue"}`}
                     >
                       <Icon size={18} className={isSelected ? "text-white" : "text-slate-400 group-hover:text-hayat-blue"} />
                       <span className="truncate">{title}</span>
-                    </Link>
+                    </AdminNavLink>
                   );
                 })}
               </nav>
@@ -768,7 +770,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                       const itemCount = sections.filter((s) => s.type === type).length;
 
                       return (
-                        <Link key={type} href={tabHref(type)} className={`group flex items-center justify-between gap-2 rounded-xl px-4 py-3 text-sm font-bold transition-all ${isSelected ? "bg-hayat-blue/10 text-hayat-blue ring-1 ring-hayat-blue/20" : "bg-slate-50 text-slate-600 hover:bg-hayat-soft hover:text-hayat-blue"}`}>
+                        <AdminNavLink key={type} href={tabHref(type)} aria-current={isSelected ? "page" : undefined} className={`group flex items-center justify-between gap-2 rounded-xl px-4 py-3 text-sm font-bold transition-all ${isSelected ? "bg-hayat-blue/10 text-hayat-blue ring-1 ring-hayat-blue/20" : "bg-slate-50 text-slate-600 hover:bg-hayat-soft hover:text-hayat-blue"}`}>
                           <div className="flex min-w-0 items-center gap-3">
                             <Icon size={18} className={isSelected ? "text-hayat-blue" : "text-slate-400 group-hover:text-hayat-blue"} />
                             <span className="truncate">{groupLabels.find((label) => label.type === type)?.label || title}</span>
@@ -776,7 +778,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                           <span className={`shrink-0 rounded-md px-2 py-1 text-[10px] uppercase tracking-widest ${itemCount > 0 ? isSelected ? "bg-hayat-blue text-white" : "bg-slate-200 text-slate-500" : "bg-red-50 text-red-500"}`}>
                             {itemCount > 0 ? itemCount : "Boş"}
                           </span>
-                        </Link>
+                        </AdminNavLink>
                       );
                     })}
                   </nav>
