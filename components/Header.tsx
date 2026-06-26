@@ -28,7 +28,7 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-[1500px] items-center justify-between gap-3 px-3 sm:h-20 sm:px-5 lg:h-[88px] lg:px-10">
         <div className="flex min-w-0 flex-1 items-center gap-3 lg:gap-5">
           <Link href="/" className="flex shrink-0 items-center rounded-md bg-white p-2 shadow-sm transition hover:-translate-y-0.5" aria-label="Hayat Ağacı Derneği ana sayfa">
-            <img src="/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" className="h-10 w-[104px] rounded-sm object-contain sm:h-14 sm:w-[140px] lg:h-[72px] lg:w-[180px]" />
+            <img src="/media/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" className="h-10 w-[104px] rounded-sm object-contain sm:h-14 sm:w-[140px] lg:h-[72px] lg:w-[180px]" />
           </Link>
 
           <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0 xl:flex 2xl:gap-1">

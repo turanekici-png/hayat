@@ -27,7 +27,7 @@ export function Footer() {
           {/* Column 1: About */}
           <div>
             <Link href="/" className="mb-5 inline-block sm:mb-8">
-               <img src="/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" loading="lazy" decoding="async" className="h-16 w-auto rounded bg-white object-contain p-1" />
+               <img src="/media/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" loading="lazy" decoding="async" className="h-16 w-auto rounded bg-white object-contain p-1" />
             </Link>
             <p className="mb-7 pr-0 text-sm leading-loose text-slate-400 sm:mb-10 sm:pr-4">
               &quot;Alan elin veren eli görmediği&quot;, şeffaf ve güvenilir bir yardımlaşma ekosistemi inşa ediyoruz. Sivas merkezli derneğimizle tüm ihtiyaç sahiplerine umut oluyoruz.

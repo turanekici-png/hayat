@@ -12,8 +12,11 @@ function configuredHost() {
 
 function localMediaPath(pathname: string, search = "") {
   const cleanPath = pathname.startsWith("/") ? pathname : `/${pathname}`;
-  if (cleanPath.startsWith("/uploads/") || cleanPath.startsWith("/brand/")) {
-    return `${cleanPath}${search}`;
+  if (cleanPath.startsWith("/uploads/")) {
+    return `/media/uploads/${cleanPath.slice("/uploads/".length)}${search}`;
+  }
+  if (cleanPath.startsWith("/brand/")) {
+    return `/media/brand/${cleanPath.slice("/brand/".length)}${search}`;
   }
   return null;
 }
@@ -37,20 +40,24 @@ export function normalizeMediaUrl(value?: string | null) {
     }
   }
 
-  if (
-    url.startsWith("/") ||
-    url.startsWith("data:") ||
-    url.startsWith("blob:")
-  ) {
+  if (url.startsWith("/uploads/") || url.startsWith("/brand/")) {
+    return localMediaPath(url);
+  }
+
+  if (url.startsWith("/") || url.startsWith("data:") || url.startsWith("blob:")) {
     return url;
   }
 
-  if (url.startsWith("uploads/") || url.startsWith("brand/")) {
-    return `/${url}`;
+  if (url.startsWith("uploads/")) {
+    return `/media/${url}`;
+  }
+
+  if (url.startsWith("brand/")) {
+    return `/media/${url}`;
   }
 
   if (!url.includes("/") && mediaExtensionPattern.test(url)) {
-    return `/uploads/${url}`;
+    return `/media/uploads/${url}`;
   }
 
   return url;

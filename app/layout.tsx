@@ -5,8 +5,8 @@ export const metadata: Metadata = {
   title: "Hayat Ağacı Derneği",
   description: "Dayanışmayı büyüten modern yardım ve bağış platformu",
   icons: {
-    icon: "/brand/hayat-agaci-logo.jpg",
-    apple: "/brand/hayat-agaci-logo.jpg"
+    icon: "/media/brand/hayat-agaci-logo.jpg",
+    apple: "/media/brand/hayat-agaci-logo.jpg"
   }
 };
 

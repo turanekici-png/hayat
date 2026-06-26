@@ -18,7 +18,7 @@ export function HeroImageSlider({
   showOverlay?: boolean;
   fitToParent?: boolean;
 }) {
-  const slides = images.length ? images : [{ src: "/brand/hayat-agaci-logo.jpg", alt: "Hayat Ağacı Derneği" }];
+  const slides = images.length ? images : [{ src: "/media/brand/hayat-agaci-logo.jpg", alt: "Hayat Ağacı Derneği" }];
   const [active, setActive] = useState(0);
 
   useEffect(() => {
