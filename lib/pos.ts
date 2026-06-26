@@ -278,7 +278,10 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
     "DisplayAmount",
     "FECAmount",
     "FECCurrencyCode",
+    "FecCurrencyCode",
     "CurrencyCode",
+    "Currency",
+    "DovizKodu",
     "OkUrl",
     "FailUrl",
     "ErrorUrl",
@@ -287,7 +290,8 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
     "SurchargeAmount",
     "SGKDebtAmount",
     "InstallmentMaturityCommisionFlag",
-    "TransactionSecurity"
+    "TransactionSecurity",
+    "HashData"
   ];
   const requestFields = {
     UserName: userName,
@@ -301,7 +305,10 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
     DisplayAmount: amount,
     FECAmount: "0",
     FECCurrencyCode: currencyCode,
+    FecCurrencyCode: currencyCode,
     CurrencyCode: currencyCode,
+    Currency: currencyCode,
+    DovizKodu: currencyCode,
     OkUrl: okUrl,
     FailUrl: failUrl,
     ErrorUrl: failUrl,
@@ -310,7 +317,8 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
     SurchargeAmount: "0",
     SGKDebtAmount: "0",
     InstallmentMaturityCommisionFlag: "0",
-    TransactionSecurity: process.env.VAKIF_POS_TRANSACTION_SECURITY || "3"
+    TransactionSecurity: process.env.VAKIF_POS_TRANSACTION_SECURITY || "3",
+    HashData: hashData
   };
 
   console.info("[VakifKatilim common_page v2]", {
@@ -327,7 +335,7 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
       method: "POST",
       endpoint,
       contentType: "application/x-www-form-urlencoded",
-      fields: { ...requestFields, HashPassword: "[redacted]" },
+      fields: { ...requestFields, HashPassword: "[redacted]", HashData: "[redacted]" },
       hashData: "[redacted]",
       hashFields
     },
