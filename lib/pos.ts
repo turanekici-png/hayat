@@ -139,6 +139,7 @@ function normalizeVakifHashPassword(value: string) {
 
 function buildVakifHash(input: {
   merchantId: string;
+  customerId?: string;
   merchantOrderId: string;
   amount: string;
   okUrl: string;
@@ -150,6 +151,7 @@ function buildVakifHash(input: {
   const separator = process.env.VAKIF_POS_HASH_SEPARATOR ?? "";
   const fieldMap = {
     merchantId: input.merchantId,
+    customerId: input.customerId || "",
     merchantOrderId: input.merchantOrderId,
     amount: input.amount,
     okUrl: input.okUrl,
@@ -252,6 +254,7 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
   const { okUrl, failUrl } = urlsFor(paymentRef, input.donationId, input.callbackBaseUrl);
   const hashData = buildVakifHash({
     merchantId,
+    customerId,
     merchantOrderId: paymentRef,
     amount,
     okUrl,
@@ -259,6 +262,10 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
     userName,
     hashPassword
   });
+  const hashFields = (process.env.VAKIF_POS_HASH_FIELDS || "merchantId,merchantOrderId,amount,okUrl,failUrl,userName,hashPassword")
+    .split(",")
+    .map((field) => field.trim())
+    .filter(Boolean);
   const fieldNames = [
     "UserName",
     "MerchantId",
@@ -318,7 +325,8 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
       method: "POST",
       endpoint,
       contentType: "application/x-www-form-urlencoded",
-      fields: { ...requestFields, HashData: "[redacted]" }
+      fields: { ...requestFields, HashData: "[redacted]" },
+      hashFields
     },
     paymentHtml: autoSubmitForm(endpoint, requestFields),
     status: "PENDING"
@@ -338,6 +346,7 @@ async function startVakifKatilim3dPayment(input: PosStartInput): Promise<PosStar
 
   const hashData = buildVakifHash({
     merchantId,
+    customerId,
     merchantOrderId: paymentRef,
     amount,
     okUrl,
