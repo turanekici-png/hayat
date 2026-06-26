@@ -148,6 +148,7 @@ model MediaAsset {
   filename  String
   mimeType  String
   size      Int
+  content   Bytes?
   createdAt DateTime @default(now())
 }
 

@@ -29,6 +29,51 @@ function isAllowedUpload(file: File) {
   );
 }
 
+function safeUploadFilename(fileName: string, prefix?: string) {
+  const safeName = fileName.replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
+  return `${Date.now()}-${prefix ? `${prefix}-` : ""}${safeName}`;
+}
+
+async function writeUploadFallback(filename: string, bytes: Buffer) {
+  try {
+    await mkdir(uploadDir, { recursive: true });
+    await writeFile(path.join(uploadDir, filename), bytes);
+  } catch (error) {
+    console.error("writeUploadFallback failed", error);
+  }
+}
+
+async function createDatabaseMediaAsset({
+  title,
+  filename,
+  mimeType,
+  size,
+  content
+}: {
+  title?: string | null;
+  filename: string;
+  mimeType: string;
+  size: number;
+  content: Buffer;
+}) {
+  const media = await prisma.mediaAsset.create({
+    data: {
+      title,
+      url: "",
+      filename,
+      mimeType,
+      size,
+      content: new Uint8Array(content)
+    }
+  });
+  const url = `/api/media/${media.id}/${encodeURIComponent(filename)}`;
+  await prisma.mediaAsset.update({
+    where: { id: media.id },
+    data: { url }
+  });
+  return { ...media, url };
+}
+
 function revalidateDonationTypes() {
   revalidateTag("donation-types");
   revalidatePath("/", "layout");
@@ -189,17 +234,21 @@ async function saveUploadedSectionImage(sectionId: string, file: File, sortOrder
   if (file.size > 80 * 1024 * 1024) return;
 
   try {
-    await mkdir(uploadDir, { recursive: true });
     const bytes = Buffer.from(await file.arrayBuffer());
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
-    const filename = `${Date.now()}-${sectionId.slice(0, 6)}-${safeName}`;
-    const diskPath = path.join(uploadDir, filename);
-    await writeFile(diskPath, bytes);
+    const filename = safeUploadFilename(file.name, sectionId.slice(0, 6));
+    await writeUploadFallback(filename, bytes);
+    const media = await createDatabaseMediaAsset({
+      title: file.name,
+      filename,
+      mimeType: file.type || "application/octet-stream",
+      size: file.size,
+      content: bytes
+    });
 
     await prisma.siteSectionImage.create({
       data: {
         sectionId,
-        url: `/uploads/${filename}`,
+        url: media.url,
         alt: file.name,
         sortOrder
       }
@@ -544,20 +593,15 @@ export async function uploadMedia(formData: FormData) {
     } else if (file.size > 80 * 1024 * 1024) {
       redirectTo = "/admin?sayfa=medya&medyaHata=Dosya%20boyutu%2080MB%20%C3%BCst%C3%BCnde%20olamaz#medya";
     } else {
-      await mkdir(uploadDir, { recursive: true });
       const bytes = Buffer.from(await file.arrayBuffer());
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
-      const filename = `${Date.now()}-${safeName}`;
-      const diskPath = path.join(uploadDir, filename);
-      await writeFile(diskPath, bytes);
-      await prisma.mediaAsset.create({
-        data: {
-          title: textValue(formData, "title"),
-          url: `/uploads/${filename}`,
-          filename,
-          mimeType: file.type,
-          size: file.size
-        }
+      const filename = safeUploadFilename(file.name);
+      await writeUploadFallback(filename, bytes);
+      await createDatabaseMediaAsset({
+        title: textValue(formData, "title"),
+        filename,
+        mimeType: file.type || "application/octet-stream",
+        size: file.size,
+        content: bytes
       });
       revalidatePath("/admin");
     }
@@ -577,7 +621,9 @@ export async function deleteMedia(formData: FormData) {
       if (media) {
         await prisma.mediaAsset.delete({ where: { id } });
         try {
-          await unlink(publicPath(...media.url.replace(/^\/+/, "").split("/")));
+          if (media.url.startsWith("/uploads/")) {
+            await unlink(publicPath(...media.url.replace(/^\/+/, "").split("/")));
+          }
         } catch {}
         revalidatePath("/admin");
       }

@@ -1,4 +1,5 @@
 ﻿import { prisma } from "@/lib/prisma";
+import { normalizeMediaUrl } from "@/lib/media-url";
 
 import { unstable_cache } from "next/cache";
 
@@ -242,6 +243,17 @@ export async function ensureLegacySectionImages() {
   }
 }
 
+function withNormalizedMedia<T extends HomeSection>(section: T): T {
+  return {
+    ...section,
+    imageUrl: normalizeMediaUrl(section.imageUrl) || section.imageUrl,
+    images: section.images?.map((image) => ({
+      ...image,
+      url: normalizeMediaUrl(image.url) || image.url
+    }))
+  };
+}
+
 async function loadHomeSections() {
   try {
     const activeRows = await prisma.siteSection.findMany({
@@ -258,9 +270,9 @@ async function loadHomeSections() {
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
-    });
+    }).map(withNormalizedMedia);
   } catch {
-    return fallbackSections;
+    return fallbackSections.map(withNormalizedMedia);
   }
 }
 
@@ -279,9 +291,9 @@ async function loadSectionsByType(type: SectionType) {
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
     });
 
-    return activeRows.length ? activeRows : fallbackSections.filter((section) => section.type === type);
+    return (activeRows.length ? activeRows : fallbackSections.filter((section) => section.type === type)).map(withNormalizedMedia);
   } catch {
-    return fallbackSections.filter((section) => section.type === type);
+    return fallbackSections.filter((section) => section.type === type).map(withNormalizedMedia);
   }
 }
 

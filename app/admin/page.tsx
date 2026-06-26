@@ -24,6 +24,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AdminNavLink } from "./AdminNavLink";
 import { MediaField } from "./MediaField";
+import { normalizeMediaUrl } from "@/lib/media-url";
 import {
   Building2,
   Bell,
@@ -121,6 +122,10 @@ function isVideoMedia(url: string, mimeType?: string | null) {
   return Boolean(mimeType?.startsWith("video/") || /\.(mp4|webm|ogg|mov)$/i.test(url));
 }
 
+function displayMediaUrl(url?: string | null) {
+  return normalizeMediaUrl(url) || url || "";
+}
+
 type PickerMedia = Pick<MediaAsset, "id" | "title" | "url" | "filename" | "mimeType">;
 type SiteSectionWithImages = SiteSection & { images: SiteSectionImage[] };
 
@@ -174,7 +179,7 @@ function SectionEditor({ section, media }: { section: SiteSectionWithImages; med
             <h4 className="mb-4 flex items-center gap-2 font-black text-hayat-dark"><ImagePlus className="text-hayat-green" size={20} /> 2. Medya</h4>
             <div className="grid gap-4 md:grid-cols-12">
               <div className="md:col-span-6">
-                <label className="text-sm font-bold text-slate-600">Ana Medya Yolu (Resim veya Video)<MediaField name="imageUrl" defaultValue={section.imageUrl || ""} media={media} inputClassName="mt-1 w-full rounded-xl border border-slate-200 p-3" /></label>
+                <label className="text-sm font-bold text-slate-600">Ana Medya Yolu (Resim veya Video)<MediaField name="imageUrl" defaultValue={displayMediaUrl(section.imageUrl)} media={media} inputClassName="mt-1 w-full rounded-xl border border-slate-200 p-3" /></label>
               </div>
               <label className="text-sm font-bold text-slate-600 md:col-span-6">Görsel Açıklaması (Alt Metin)<input name="imageAlt" defaultValue={section.imageAlt || ""} className="mt-1 w-full rounded-xl border border-slate-200 p-3" /></label>
               {!isMediaOnly && (
@@ -200,12 +205,12 @@ function SectionEditor({ section, media }: { section: SiteSectionWithImages; med
                 <input type="hidden" name="sectionImageId" value={image.id} />
                 <div className="md:col-span-2">
                   {isVideoMedia(image.url) ? (
-                    <video src={image.url} className="h-24 w-full rounded-xl object-cover" muted preload="metadata" />
+                    <video src={displayMediaUrl(image.url)} className="h-24 w-full rounded-xl object-cover" muted preload="metadata" />
                   ) : (
-                    <img src={image.url} alt={image.alt || section.title} loading="lazy" decoding="async" className="h-24 w-full rounded-xl object-cover" />
+                    <img src={displayMediaUrl(image.url)} alt={image.alt || section.title} loading="lazy" decoding="async" className="h-24 w-full rounded-xl object-cover" />
                   )}
                 </div>
-                <label className="text-sm font-bold text-slate-600 md:col-span-4">Medya yolu<MediaField name="sectionImageUrl" defaultValue={image.url} placeholder="/uploads/medya.jpg" media={media} /></label>
+                <label className="text-sm font-bold text-slate-600 md:col-span-4">Medya yolu<MediaField name="sectionImageUrl" defaultValue={displayMediaUrl(image.url)} placeholder="/uploads/medya.jpg" media={media} /></label>
                 <label className="text-sm font-bold text-slate-600 md:col-span-3">Alt metin<input name="sectionImageAlt" defaultValue={image.alt || ""} className="mt-1 w-full rounded-xl border p-3" /></label>
                 <label className="text-sm font-bold text-slate-600 md:col-span-1">Sıra<input name="sectionImageSortOrder" type="number" defaultValue={image.sortOrder} className="mt-1 w-full rounded-xl border p-3" /></label>
                 <label className="mt-6 flex items-center gap-2 rounded-xl bg-red-50 px-3 py-3 font-bold text-red-700 md:col-span-2"><input name="sectionImageDeleteId" type="checkbox" value={image.id} /> Sil</label>
@@ -392,7 +397,17 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
       },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
     }),
-    prisma.mediaAsset.findMany({ orderBy: { createdAt: "desc" }, take: 24 }),
+    prisma.mediaAsset.findMany({
+      select: {
+        id: true,
+        title: true,
+        url: true,
+        filename: true,
+        mimeType: true
+      },
+      orderBy: { createdAt: "desc" },
+      take: 24
+    }),
     prisma.donationType.findMany({ orderBy: [{ sortOrder: "asc" }, { label: "asc" }] }),
     prisma.adminUser.findMany({ orderBy: [{ isActive: "desc" }, { createdAt: "desc" }] }),
     prisma.$transaction([
@@ -408,7 +423,9 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
     prisma.popupSetting.findFirst({ orderBy: { updatedAt: "desc" } }),
     prisma.sectionGroupLabel.findMany()
   ]);
-  const safeMedia = media.filter((item) => item.url.trim().length > 0);
+  const safeMedia = media
+    .filter((item) => item.url.trim().length > 0)
+    .map((item) => ({ ...item, url: displayMediaUrl(item.url) }));
   const [sectionCount, activeSectionCount, mediaCount, donationCount, applicationCount, newApplicationCount, sacrificeCount, announcementCount] = totals;
   const selectedGroupItems = sections.filter((section) => section.type === selectedGroup.type);
   const selectedGroupLabel = groupLabels.find((label) => label.type === selectedGroup.type)?.label || selectedGroup.title;
@@ -720,7 +737,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                   {popup?.id && <input type="hidden" name="id" defaultValue={popup.id} />}
                   <input name="title" defaultValue={popup?.title || ""} placeholder="Popup başlığı" className="rounded-xl border p-3 md:col-span-6" />
                   <div className="md:col-span-4">
-                    <MediaField name="imageUrl" defaultValue={popup?.imageUrl || ""} placeholder="Medya yolu: /uploads/resim.jpg" media={safeMedia} inputClassName="w-full rounded-xl border p-3" />
+                    <MediaField name="imageUrl" defaultValue={displayMediaUrl(popup?.imageUrl)} placeholder="Medya yolu: /uploads/resim.jpg" media={safeMedia} inputClassName="w-full rounded-xl border p-3" />
                   </div>
                   <input name="delaySeconds" defaultValue={popup?.delaySeconds ?? 1} placeholder="Gecikme sn." className="rounded-xl border p-3 md:col-span-2" />
                   <input name="imageAlt" defaultValue={popup?.imageAlt || ""} placeholder="Medya açıklaması" className="rounded-xl border p-3 md:col-span-4" />
