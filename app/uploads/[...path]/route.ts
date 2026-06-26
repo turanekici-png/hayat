@@ -1,7 +1,7 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import { NextResponse } from "next/server";
-import { safePublicFilePath } from "@/lib/public-files";
+import { resolvePublicFilePath } from "@/lib/public-files";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -22,7 +22,7 @@ const contentTypes: Record<string, string> = {
 
 export async function GET(_request: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const { path: parts } = await params;
-  const filePath = safePublicFilePath("uploads", parts || []);
+  const filePath = await resolvePublicFilePath("uploads", parts || []);
   if (!filePath) return new NextResponse("Not found", { status: 404 });
 
   try {
