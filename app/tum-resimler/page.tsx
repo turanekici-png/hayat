@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { GalleryLightboxGrid } from "@/components/GalleryLightboxGrid";
 import { getSectionGroupLabel, getSectionsByType } from "@/lib/site-content";
+import { normalizeMediaUrl } from "@/lib/media-url";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -18,10 +19,11 @@ function mediaItems(section: {
 }) {
   const items = (section.images || [])
     .filter((image) => image.url)
-    .map((image) => ({ id: image.id, src: image.url, alt: image.alt || section.imageAlt || section.title }));
+    .map((image) => ({ id: image.id, src: normalizeMediaUrl(image.url) || image.url, alt: image.alt || section.imageAlt || section.title }));
 
-  if (section.imageUrl && !items.some((item) => item.src === section.imageUrl)) {
-    items.unshift({ id: "cover", src: section.imageUrl, alt: section.imageAlt || section.title });
+  const coverUrl = normalizeMediaUrl(section.imageUrl) || section.imageUrl;
+  if (coverUrl && !items.some((item) => item.src === coverUrl)) {
+    items.unshift({ id: "cover", src: coverUrl, alt: section.imageAlt || section.title });
   }
 
   return items;

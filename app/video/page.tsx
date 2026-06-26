@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { VideoLightboxGrid } from "@/components/VideoLightboxGrid";
 import { getSectionGroupLabel, getSectionsByType } from "@/lib/site-content";
+import { normalizeMediaUrl } from "@/lib/media-url";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -22,10 +23,11 @@ function allMediaItems(section: {
 }) {
   const items = (section.images || [])
     .filter((item) => item.url)
-    .map((item) => ({ id: item.id, src: item.url, title: item.alt || section.imageAlt || section.title }));
+    .map((item) => ({ id: item.id, src: normalizeMediaUrl(item.url) || item.url, title: item.alt || section.imageAlt || section.title }));
 
-  if (section.imageUrl && !items.some((item) => item.src === section.imageUrl)) {
-    items.unshift({ id: "cover", src: section.imageUrl, title: section.imageAlt || section.title });
+  const coverUrl = normalizeMediaUrl(section.imageUrl) || section.imageUrl;
+  if (coverUrl && !items.some((item) => item.src === coverUrl)) {
+    items.unshift({ id: "cover", src: coverUrl, title: section.imageAlt || section.title });
   }
 
   return items;

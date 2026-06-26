@@ -230,7 +230,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-white font-montserrat text-hayat-ink selection:bg-hayat-green/10 selection:text-hayat-green overflow-x-hidden">
-      <HomePopup popup={popup ? { id: popup.id, title: popup.title, content: popup.content, imageUrl: popup.imageUrl, imageAlt: popup.imageAlt, buttonLabel: popup.buttonLabel, buttonUrl: popup.buttonUrl, showOnce: popup.showOnce, delaySeconds: popup.delaySeconds } : null} />
+      <HomePopup popup={popup ? { id: popup.id, title: popup.title, content: popup.content, imageUrl: normalizeMediaUrl(popup.imageUrl) || popup.imageUrl, imageAlt: popup.imageAlt, buttonLabel: popup.buttonLabel, buttonUrl: popup.buttonUrl, showOnce: popup.showOnce, delaySeconds: popup.delaySeconds } : null} />
       <Header />
       
       <main>

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
+import { normalizeMediaUrl } from "@/lib/media-url";
 import { CalendarDays } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +13,8 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
   const section = await prisma.siteSection.findUnique({ where: { id }, include: { images: true } }).catch(() => null);
   if (!section || !section.isActive) notFound();
 
-  const image = Array.isArray(section.images) && section.images.length ? section.images[0].url : section.imageUrl;
+  const rawImage = Array.isArray(section.images) && section.images.length ? section.images[0].url : section.imageUrl;
+  const image = normalizeMediaUrl(rawImage) || rawImage;
 
   return (
     <>
