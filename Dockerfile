@@ -49,4 +49,4 @@ USER nextjs
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run admin:ensure && npm run start"]
+CMD ["npm", "run", "start"]
