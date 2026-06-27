@@ -19,14 +19,45 @@ type SectionType = string;
 
 const uploadDir = publicPath("uploads");
 const allowedUploadExtensions = new Set([".jpg", ".jpeg", ".png", ".mp4", ".webm", ".ogg", ".mov"]);
+const allowedUploadMimeTypes = new Set([
+  "image/jpeg",
+  "image/png",
+  "video/mp4",
+  "video/webm",
+  "video/ogg",
+  "video/quicktime"
+]);
 
-function isAllowedUpload(file: File) {
-  const extension = path.extname(file.name).toLowerCase();
+type UploadedFile = File;
+
+function isUploadedFile(value: FormDataEntryValue | null): value is UploadedFile {
   return (
-    file.type.startsWith("image/") ||
-    file.type.startsWith("video/") ||
-    allowedUploadExtensions.has(extension)
+    typeof value === "object" &&
+    value !== null &&
+    "name" in value &&
+    "size" in value &&
+    "arrayBuffer" in value &&
+    typeof (value as { name?: unknown }).name === "string" &&
+    typeof (value as { size?: unknown }).size === "number" &&
+    typeof (value as { arrayBuffer?: unknown }).arrayBuffer === "function"
   );
+}
+
+function mimeTypeForFilename(filename: string) {
+  const extension = path.extname(filename).toLowerCase();
+  if (extension === ".jpg" || extension === ".jpeg") return "image/jpeg";
+  if (extension === ".png") return "image/png";
+  if (extension === ".mp4") return "video/mp4";
+  if (extension === ".webm") return "video/webm";
+  if (extension === ".ogg") return "video/ogg";
+  if (extension === ".mov") return "video/quicktime";
+  return "application/octet-stream";
+}
+
+function isAllowedUpload(file: UploadedFile) {
+  const extension = path.extname(file.name).toLowerCase();
+  const mimeType = file.type?.toLowerCase() || mimeTypeForFilename(file.name);
+  return allowedUploadExtensions.has(extension) && allowedUploadMimeTypes.has(mimeType);
 }
 
 function safeUploadFilename(fileName: string, prefix?: string) {
@@ -229,7 +260,7 @@ function sectionPayload(formData: FormData) {
   };
 }
 
-async function saveUploadedSectionImage(sectionId: string, file: File, sortOrder: number) {
+async function saveUploadedSectionImage(sectionId: string, file: UploadedFile, sortOrder: number) {
   if (!isAllowedUpload(file) || file.size === 0) return;
   if (file.size > 80 * 1024 * 1024) return;
 
@@ -240,7 +271,7 @@ async function saveUploadedSectionImage(sectionId: string, file: File, sortOrder
     const media = await createDatabaseMediaAsset({
       title: file.name,
       filename,
-      mimeType: file.type || "application/octet-stream",
+      mimeType: file.type || mimeTypeForFilename(file.name),
       size: file.size,
       content: bytes
     });
@@ -308,7 +339,7 @@ async function syncSectionImages(sectionId: string, formData: FormData) {
     });
   }
 
-  const uploadedFiles = formData.getAll("newSectionImageFiles").filter((value): value is File => value instanceof File && value.size > 0);
+  const uploadedFiles = formData.getAll("newSectionImageFiles").filter((value): value is UploadedFile => isUploadedFile(value) && value.size > 0);
   const currentCount = await prisma.siteSectionImage.count({ where: { sectionId } });
   for (let index = 0; index < uploadedFiles.length; index += 1) {
     await saveUploadedSectionImage(sectionId, uploadedFiles[index], currentCount + index + 1);
@@ -586,7 +617,7 @@ export async function uploadMedia(formData: FormData) {
   let redirectTo = "/admin?sayfa=medya&medyaDurum=ok#medya";
   const file = formData.get("file");
   try {
-    if (!(file instanceof File) || file.size === 0) {
+    if (!isUploadedFile(file) || file.size === 0) {
       redirectTo = "/admin?sayfa=medya&medyaHata=Dosya%20se%C3%A7ilemedi#medya";
     } else if (!isAllowedUpload(file)) {
       redirectTo = "/admin?sayfa=medya&medyaHata=Sadece%20JPG%2C%20PNG%20ve%20video%20dosyalar%C4%B1%20y%C3%BCkleyin#medya";
@@ -599,7 +630,7 @@ export async function uploadMedia(formData: FormData) {
       await createDatabaseMediaAsset({
         title: textValue(formData, "title"),
         filename,
-        mimeType: file.type || "application/octet-stream",
+        mimeType: file.type || mimeTypeForFilename(file.name),
         size: file.size,
         content: bytes
       });

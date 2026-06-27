@@ -153,7 +153,7 @@ function SectionEditor({ section, media }: { section: SiteSectionWithImages; med
       </summary>
 
       <div className="bg-white p-6">
-        <form action={updateSection} className="space-y-8">
+        <form action={updateSection} encType="multipart/form-data" className="space-y-8">
           <input type="hidden" name="id" value={section.id} />
           <input type="hidden" name="type" value={section.type} />
           
@@ -704,7 +704,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                   <p className="mt-2 text-slate-500">Yüklediğiniz medyalar, alanlardaki Medya Seç penceresinde otomatik listelenir.</p>
                   {mediaError && <p className="mt-4 rounded-2xl border border-red-100 bg-red-50 p-3 text-sm font-bold text-red-700">{mediaError}</p>}
                   {mediaStatus === "ok" && <p className="mt-4 rounded-2xl border border-green-100 bg-green-50 p-3 text-sm font-bold text-green-700">Medya başarıyla yüklendi.</p>}
-                  <form action={uploadMedia} className="mt-5 space-y-3">
+                  <form action={uploadMedia} encType="multipart/form-data" className="mt-5 space-y-3">
                     <input name="title" placeholder="Medya başlığı" className="w-full rounded-2xl border p-3" />
                     <input name="file" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png,video/mp4,video/webm,video/ogg,video/quicktime" required className="w-full rounded-2xl border p-3" />
                     <button className="w-full rounded-2xl bg-hayat-blue px-6 py-3 font-black text-white"><ImagePlus className="mr-2 inline" size={18} /> Medya Yükle</button>
