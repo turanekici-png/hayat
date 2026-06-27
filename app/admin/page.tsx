@@ -17,13 +17,13 @@ import {
   updateDonationType,
   updateDonationTypesBulk,
   updateAdminUser,
-  updateSection,
-  uploadMedia
+  updateSection
 } from "./actions";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AdminNavLink } from "./AdminNavLink";
 import { MediaField } from "./MediaField";
+import { MediaLibraryUploader, SectionMediaUploader } from "./MediaUploadClient";
 import { normalizeMediaUrl } from "@/lib/media-url";
 import {
   Building2,
@@ -153,7 +153,7 @@ function SectionEditor({ section, media }: { section: SiteSectionWithImages; med
       </summary>
 
       <div className="bg-white p-6">
-        <form action={updateSection} encType="multipart/form-data" className="space-y-8">
+        <form action={updateSection} className="space-y-8">
           <input type="hidden" name="id" value={section.id} />
           <input type="hidden" name="type" value={section.type} />
           
@@ -216,11 +216,7 @@ function SectionEditor({ section, media }: { section: SiteSectionWithImages; med
                 <label className="mt-6 flex items-center gap-2 rounded-xl bg-red-50 px-3 py-3 font-bold text-red-700 md:col-span-2"><input name="sectionImageDeleteId" type="checkbox" value={image.id} /> Sil</label>
               </div>
             ))}
-            <label className="block rounded-xl border-2 border-dashed border-hayat-green/30 bg-hayat-soft p-4 font-bold text-slate-700">
-              Bu alanın kendi medya kütüphanesine resim/video yükle
-              <input name="newSectionImageFiles" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png,video/mp4,video/webm,video/ogg,video/quicktime" multiple className="mt-3 w-full rounded-xl bg-white p-3 font-normal" />
-              <span className="mt-2 block text-xs font-normal text-slate-500">Seçilen dosyalar sadece bu alanın medya listesine kaydedilir.</span>
-            </label>
+            <SectionMediaUploader prefix={section.id.slice(0, 6)} startOrder={section.images.length + 1} />
             {!isMediaOnly && [0, 1, 2].map((index) => (
               <div key={`new-image-${section.id}-${index}`} className="grid gap-3 rounded-xl border border-dashed border-slate-200 bg-white p-3 md:grid-cols-12">
                 <label className="text-sm font-bold text-slate-600 md:col-span-5">Yeni medya yolu<MediaField name="newSectionImageUrl" placeholder="/uploads/medya.jpg" media={media} /></label>
@@ -704,11 +700,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                   <p className="mt-2 text-slate-500">Yüklediğiniz medyalar, alanlardaki Medya Seç penceresinde otomatik listelenir.</p>
                   {mediaError && <p className="mt-4 rounded-2xl border border-red-100 bg-red-50 p-3 text-sm font-bold text-red-700">{mediaError}</p>}
                   {mediaStatus === "ok" && <p className="mt-4 rounded-2xl border border-green-100 bg-green-50 p-3 text-sm font-bold text-green-700">Medya başarıyla yüklendi.</p>}
-                  <form action={uploadMedia} encType="multipart/form-data" className="mt-5 space-y-3">
-                    <input name="title" placeholder="Medya başlığı" className="w-full rounded-2xl border p-3" />
-                    <input name="file" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png,video/mp4,video/webm,video/ogg,video/quicktime" required className="w-full rounded-2xl border p-3" />
-                    <button className="w-full rounded-2xl bg-hayat-blue px-6 py-3 font-black text-white"><ImagePlus className="mr-2 inline" size={18} /> Medya Yükle</button>
-                  </form>
+                  <MediaLibraryUploader />
                 </div>
                 <div className="rounded-[1.4rem] bg-white p-4 shadow-sm">
                   <h2 className="flex items-center gap-2 text-2xl font-black text-hayat-dark"><LibraryBig className="text-hayat-green" /> Medya kütüphanesi</h2>
