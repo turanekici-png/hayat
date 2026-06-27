@@ -84,7 +84,7 @@ async function createDatabaseMediaAsset({
       filename,
       mimeType,
       size,
-      content
+      content: new Uint8Array(content)
     }
   });
   const url = `/api/media/${media.id}/${encodeURIComponent(filename)}`;
