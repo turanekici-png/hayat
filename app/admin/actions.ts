@@ -5,7 +5,7 @@ import { ensureDefaultDonationTypes } from "@/lib/donation-types";
 import { ensureManagedSectionsOnce, fallbackSections } from "@/lib/site-content";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { mkdir, writeFile, unlink } from "fs/promises";
+import { unlink } from "fs/promises";
 import { sendSms } from "@/lib/sms";
 import { publicPath } from "@/lib/public-files";
 import path from "path";
@@ -17,7 +17,6 @@ type SectionLayout = string;
 type SectionTheme = string;
 type SectionType = string;
 
-const uploadDir = publicPath("uploads");
 const allowedUploadExtensions = new Set([".jpg", ".jpeg", ".png", ".mp4", ".webm", ".ogg", ".mov"]);
 const allowedUploadMimeTypes = new Set([
   "image/jpeg",
@@ -65,15 +64,6 @@ function safeUploadFilename(fileName: string, prefix?: string) {
   return `${Date.now()}-${prefix ? `${prefix}-` : ""}${safeName}`;
 }
 
-async function writeUploadFallback(filename: string, bytes: Buffer) {
-  try {
-    await mkdir(uploadDir, { recursive: true });
-    await writeFile(path.join(uploadDir, filename), bytes);
-  } catch (error) {
-    console.error("writeUploadFallback failed", error);
-  }
-}
-
 async function createDatabaseMediaAsset({
   title,
   filename,
@@ -94,7 +84,7 @@ async function createDatabaseMediaAsset({
       filename,
       mimeType,
       size,
-      content: new Uint8Array(content)
+      content
     }
   });
   const url = `/api/media/${media.id}/${encodeURIComponent(filename)}`;
@@ -267,7 +257,6 @@ async function saveUploadedSectionImage(sectionId: string, file: UploadedFile, s
   try {
     const bytes = Buffer.from(await file.arrayBuffer());
     const filename = safeUploadFilename(file.name, sectionId.slice(0, 6));
-    await writeUploadFallback(filename, bytes);
     const media = await createDatabaseMediaAsset({
       title: file.name,
       filename,
@@ -626,7 +615,6 @@ export async function uploadMedia(formData: FormData) {
     } else {
       const bytes = Buffer.from(await file.arrayBuffer());
       const filename = safeUploadFilename(file.name);
-      await writeUploadFallback(filename, bytes);
       await createDatabaseMediaAsset({
         title: textValue(formData, "title"),
         filename,
