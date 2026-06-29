@@ -198,6 +198,38 @@ footer h3 {
   }
 }
 
+@media (min-width: 1024px) {
+  .quick-donation-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .quick-donation-side .quick-donation-heading {
+    text-align: left;
+  }
+
+  .quick-donation-side .quick-donation-title {
+    font-size: 1.7rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .quick-donation-side .quick-donation-subtitle {
+    font-size: 0.9rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .quick-donation-side .quick-donation-form {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .quick-donation-side .quick-donation-button {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
 @media (max-width: 768px) {
   .quick-donation-section {
     padding: 0.45rem 0.75rem !important;

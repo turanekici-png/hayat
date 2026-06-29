@@ -227,6 +227,30 @@ export default async function HomePage() {
     sectionText((item.title || "").replace(/Kısayolu|Kisayolu/gi, "").trim(), item.body || "Bağış"),
     item.href || "/bagis"
   ]);
+  const renderQuickDonation = (sidePanel = false) => (
+    <div className={`quick-donation-card ${sidePanel ? "quick-donation-side h-full" : ""} mx-auto ${quickDonation?.contentWidth === "full" && !sidePanel ? "w-full max-w-none" : sidePanel ? "w-full" : "max-w-[1840px]"} rounded-lg border border-white/25 bg-hayat-green p-4 shadow-green sm:p-6 md:p-8`} style={cardStyle(quickDonation, { backgroundColor: "#6FB744", borderRadius: 8, padding: 24 })}>
+      <div className="quick-donation-heading mb-6 text-center">
+        <h2 className="quick-donation-title text-2xl font-black leading-tight text-white md:text-3xl" style={quickDonation ? headingStyle(quickDonation, "#ffffff", 32) : undefined}>{quickDonation?.title || "Hızlı Bağış"}</h2>
+        {quickDonation?.subtitle && <p className="quick-donation-subtitle mt-2 text-sm font-bold text-white/85" style={quickDonation ? subtitleStyle(quickDonation, "rgba(255,255,255,.85)", 15) : undefined}>{quickDonation.subtitle}</p>}
+      </div>
+      <form action="/bagis" method="GET" className="quick-donation-form grid gap-5 md:grid-cols-[1.15fr_1.15fr_auto]">
+        <select name="type" className="quick-donation-control h-14 rounded-md border border-white/30 bg-white px-5 text-sm font-black text-hayat-ink outline-hayat-blue shadow-stk">
+          {donationTypes.length > 0 ? donationTypes.map((type) => (
+            <option key={type.code} value={type.code}>{type.label}</option>
+          )) : (
+            <option value="GENEL">Genel Bağış</option>
+          )}
+        </select>
+        <div className="relative">
+          <input required name="amount" type="number" min="1" step="0.01" placeholder="0" className="quick-donation-control h-14 w-full rounded-md border border-white/30 bg-white px-5 pr-14 text-sm font-black text-hayat-ink outline-hayat-blue shadow-stk" />
+          <span className="quick-donation-currency absolute right-5 top-1/2 -translate-y-1/2 text-sm font-black text-hayat-ink">₺</span>
+        </div>
+        <button type="submit" className="quick-donation-button inline-flex h-14 w-full items-center justify-center gap-2 rounded-md bg-hayat-dark px-6 text-sm font-black text-white shadow-stk transition hover:bg-hayat-blue md:w-auto md:min-w-[220px] md:px-8">
+          <Heart size={16} fill="currentColor" /> {quickDonation?.buttonLabel || "Şimdi Destek Ol"}
+        </button>
+      </form>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-white font-montserrat text-hayat-ink selection:bg-hayat-green/10 selection:text-hayat-green overflow-x-hidden">
@@ -237,37 +261,21 @@ export default async function HomePage() {
         {/* 1. NEWS WELCOME */}
         {heroNewsItems.length > 0 && (
           <section className="relative overflow-hidden border-b border-[#d5e4ec]" style={{ backgroundColor: heroNewsLead?.backgroundColor || "#eef5f8", paddingTop: `${heroNewsLead?.paddingY || 0}px`, paddingBottom: `${heroNewsLead?.paddingY || 0}px` }}>
-            <div className={`mx-auto ${heroNewsLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"} px-3 py-1 sm:px-4 lg:px-4`}>
-              <ActivityShowcaseSlider items={heroNewsItems} defaultHref="/haberler" defaultButtonLabel="Haberi İncele" dotLabel="haber" showDefaultButton splitMedia showBody={false} />
+            <div className={`mx-auto grid ${heroNewsLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"} items-stretch gap-4 px-3 py-1 sm:px-4 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-4 xl:grid-cols-[minmax(0,1fr)_400px] 2xl:grid-cols-[minmax(0,1fr)_430px]`}>
+              <div className="min-w-0">
+                <ActivityShowcaseSlider items={heroNewsItems} defaultHref="/haberler" defaultButtonLabel="Haberi İncele" dotLabel="haber" showDefaultButton splitMedia showBody={false} />
+              </div>
+              {renderQuickDonation(true)}
             </div>
           </section>
         )}
 
-        {/* 2. QUICK DONATION OVERLAY */}
-        <section className="quick-donation-section px-3 sm:px-4 lg:px-4" style={{ backgroundColor: quickDonation?.backgroundColor || "#eef5f8", paddingTop: 12, paddingBottom: 12 }}>
-          <div className={`quick-donation-card mx-auto ${quickDonation?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"} rounded-lg border border-white/25 bg-hayat-green p-4 shadow-green sm:p-6 md:p-8`} style={cardStyle(quickDonation, { backgroundColor: "#6FB744", borderRadius: 8, padding: 24 })}>
-            <div className="quick-donation-heading mb-6 text-center">
-              <h2 className="quick-donation-title text-2xl font-black leading-tight text-white md:text-3xl" style={quickDonation ? headingStyle(quickDonation, "#ffffff", 32) : undefined}>{quickDonation?.title || "Hızlı Bağış"}</h2>
-              {quickDonation?.subtitle && <p className="quick-donation-subtitle mt-2 text-sm font-bold text-white/85" style={quickDonation ? subtitleStyle(quickDonation, "rgba(255,255,255,.85)", 15) : undefined}>{quickDonation.subtitle}</p>}
-            </div>
-            <form action="/bagis" method="GET" className="quick-donation-form grid gap-5 md:grid-cols-[1.15fr_1.15fr_auto]">
-              <select name="type" className="quick-donation-control h-14 rounded-md border border-white/30 bg-white px-5 text-sm font-black text-hayat-ink outline-hayat-blue shadow-stk">
-                {donationTypes.length > 0 ? donationTypes.map((type) => (
-                  <option key={type.code} value={type.code}>{type.label}</option>
-                )) : (
-                  <option value="GENEL">Genel Bağış</option>
-                )}
-              </select>
-              <div className="relative">
-                <input required name="amount" type="number" min="1" step="0.01" placeholder="0" className="quick-donation-control h-14 w-full rounded-md border border-white/30 bg-white px-5 pr-14 text-sm font-black text-hayat-ink outline-hayat-blue shadow-stk" />
-                <span className="quick-donation-currency absolute right-5 top-1/2 -translate-y-1/2 text-sm font-black text-hayat-ink">₺</span>
-              </div>
-              <button type="submit" className="quick-donation-button inline-flex h-14 w-full items-center justify-center gap-2 rounded-md bg-hayat-dark px-6 text-sm font-black text-white shadow-stk transition hover:bg-hayat-blue md:w-auto md:min-w-[220px] md:px-8">
-                <Heart size={16} fill="currentColor" /> {quickDonation?.buttonLabel || "Şimdi Destek Ol"}
-              </button>
-            </form>
-          </div>
-        </section>
+        {/* 2. QUICK DONATION FALLBACK */}
+        {heroNewsItems.length === 0 && (
+          <section className="quick-donation-section px-3 sm:px-4 lg:px-4" style={{ backgroundColor: quickDonation?.backgroundColor || "#eef5f8", paddingTop: 12, paddingBottom: 12 }}>
+            {renderQuickDonation()}
+          </section>
+        )}
 
         {/* 3. DONATION SHORTCUTS */}
         {donationShortcuts.length > 0 && (
