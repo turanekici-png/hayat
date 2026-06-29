@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+﻿﻿import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import {
   createSection,
@@ -708,9 +708,9 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                     {safeMedia.map((m) => (
                       <div key={m.id} className="rounded-2xl border bg-slate-50 p-2">
                         {isVideoMedia(m.url, m.mimeType) ? (
-                          <video src={m.url} className="h-28 w-full rounded-xl object-cover" controls preload="metadata" />
+                          <video src={m.url} className="h-28 w-full rounded-xl object-contain" controls preload="metadata" />
                         ) : (
-                          <img src={m.url} alt={m.title || m.filename} loading="lazy" decoding="async" className="h-28 w-full rounded-xl object-cover" />
+                          <img src={m.url} alt={m.title || m.filename} loading="lazy" decoding="async" className="h-28 w-full rounded-xl object-contain" />
                         )}
                         <p className="mt-2 break-all rounded-xl bg-white p-2 text-xs font-bold text-slate-600">{m.url}</p>
                         <form action={deleteMedia} className="mt-2"><input type="hidden" name="id" value={m.id} /><button className="w-full rounded-xl bg-red-50 px-3 py-2 text-xs font-black text-red-600">Medyayı Sil</button></form>
@@ -801,4 +801,3 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
     </>
   );
 }
-
