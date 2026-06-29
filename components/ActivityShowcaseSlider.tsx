@@ -1,4 +1,4 @@
-﻿"use client";
+﻿﻿"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -135,7 +135,7 @@ export function ActivityShowcaseSlider({
               loading={active === 0 ? "eager" : "lazy"}
               decoding="async"
               fetchPriority={active === 0 ? "high" : "auto"}
-              className={`block h-full w-full bg-white object-center ${mediaWide ? "object-contain" : "object-cover"}`}
+              className={`block h-full w-full bg-white object-center object-contain`}
             />
           ) : (
             <div className="h-full w-full bg-[#eef5f8]" />
