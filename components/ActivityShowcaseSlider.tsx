@@ -92,9 +92,9 @@ export function ActivityShowcaseSlider({
 
   if (splitMedia) {
     return (
-      <div className="relative grid min-h-[360px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk lg:min-h-[560px] lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="z-10 flex items-center bg-white px-6 py-8 sm:px-10 lg:px-12">
-          <div className="max-w-[540px]">
+      <div className="relative grid min-h-[460px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:min-h-[540px] lg:min-h-[680px] lg:grid-cols-[0.72fr_1.28fr]">
+        <div className="z-10 flex items-center bg-white px-6 py-9 sm:px-10 lg:px-10">
+          <div className="max-w-[430px]">
             {(current.badge || current.subtitle) && (
               <div className="mb-4 inline-flex w-fit items-center rounded-md border border-hayat-border bg-hayat-soft px-3 py-2 text-[10px] font-black uppercase text-hayat-green shadow-stk sm:px-4 sm:py-2.5 sm:text-[11px]">
                 <span style={subtitleStyle(current)}>{current.badge || current.subtitle}</span>
@@ -122,7 +122,7 @@ export function ActivityShowcaseSlider({
           </div>
         </div>
 
-        <div className="relative min-h-[240px] bg-hayat-soft sm:min-h-[320px] lg:min-h-0">
+        <div className="relative min-h-[300px] bg-hayat-soft sm:min-h-[380px] lg:min-h-0">
           {activeImage ? (
             <img
               key={`${current.id}-${activeImage.src}`}
