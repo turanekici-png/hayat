@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { serializeBankAccountsContent, type BankAccount } from "@/lib/bank-accounts";
+import { defaultIbanLabels, serializeBankAccountsContent, type BankAccount } from "@/lib/bank-accounts";
 
 function textValue(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -22,7 +22,9 @@ export async function saveBankAccountsPage(formData: FormData) {
   const banks = textValues(formData, "bank");
   const branches = textValues(formData, "branch");
   const accountNames = textValues(formData, "accountName");
-  const ibans = textValues(formData, "iban");
+  const tlIbans = textValues(formData, "tlIban");
+  const euroIbans = textValues(formData, "euroIban");
+  const dolarIbans = textValues(formData, "dolarIban");
   const types = textValues(formData, "type");
   const descriptions = textValues(formData, "description");
 
@@ -30,10 +32,14 @@ export async function saveBankAccountsPage(formData: FormData) {
     bank,
     branch: branches[index] || "",
     accountName: accountNames[index] || "",
-    iban: ibans[index] || "",
     type: types[index] || "",
-    description: descriptions[index] || ""
-  })).filter((account) => account.bank || account.iban || account.type || account.description);
+    description: descriptions[index] || "",
+    ibans: [
+      { label: defaultIbanLabels[0], iban: tlIbans[index] || "" },
+      { label: defaultIbanLabels[1], iban: euroIbans[index] || "" },
+      { label: defaultIbanLabels[2], iban: dolarIbans[index] || "" }
+    ]
+  })).filter((account) => account.bank || account.ibans.some((iban) => iban.iban) || account.type || account.description);
 
   const content = serializeBankAccountsContent({ note, accounts });
 

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Building2 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { CopyIbanButton } from "@/components/CopyIbanButton";
 import { prisma } from "@/lib/prisma";
 import { defaultBankAccounts, parseBankAccountsContent } from "@/lib/bank-accounts";
 
@@ -50,8 +51,8 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
   return (
     <>
       <Header />
-      <main className="bg-hayat-soft px-4 py-12 sm:px-6">
-        <article className="mx-auto max-w-[1180px]">
+      <main className="bg-hayat-soft px-3 py-12 sm:px-4 lg:px-4">
+        <article className="mx-auto max-w-[1840px]">
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-[13px] font-black uppercase text-hayat-green">{label}</p>
@@ -67,14 +68,21 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
           {isBankPage && (
             <div className="mt-8 grid gap-5 md:grid-cols-3">
               {bankAccounts.map((account, index) => (
-                <div key={`${account.iban}-${index}`} className="rounded-[20px] border border-hayat-border bg-white p-6 shadow-stk">
+                <div key={`${account.bank}-${index}`} className="rounded-[20px] border border-hayat-border bg-white p-6 shadow-stk">
                   <p className="text-xs font-black uppercase text-hayat-green">{account.type || "Banka Hesabı"}</p>
                   <h2 className="mt-3 text-xl font-black text-hayat-dark">{account.bank || "Banka adı girilmedi"}</h2>
                   {account.branch && <p className="mt-1 text-sm font-bold text-[#5d6b70]">{account.branch}</p>}
                   {account.accountName && <p className="mt-3 text-sm font-black text-hayat-dark">{account.accountName}</p>}
-                  <div className="mt-5 rounded-[14px] border border-hayat-border bg-hayat-soft p-4">
-                    <p className="text-xs font-black uppercase text-[#5d6b70]">IBAN</p>
-                    <p className="mt-2 break-words font-black leading-7 text-hayat-dark">{account.iban || "TR..."}</p>
+                  <div className="mt-5 space-y-3">
+                    {account.ibans.map((iban) => (
+                      <div key={iban.label} className="rounded-[14px] border border-hayat-border bg-hayat-soft p-4">
+                        <div className="mb-2 flex items-center justify-between gap-3">
+                          <p className="text-xs font-black uppercase text-[#5d6b70]">{iban.label}</p>
+                          {iban.iban && <CopyIbanButton value={iban.iban} />}
+                        </div>
+                        <p className="break-words font-black leading-7 text-hayat-dark">{iban.iban || "TR..."}</p>
+                      </div>
+                    ))}
                   </div>
                   {account.description && <p className="mt-4 text-sm font-semibold leading-6 text-[#5d6b70]">{account.description}</p>}
                 </div>

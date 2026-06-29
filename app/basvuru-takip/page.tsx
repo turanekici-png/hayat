@@ -31,8 +31,8 @@ export default async function ApplicationTrackPage({ searchParams }: { searchPar
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-hayat-soft py-12">
-        <div className="mx-auto max-w-4xl px-5">
+      <main className="min-h-screen bg-hayat-soft px-3 py-12 sm:px-4 lg:px-4">
+        <div className="mx-auto max-w-[1840px]">
           <section className="rounded-[2rem] bg-white p-6 shadow-soft md:p-8">
             <div className="flex items-center gap-3">
               <span className="grid h-12 w-12 place-items-center rounded-2xl bg-hayat-green text-white"><SearchCheck /></span>

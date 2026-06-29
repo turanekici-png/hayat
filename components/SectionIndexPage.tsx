@@ -64,8 +64,8 @@ export async function SectionIndexPage({
     <>
       <Header />
       <main className="bg-hayat-soft">
-        <section className="border-b border-hayat-border bg-hayat-soft px-4 py-10 sm:px-6 sm:py-14">
-          <div className="mx-auto flex max-w-[1180px] flex-col gap-7 md:flex-row md:items-end md:justify-between">
+        <section className="border-b border-hayat-border bg-hayat-soft px-3 py-10 sm:px-4 sm:py-14 lg:px-4">
+          <div className="mx-auto flex max-w-[1840px] flex-col gap-7 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-[13px] font-black uppercase text-hayat-green">{eyebrow}</p>
               <h1 className="mt-3 max-w-4xl text-[34px] font-black leading-tight text-hayat-dark sm:text-[44px] md:text-[52px]">{pageTitle}</h1>
@@ -79,8 +79,8 @@ export async function SectionIndexPage({
         </section>
 
         {featured && (
-          <section className="px-4 py-8 sm:px-6 sm:py-12">
-            <div className="mx-auto grid max-w-[1180px] overflow-hidden rounded-[20px] border border-hayat-border bg-white shadow-stk lg:grid-cols-[1fr_1fr]">
+          <section className="px-3 py-8 sm:px-4 sm:py-12 lg:px-4">
+            <div className="mx-auto grid max-w-[1840px] overflow-hidden rounded-[20px] border border-hayat-border bg-white shadow-stk lg:grid-cols-[1fr_1fr]">
               <div className="min-h-[260px] bg-hayat-soft sm:min-h-[340px]">
                 {sectionImages(featured)[0] ? (
                   <img src={sectionImages(featured)[0].src} alt={sectionImages(featured)[0].alt} loading="eager" decoding="async" fetchPriority="high" className="h-full min-h-[260px] w-full bg-white object-cover sm:min-h-[340px]" />
@@ -109,8 +109,8 @@ export async function SectionIndexPage({
           </section>
         )}
 
-        <section className={`px-4 ${featured ? "pb-16" : "py-16"} sm:px-6`}>
-          <div className="mx-auto grid max-w-[1180px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <section className={`px-3 ${featured ? "pb-16" : "py-16"} sm:px-4 lg:px-4`}>
+          <div className="mx-auto grid max-w-[1840px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => {
               const image = sectionImages(item)[0];
               const linkHref = item.href || (item.type === "NEWS" ? `/haberler/${item.id}` : undefined);

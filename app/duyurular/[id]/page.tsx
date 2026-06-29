@@ -16,7 +16,7 @@ export default async function AnnouncementDetailPage({ params }: { params: Promi
     <>
       <Header />
       <main className="bg-hayat-soft px-3 py-14 sm:px-4 lg:px-4">
-        <article className="mx-auto max-w-5xl rounded-[2rem] bg-white p-6 shadow-soft md:p-10">
+        <article className="mx-auto max-w-[1840px] rounded-[2rem] bg-white p-6 shadow-soft md:p-10">
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <div>
               <p className="font-black uppercase tracking-[.22em] text-hayat-green">{ann.type === "ACIL" ? "Acil" : ann.type === "KAMPANYA" ? "Kampanya" : ann.type === "HABER" ? "Haber" : "Duyuru"}</p>

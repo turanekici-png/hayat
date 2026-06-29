@@ -2,26 +2,46 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import type { BankAccount } from "@/lib/bank-accounts";
+import { defaultIbanLabels, type BankAccount } from "@/lib/bank-accounts";
 
 const emptyAccount: BankAccount = {
   bank: "",
   branch: "",
   accountName: "Hayat Ağacı Derneği",
-  iban: "",
   type: "",
-  description: ""
+  description: "",
+  ibans: defaultIbanLabels.map((label) => ({ label, iban: "" }))
 };
 
-export function BankAccountsEditor({ accounts }: { accounts: BankAccount[] }) {
-  const [rows, setRows] = useState<BankAccount[]>(accounts.length ? accounts : [{ ...emptyAccount }]);
+function withMinimumIbans(account: BankAccount): BankAccount {
+  return {
+    ...account,
+    ibans: defaultIbanLabels.map((label, index) => ({
+      label: account.ibans?.[index]?.label || label,
+      iban: account.ibans?.[index]?.iban || ""
+    }))
+  };
+}
 
-  function update(index: number, key: keyof BankAccount, value: string) {
+export function BankAccountsEditor({ accounts }: { accounts: BankAccount[] }) {
+  const [rows, setRows] = useState<BankAccount[]>(accounts.length ? accounts.map(withMinimumIbans) : [{ ...emptyAccount }]);
+
+  function update(index: number, key: keyof Omit<BankAccount, "ibans">, value: string) {
     setRows((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, [key]: value } : row));
   }
 
+  function updateIban(accountIndex: number, ibanIndex: number, value: string) {
+    setRows((current) => current.map((row, rowIndex) => {
+      if (rowIndex !== accountIndex) return row;
+      return {
+        ...row,
+        ibans: row.ibans.map((iban, currentIbanIndex) => currentIbanIndex === ibanIndex ? { ...iban, iban: value } : iban)
+      };
+    }));
+  }
+
   function addRow() {
-    setRows((current) => [...current, { ...emptyAccount }]);
+    setRows((current) => [...current, { ...emptyAccount, ibans: defaultIbanLabels.map((label) => ({ label, iban: "" })) }]);
   }
 
   function removeRow(index: number) {
@@ -33,17 +53,17 @@ export function BankAccountsEditor({ accounts }: { accounts: BankAccount[] }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-black text-hayat-dark">Banka hesapları</h2>
-          <p className="mt-1 text-sm font-bold text-[#5d6b70]">Her banka hesabını ayrı kart olarak girin; boş kartlar kaydedilmez.</p>
+          <p className="mt-1 text-sm font-bold text-[#5d6b70]">Her banka için TL, Euro ve Dolar IBAN bilgilerini ayrı ayrı girin.</p>
         </div>
         <button type="button" onClick={addRow} className="inline-flex items-center gap-2 rounded-[14px] bg-hayat-blue px-4 py-3 text-sm font-black text-white shadow-stk">
-          <Plus size={17} /> Hesap Ekle
+          <Plus size={17} /> Banka Ekle
         </button>
       </div>
 
       {rows.map((row, index) => (
         <div key={index} className="rounded-[20px] border border-hayat-border bg-hayat-soft p-4">
           <div className="mb-4 flex items-center justify-between gap-3">
-            <p className="text-sm font-black text-hayat-dark">Hesap {index + 1}</p>
+            <p className="text-sm font-black text-hayat-dark">Banka {index + 1}</p>
             <button type="button" onClick={() => removeRow(index)} className="inline-flex items-center gap-1 rounded-[12px] bg-red-50 px-3 py-2 text-xs font-black text-red-600">
               <Trash2 size={14} /> Sil
             </button>
@@ -63,17 +83,22 @@ export function BankAccountsEditor({ accounts }: { accounts: BankAccount[] }) {
               <input name="accountName" value={row.accountName || ""} onChange={(event) => update(index, "accountName", event.target.value)} className="mt-2 w-full rounded-[14px] border border-hayat-border bg-white p-3 font-bold text-hayat-dark outline-hayat-blue" placeholder="Hayat Ağacı Derneği" />
             </label>
             <label className="text-sm font-black text-[#5d6b70]">
-              Bağış Türü
+              Bağış Türü / Grup
               <input name="type" value={row.type || ""} onChange={(event) => update(index, "type", event.target.value)} className="mt-2 w-full rounded-[14px] border border-hayat-border bg-white p-3 font-bold text-hayat-dark outline-hayat-blue" placeholder="Genel Bağış" />
-            </label>
-            <label className="text-sm font-black text-[#5d6b70] md:col-span-2">
-              IBAN
-              <input name="iban" value={row.iban} onChange={(event) => update(index, "iban", event.target.value)} className="mt-2 w-full rounded-[14px] border border-hayat-border bg-white p-3 font-mono text-sm font-black text-hayat-dark outline-hayat-blue" placeholder="TR..." />
             </label>
             <label className="text-sm font-black text-[#5d6b70] md:col-span-2">
               Açıklama
               <input name="description" value={row.description || ""} onChange={(event) => update(index, "description", event.target.value)} className="mt-2 w-full rounded-[14px] border border-hayat-border bg-white p-3 font-bold text-hayat-dark outline-hayat-blue" placeholder="Açıklama kodu, hesap açıklaması veya özel not" />
             </label>
+          </div>
+
+          <div className="mt-4 grid gap-3">
+            {row.ibans.map((iban, ibanIndex) => (
+              <label key={iban.label} className="grid gap-2 rounded-[16px] border border-hayat-border bg-white p-3 text-sm font-black text-[#5d6b70] md:grid-cols-[160px_1fr] md:items-center">
+                <span>{iban.label}</span>
+                <input name={ibanIndex === 0 ? "tlIban" : ibanIndex === 1 ? "euroIban" : "dolarIban"} value={iban.iban} onChange={(event) => updateIban(index, ibanIndex, event.target.value)} className="w-full rounded-[12px] border border-hayat-border bg-hayat-soft p-3 font-mono text-sm font-black text-hayat-dark outline-hayat-blue" placeholder="TR..." />
+              </label>
+            ))}
           </div>
         </div>
       ))}

@@ -1,10 +1,15 @@
+export type BankIban = {
+  label: string;
+  iban: string;
+};
+
 export type BankAccount = {
   bank: string;
   branch?: string;
   accountName?: string;
-  iban: string;
   type?: string;
   description?: string;
+  ibans: BankIban[];
 };
 
 export type BankAccountsContent = {
@@ -12,10 +17,42 @@ export type BankAccountsContent = {
   accounts: BankAccount[];
 };
 
+export const defaultIbanLabels = ["TL Hesabı", "Euro Hesabı", "Dolar Hesabı"];
+
 export const defaultBankAccounts: BankAccount[] = [
-  { bank: "T.C. Ziraat Bankası", branch: "Sivas Merkez Şubesi", accountName: "Hayat Ağacı Derneği", iban: "TR12 0001 0000 0000 0000 0000 01", type: "Genel Bağış" },
-  { bank: "VakıfBank", branch: "Sivas Şubesi", accountName: "Hayat Ağacı Derneği", iban: "TR34 0001 5000 0000 0000 0000 02", type: "Zekat & Fitre" },
-  { bank: "Halkbank", branch: "Sivas Şubesi", accountName: "Hayat Ağacı Derneği", iban: "TR56 0001 2000 0000 0000 0000 03", type: "Kurban" }
+  {
+    bank: "T.C. Ziraat Bankası",
+    branch: "Sivas Merkez Şubesi",
+    accountName: "Hayat Ağacı Derneği",
+    type: "Genel Bağış",
+    ibans: [
+      { label: "TL Hesabı", iban: "TR12 0001 0000 0000 0000 0000 01" },
+      { label: "Euro Hesabı", iban: "TR12 0001 0000 0000 0000 0000 02" },
+      { label: "Dolar Hesabı", iban: "TR12 0001 0000 0000 0000 0000 03" }
+    ]
+  },
+  {
+    bank: "VakıfBank",
+    branch: "Sivas Şubesi",
+    accountName: "Hayat Ağacı Derneği",
+    type: "Zekat & Fitre",
+    ibans: [
+      { label: "TL Hesabı", iban: "TR34 0001 5000 0000 0000 0000 01" },
+      { label: "Euro Hesabı", iban: "TR34 0001 5000 0000 0000 0000 02" },
+      { label: "Dolar Hesabı", iban: "TR34 0001 5000 0000 0000 0000 03" }
+    ]
+  },
+  {
+    bank: "Halkbank",
+    branch: "Sivas Şubesi",
+    accountName: "Hayat Ağacı Derneği",
+    type: "Kurban",
+    ibans: [
+      { label: "TL Hesabı", iban: "TR56 0001 2000 0000 0000 0000 01" },
+      { label: "Euro Hesabı", iban: "TR56 0001 2000 0000 0000 0000 02" },
+      { label: "Dolar Hesabı", iban: "TR56 0001 2000 0000 0000 0000 03" }
+    ]
+  }
 ];
 
 const defaultNote = "Banka hesap bilgileriniz yönetim panelinden güncellenebilir.";
@@ -24,20 +61,37 @@ function clean(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function normalizeIbans(value: unknown, legacyIban = ""): BankIban[] {
+  const parsed = Array.isArray(value)
+    ? value.map((item) => {
+      if (!item || typeof item !== "object") return null;
+      const record = item as Record<string, unknown>;
+      return { label: clean(record.label), iban: clean(record.iban) };
+    }).filter(Boolean) as BankIban[]
+    : [];
+
+  const source = parsed.length ? parsed : (legacyIban ? [{ label: "TL Hesabı", iban: legacyIban }] : []);
+  return defaultIbanLabels.map((label, index) => ({
+    label: source[index]?.label || label,
+    iban: source[index]?.iban || ""
+  }));
+}
+
 function normalizeAccount(value: unknown): BankAccount | null {
   if (!value || typeof value !== "object") return null;
   const record = value as Record<string, unknown>;
   const bank = clean(record.bank);
-  const iban = clean(record.iban);
-  if (!bank && !iban) return null;
+  const legacyIban = clean(record.iban);
+  const ibans = normalizeIbans(record.ibans, legacyIban);
+  if (!bank && !ibans.some((item) => item.iban)) return null;
 
   return {
     bank,
     branch: clean(record.branch),
     accountName: clean(record.accountName),
-    iban,
     type: clean(record.type),
-    description: clean(record.description)
+    description: clean(record.description),
+    ibans
   };
 }
 
@@ -93,9 +147,12 @@ export function serializeBankAccountsContent(input: BankAccountsContent) {
         bank: account.bank.trim(),
         branch: account.branch?.trim() || "",
         accountName: account.accountName?.trim() || "",
-        iban: account.iban.trim(),
         type: account.type?.trim() || "",
-        description: account.description?.trim() || ""
+        description: account.description?.trim() || "",
+        ibans: normalizeIbans(account.ibans).map((item) => ({
+          label: item.label.trim(),
+          iban: item.iban.trim()
+        }))
       }))
     },
     null,

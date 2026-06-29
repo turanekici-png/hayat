@@ -35,7 +35,7 @@ export default function ContactPage() {
       <Header />
       <main className="bg-hayat-soft">
         <section className="border-b border-hayat-border bg-hayat-soft px-3 py-12 sm:px-4 lg:px-4">
-          <div className="mx-auto flex max-w-[1180px] flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <div className="mx-auto flex max-w-[1840px] flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <div>
               <Link href="/" className="inline-flex items-center gap-2 text-sm font-black text-hayat-blue transition hover:text-hayat-green">
                 <ArrowLeft size={18} /> Ana sayfaya dön
@@ -56,7 +56,7 @@ export default function ContactPage() {
         </section>
 
         <section className="px-3 py-14 sm:px-4 lg:px-4">
-          <div className="mx-auto grid max-w-[1180px] gap-8 lg:grid-cols-[.9fr_1.1fr]">
+          <div className="mx-auto grid max-w-[1840px] gap-8 lg:grid-cols-[.9fr_1.1fr]">
             <div className="grid gap-5">
               {contactItems.map(({ label, value, href, Icon }) => (
                 <a
