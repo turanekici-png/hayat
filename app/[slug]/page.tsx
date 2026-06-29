@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { Building2 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CopyIbanButton } from "@/components/CopyIbanButton";
@@ -82,7 +81,7 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex min-w-0 items-start gap-3">
                         {logoUrl && (
-                          <img src={logoUrl} alt={account.bank} loading="lazy" decoding="async" className="h-12 w-12 shrink-0 rounded-[12px] border border-hayat-border bg-white object-contain p-1.5" />
+                          <img src={logoUrl} alt={account.bank || "Banka logosu"} loading="lazy" decoding="async" className="h-12 w-12 shrink-0 rounded-[12px] border border-hayat-border bg-white object-contain p-1.5" />
                         )}
                         <div className="min-w-0">
                           <h2 className="text-xl font-black leading-tight text-hayat-dark">{account.bank || "Banka Bilgisi"}</h2>
@@ -105,10 +104,10 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
                     <div className="mt-5 space-y-3">
                       {ibans.map((iban, ibanIndex) => (
                         <div key={`${account.bank}-${iban.label}-${ibanIndex}`} className="rounded-[14px] border border-hayat-border bg-hayat-soft p-4">
-                          <p className="text-xs font-black uppercase tracking-wide text-[#8a928f]">{iban.label.replace(" IBAN", "")}</p>
+                          <p className="text-xs font-black uppercase tracking-wide text-[#8a928f]">{ibans.length === 1 ? "IBAN" : iban.label.replace(" IBAN", "")}</p>
                           <p className="mt-2 break-all font-mono text-sm font-black tracking-wide text-hayat-dark sm:text-base">{iban.iban}</p>
                           <div className="mt-3">
-                            <CopyIbanButton value={iban.iban} className="w-full justify-center py-3 text-sm" />
+                            <CopyIbanButton value={iban.iban} label="IBAN Kopyala" className="w-full justify-center py-3 text-sm" />
                           </div>
                         </div>
                       ))}
