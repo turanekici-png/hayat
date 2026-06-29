@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+﻿﻿import Link from "next/link";
 import { Phone, Mail, MapPin, Facebook, Instagram, Twitter, Youtube, ChevronRight } from "lucide-react";
 
 const quickLinks = [
@@ -21,8 +21,8 @@ const corporateLinks = [
 
 export function Footer() {
   return (
-    <footer id="iletisim" className="bg-hayat-dark pb-8 pt-12 text-white sm:pt-16 lg:pt-24 lg:pb-10">
-      <div className="mx-auto max-w-[1840px] px-3 sm:px-4 lg:px-4">
+    <footer id="iletisim" className="bg-hayat-dark pb-8 pt-12 text-white sm:pt-16 lg:pb-10 lg:pt-24">
+      <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-4">
         <div className="mb-12 grid grid-cols-1 gap-10 md:grid-cols-2 lg:mb-20 lg:grid-cols-4 lg:gap-16">
           {/* Column 1: About */}
           <div>
