@@ -3,6 +3,7 @@ import { Building2 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
+import { defaultBankAccounts, parseBankAccountsContent } from "@/lib/bank-accounts";
 
 const fallbackPolicies: Record<string, { title: string; content: string; label?: string }> = {
   kvkk: {
@@ -24,15 +25,9 @@ const fallbackPolicies: Record<string, { title: string; content: string; label?:
   "hesap-numaralarimiz": {
     title: "Hesap Numaralarımız",
     label: "Banka ve Hesap Bilgileri",
-    content: "Bu alan yönetim panelindeki KVKK / Politikalar bölümünden banka adı, hesap adı, IBAN ve açıklama bilgileriyle güncellenmelidir."
+    content: "Banka hesap bilgileri yönetim panelinden güncellenebilir."
   }
 };
-
-const fallbackBankAccounts = [
-  { bank: "T.C. Ziraat Bankası", branch: "Sivas Merkez Şubesi", iban: "TR12 0001 0000 0000 0000 0000 01", type: "Genel Bağış" },
-  { bank: "VakıfBank", branch: "Sivas Şubesi", iban: "TR34 0001 5000 0000 0000 0000 02", type: "Zekat & Fitre" },
-  { bank: "Halkbank", branch: "Sivas Şubesi", iban: "TR56 0001 2000 0000 0000 0000 03", type: "Kurban" }
-];
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -44,10 +39,13 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
   if (!dbPolicy && !fallback) notFound();
   if (dbPolicy && !dbPolicy.isActive) notFound();
 
-  const title = dbPolicy?.title || fallback.title;
-  const content = dbPolicy?.content || fallback.content;
+  const title = dbPolicy?.title || fallback?.title || "Hayat Ağacı Derneği";
+  const content = dbPolicy?.content || fallback?.content || "";
   const label = fallback?.label || "Hayat Ağacı Derneği";
   const isBankPage = slug === "hesap-numaralarimiz";
+  const bankContent = isBankPage ? parseBankAccountsContent(content) : null;
+  const bankAccounts = bankContent?.accounts.length ? bankContent.accounts : defaultBankAccounts;
+  const displayContent = isBankPage ? bankContent?.note : content;
 
   return (
     <>
@@ -68,23 +66,27 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
 
           {isBankPage && (
             <div className="mt-8 grid gap-5 md:grid-cols-3">
-              {fallbackBankAccounts.map((account) => (
-                <div key={account.iban} className="rounded-[20px] border border-hayat-border bg-white p-6 shadow-stk">
-                  <p className="text-xs font-black uppercase text-hayat-green">{account.type}</p>
-                  <h2 className="mt-3 text-xl font-black text-hayat-dark">{account.bank}</h2>
-                  <p className="mt-1 text-sm font-bold text-[#5d6b70]">{account.branch}</p>
+              {bankAccounts.map((account, index) => (
+                <div key={`${account.iban}-${index}`} className="rounded-[20px] border border-hayat-border bg-white p-6 shadow-stk">
+                  <p className="text-xs font-black uppercase text-hayat-green">{account.type || "Banka Hesabı"}</p>
+                  <h2 className="mt-3 text-xl font-black text-hayat-dark">{account.bank || "Banka adı girilmedi"}</h2>
+                  {account.branch && <p className="mt-1 text-sm font-bold text-[#5d6b70]">{account.branch}</p>}
+                  {account.accountName && <p className="mt-3 text-sm font-black text-hayat-dark">{account.accountName}</p>}
                   <div className="mt-5 rounded-[14px] border border-hayat-border bg-hayat-soft p-4">
                     <p className="text-xs font-black uppercase text-[#5d6b70]">IBAN</p>
-                    <p className="mt-2 break-words font-black leading-7 text-hayat-dark">{account.iban}</p>
+                    <p className="mt-2 break-words font-black leading-7 text-hayat-dark">{account.iban || "TR..."}</p>
                   </div>
+                  {account.description && <p className="mt-4 text-sm font-semibold leading-6 text-[#5d6b70]">{account.description}</p>}
                 </div>
               ))}
             </div>
           )}
 
-          <div className="mt-8 whitespace-pre-line rounded-[20px] border border-hayat-border bg-white p-6 text-base font-semibold leading-8 text-[#5d6b70] shadow-stk md:p-8">
-            {content}
-          </div>
+          {displayContent && (
+            <div className="mt-8 whitespace-pre-line rounded-[20px] border border-hayat-border bg-white p-6 text-base font-semibold leading-8 text-[#5d6b70] shadow-stk md:p-8">
+              {displayContent}
+            </div>
+          )}
         </article>
       </main>
       <Footer />
