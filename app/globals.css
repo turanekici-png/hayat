@@ -199,6 +199,51 @@ footer h3 {
 }
 
 @media (max-width: 768px) {
+  .quick-donation-section {
+    padding: 0.45rem 0.75rem !important;
+  }
+
+  .quick-donation-card {
+    padding: 0.75rem !important;
+  }
+
+  .quick-donation-heading {
+    margin-bottom: 0.75rem !important;
+  }
+
+  .quick-donation-title {
+    font-size: 1.2rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .quick-donation-subtitle {
+    margin-top: 0.25rem !important;
+    font-size: 0.75rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .quick-donation-form {
+    gap: 0.5rem !important;
+  }
+
+  .quick-donation-control,
+  .quick-donation-button {
+    height: 2.65rem !important;
+    min-height: 2.65rem !important;
+    padding-left: 0.85rem !important;
+    padding-right: 0.85rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .quick-donation-control {
+    padding-right: 2.5rem !important;
+  }
+
+  .quick-donation-currency {
+    right: 0.85rem !important;
+    font-size: 0.78rem !important;
+  }
+
   body {
     font-size: 0.88rem;
     line-height: 1.65;
