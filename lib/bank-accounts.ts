@@ -18,7 +18,7 @@ export type BankAccountsContent = {
   accounts: BankAccount[];
 };
 
-export const defaultIbanLabels = ["TL Hesabı", "Euro Hesabı", "Dolar Hesabı"];
+export const defaultIbanLabels = ["TL IBAN", "Dolar IBAN", "Euro IBAN"];
 
 export const defaultBankAccounts: BankAccount[] = [
   {
@@ -27,9 +27,7 @@ export const defaultBankAccounts: BankAccount[] = [
     accountName: "Hayat Ağacı Derneği",
     type: "Genel Bağış",
     ibans: [
-      { label: "TL Hesabı", iban: "TR12 0001 0000 0000 0000 0000 01" },
-      { label: "Euro Hesabı", iban: "TR12 0001 0000 0000 0000 0000 02" },
-      { label: "Dolar Hesabı", iban: "TR12 0001 0000 0000 0000 0000 03" }
+      { label: "TL IBAN", iban: "TR12 0001 0000 0000 0000 0000 01" }
     ]
   },
   {
@@ -38,9 +36,7 @@ export const defaultBankAccounts: BankAccount[] = [
     accountName: "Hayat Ağacı Derneği",
     type: "Zekat & Fitre",
     ibans: [
-      { label: "TL Hesabı", iban: "TR34 0001 5000 0000 0000 0000 01" },
-      { label: "Euro Hesabı", iban: "TR34 0001 5000 0000 0000 0000 02" },
-      { label: "Dolar Hesabı", iban: "TR34 0001 5000 0000 0000 0000 03" }
+      { label: "TL IBAN", iban: "TR34 0001 5000 0000 0000 0000 02" }
     ]
   },
   {
@@ -49,17 +45,22 @@ export const defaultBankAccounts: BankAccount[] = [
     accountName: "Hayat Ağacı Derneği",
     type: "Kurban",
     ibans: [
-      { label: "TL Hesabı", iban: "TR56 0001 2000 0000 0000 0000 01" },
-      { label: "Euro Hesabı", iban: "TR56 0001 2000 0000 0000 0000 02" },
-      { label: "Dolar Hesabı", iban: "TR56 0001 2000 0000 0000 0000 03" }
+      { label: "TL IBAN", iban: "TR56 0001 2000 0000 0000 0000 03" }
     ]
   }
 ];
 
-const defaultNote = "Banka hesap bilgileriniz yönetim panelinden güncellenebilir.";
+const defaultNote = "Hesap sahibi tüm hesaplarda Hayat Ağacı Derneği'dir. Açıklama kısmına bağış türünü yazmanız yeterlidir.";
 
 function clean(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function ibanKey(label: string) {
+  const value = label.toLocaleLowerCase("tr-TR");
+  if (value.includes("dolar") || value.includes("usd") || value.includes("$")) return "dolar";
+  if (value.includes("euro") || value.includes("eur") || value.includes("€")) return "euro";
+  return "tl";
 }
 
 function normalizeIbans(value: unknown, legacyIban = ""): BankIban[] {
@@ -71,11 +72,21 @@ function normalizeIbans(value: unknown, legacyIban = ""): BankIban[] {
     }).filter(Boolean) as BankIban[]
     : [];
 
-  const source = parsed.length ? parsed : (legacyIban ? [{ label: "TL Hesabı", iban: legacyIban }] : []);
-  return defaultIbanLabels.map((label, index) => ({
-    label: source[index]?.label || label,
-    iban: source[index]?.iban || ""
-  }));
+  const source = parsed.length ? parsed : (legacyIban ? [{ label: "TL IBAN", iban: legacyIban }] : []);
+  const byKey = new Map<string, BankIban>();
+  source.forEach((item, index) => {
+    const fallbackKey = index === 1 ? "dolar" : index === 2 ? "euro" : "tl";
+    const key = item.label ? ibanKey(item.label) : fallbackKey;
+    if (!byKey.has(key)) byKey.set(key, item);
+  });
+
+  return defaultIbanLabels.map((label) => {
+    const sourceItem = byKey.get(ibanKey(label));
+    return {
+      label,
+      iban: sourceItem?.iban || ""
+    };
+  });
 }
 
 function normalizeAccount(value: unknown): BankAccount | null {

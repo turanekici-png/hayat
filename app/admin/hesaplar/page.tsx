@@ -44,7 +44,7 @@ export default async function BankAccountsAdminPage() {
           <Building2 size={18} /> Hesap / Banka Bilgileri
         </p>
         <h1 className="mt-3 text-4xl font-black">Hesap Numaralarımız</h1>
-        <p className="mt-2 text-white/70">Üst menüdeki “Hesap No” sayfasında görünecek banka hesaplarını tek tek buradan yönetin.</p>
+        <p className="mt-2 text-white/70">Üst menüdeki “Hesap No” sayfasında görünecek banka logolarını, bağış gruplarını ve IBAN bilgilerini buradan yönetin.</p>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link href="/admin" className="rounded-[14px] bg-white/10 px-5 py-3 font-black">Admin Panele Dön</Link>
           <Link href="/hesap-numaralarimiz" className="inline-flex items-center gap-2 rounded-[14px] bg-hayat-gold px-5 py-3 font-black text-hayat-dark">
@@ -65,7 +65,7 @@ export default async function BankAccountsAdminPage() {
         </div>
 
         <label className="text-sm font-black text-[#5d6b70]">Sayfa Başlığı</label>
-        <input name="title" defaultValue={page?.title || "Hesap Numaralarımız"} className="mt-2 w-full rounded-[14px] border border-hayat-border bg-hayat-soft p-4 text-xl font-black text-hayat-dark outline-hayat-blue" />
+        <input name="title" defaultValue={page?.title || "Banka havalesi ile bağış"} className="mt-2 w-full rounded-[14px] border border-hayat-border bg-hayat-soft p-4 text-xl font-black text-hayat-dark outline-hayat-blue" />
 
         <label className="mt-5 block text-sm font-black text-[#5d6b70]">Sayfa Açıklaması</label>
         <textarea name="note" defaultValue={parsed.note} rows={4} className="mt-2 w-full rounded-[14px] border border-hayat-border bg-hayat-soft p-4 text-base font-semibold leading-7 text-hayat-dark outline-hayat-blue" />

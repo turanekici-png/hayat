@@ -235,7 +235,7 @@ export default async function HomePage() {
       subtitle={quickDonation?.subtitle || "Bağış türünü ve tutarını seç, anında destek ol"}
       buttonLabel={quickDonation?.buttonLabel || "Şimdi Destek Ol"}
       sidePanel={sidePanel}
-      className={`mx-auto ${quickDonation?.contentWidth === "full" && !sidePanel ? "w-full max-w-none" : sidePanel ? "w-full" : "max-w-[1840px]"}`}
+      className={`mx-auto ${quickDonation?.contentWidth === "full" && !sidePanel ? "w-full max-w-none" : sidePanel ? "w-full lg:h-[520px]" : "max-w-[1840px]"}`}
       style={{ ...cardStyle(quickDonation, { padding: 24 }), backgroundColor: "#ffffff", borderColor: "#e2ddd0", borderRadius: 20 }}
     />
   );

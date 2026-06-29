@@ -15,7 +15,7 @@ function textValues(formData: FormData, key: string) {
 }
 
 export async function saveBankAccountsPage(formData: FormData) {
-  const title = textValue(formData, "title") || "Hesap Numaralarımız";
+  const title = textValue(formData, "title") || "Banka havalesi ile bağış";
   const note = textValue(formData, "note");
   const isActive = formData.get("isActive") === "on";
 
@@ -24,8 +24,8 @@ export async function saveBankAccountsPage(formData: FormData) {
   const branches = textValues(formData, "branch");
   const accountNames = textValues(formData, "accountName");
   const tlIbans = textValues(formData, "tlIban");
-  const euroIbans = textValues(formData, "euroIban");
   const dolarIbans = textValues(formData, "dolarIban");
+  const euroIbans = textValues(formData, "euroIban");
   const types = textValues(formData, "type");
   const descriptions = textValues(formData, "description");
 
@@ -38,8 +38,8 @@ export async function saveBankAccountsPage(formData: FormData) {
     description: descriptions[index] || "",
     ibans: [
       { label: defaultIbanLabels[0], iban: tlIbans[index] || "" },
-      { label: defaultIbanLabels[1], iban: euroIbans[index] || "" },
-      { label: defaultIbanLabels[2], iban: dolarIbans[index] || "" }
+      { label: defaultIbanLabels[1], iban: dolarIbans[index] || "" },
+      { label: defaultIbanLabels[2], iban: euroIbans[index] || "" }
     ]
   })).filter((account) => account.bank || account.ibans.some((iban) => iban.iban) || account.type || account.description);
 

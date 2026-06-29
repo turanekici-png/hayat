@@ -28,7 +28,7 @@ function withMinimumIbans(account: BankAccount): BankAccount {
     ...account,
     logoUrl: account.logoUrl || "",
     ibans: defaultIbanLabels.map((label, index) => ({
-      label: account.ibans?.[index]?.label || label,
+      label,
       iban: account.ibans?.[index]?.iban || ""
     }))
   };
@@ -39,6 +39,12 @@ function createEmptyAccount(): BankAccount {
     ...emptyAccount,
     ibans: defaultIbanLabels.map((label) => ({ label, iban: "" }))
   };
+}
+
+function ibanFieldName(index: number) {
+  if (index === 0) return "tlIban";
+  if (index === 1) return "dolarIban";
+  return "euroIban";
 }
 
 export function BankAccountsEditor({ accounts, media }: { accounts: BankAccount[]; media: MediaItem[] }) {
@@ -71,7 +77,7 @@ export function BankAccountsEditor({ accounts, media }: { accounts: BankAccount[
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-black text-hayat-dark">Banka hesapları</h2>
-          <p className="mt-1 text-sm font-bold text-[#5d6b70]">Her banka için TL, Euro ve Dolar IBAN bilgilerini ayrı ayrı girin.</p>
+          <p className="mt-1 text-sm font-bold text-[#5d6b70]">Her banka için logo, bağış grubu ve TL, Dolar, Euro IBAN bilgilerini girin. Boş IBAN alanları sitede gösterilmez.</p>
         </div>
         <button type="button" onClick={addRow} className="inline-flex items-center gap-2 rounded-[14px] bg-hayat-blue px-4 py-3 text-sm font-black text-white shadow-stk">
           <Plus size={17} /> Banka Ekle
@@ -115,10 +121,10 @@ export function BankAccountsEditor({ accounts, media }: { accounts: BankAccount[
           </div>
 
           <div className="mt-4 grid gap-3">
-            {row.ibans.map((iban, ibanIndex) => (
+            {withMinimumIbans(row).ibans.map((iban, ibanIndex) => (
               <label key={iban.label} className="grid gap-2 rounded-[16px] border border-hayat-border bg-white p-3 text-sm font-black text-[#5d6b70] md:grid-cols-[160px_1fr] md:items-center">
                 <span>{iban.label}</span>
-                <input name={ibanIndex === 0 ? "tlIban" : ibanIndex === 1 ? "euroIban" : "dolarIban"} value={iban.iban} onChange={(event) => updateIban(index, ibanIndex, event.target.value)} className="w-full rounded-[12px] border border-hayat-border bg-hayat-soft p-3 font-mono text-sm font-black text-hayat-dark outline-hayat-blue" placeholder="TR..." />
+                <input name={ibanFieldName(ibanIndex)} value={iban.iban} onChange={(event) => updateIban(index, ibanIndex, event.target.value)} className="w-full rounded-[12px] border border-hayat-border bg-hayat-soft p-3 font-mono text-sm font-black text-hayat-dark outline-hayat-blue" placeholder="TR..." />
               </label>
             ))}
           </div>
