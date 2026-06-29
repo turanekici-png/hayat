@@ -205,9 +205,9 @@ function SectionEditor({ section, media }: { section: SiteSectionWithImages; med
                 <input type="hidden" name="sectionImageId" value={image.id} />
                 <div className="md:col-span-2">
                   {isVideoMedia(image.url) ? (
-                    <video src={displayMediaUrl(image.url)} className="h-24 w-full rounded-xl object-contain" muted preload="metadata" />
+                    <video src={displayMediaUrl(image.url)} className="h-24 w-full rounded-xl object-cover" muted preload="metadata" />
                   ) : (
-                    <img src={displayMediaUrl(image.url)} alt={image.alt || section.title} loading="lazy" decoding="async" className="h-24 w-full rounded-xl object-contain" />
+                    <img src={displayMediaUrl(image.url)} alt={image.alt || section.title} loading="lazy" decoding="async" className="h-24 w-full rounded-xl object-cover" />
                   )}
                 </div>
                 <label className="text-sm font-bold text-slate-600 md:col-span-4">Medya yolu<MediaField name="sectionImageUrl" defaultValue={displayMediaUrl(image.url)} placeholder="/uploads/medya.jpg" media={media} /></label>
@@ -708,9 +708,9 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                     {safeMedia.map((m) => (
                       <div key={m.id} className="rounded-2xl border bg-slate-50 p-2">
                         {isVideoMedia(m.url, m.mimeType) ? (
-                          <video src={m.url} className="h-28 w-full rounded-xl object-contain" controls preload="metadata" />
+                          <video src={m.url} className="h-28 w-full rounded-xl object-cover" controls preload="metadata" />
                         ) : (
-                          <img src={m.url} alt={m.title || m.filename} loading="lazy" decoding="async" className="h-28 w-full rounded-xl object-contain" />
+                          <img src={m.url} alt={m.title || m.filename} loading="lazy" decoding="async" className="h-28 w-full rounded-xl object-cover" />
                         )}
                         <p className="mt-2 break-all rounded-xl bg-white p-2 text-xs font-bold text-slate-600">{m.url}</p>
                         <form action={deleteMedia} className="mt-2"><input type="hidden" name="id" value={m.id} /><button className="w-full rounded-xl bg-red-50 px-3 py-2 text-xs font-black text-red-600">Medyayı Sil</button></form>
