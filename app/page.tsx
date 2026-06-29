@@ -8,11 +8,12 @@ import { ExpandableText } from "@/components/ExpandableText";
 import { AutoScrollRow } from "@/components/AutoScrollRow";
 import { ActivityShowcaseSlider } from "@/components/ActivityShowcaseSlider";
 import { MediaLightboxTile } from "@/components/MediaLightboxTile";
+import { QuickDonationCard } from "@/components/QuickDonationCard";
 import { getHomeSections, allByType, firstByType } from "@/lib/site-content";
 import { getActiveDonationTypes } from "@/lib/donation-types";
 import { normalizeMediaUrl } from "@/lib/media-url";
 import { prisma } from "@/lib/prisma";
-import { ArrowRight, Heart, ChevronRight, ShieldCheck, CalendarDays, Megaphone } from "lucide-react";
+import { ArrowRight, ChevronRight, ShieldCheck, CalendarDays, Megaphone } from "lucide-react";
 import type { CSSProperties } from "react";
 
 export const dynamic = "force-dynamic";
@@ -228,28 +229,15 @@ export default async function HomePage() {
     item.href || "/bagis"
   ]);
   const renderQuickDonation = (sidePanel = false) => (
-    <div className={`quick-donation-card ${sidePanel ? "quick-donation-side h-full" : ""} mx-auto ${quickDonation?.contentWidth === "full" && !sidePanel ? "w-full max-w-none" : sidePanel ? "w-full" : "max-w-[1840px]"} rounded-[20px] border border-hayat-border bg-white p-4 shadow-stk sm:p-6 md:p-8`} style={{ ...cardStyle(quickDonation, { padding: 24 }), backgroundColor: "#ffffff", borderColor: "#e2ddd0", borderRadius: 20 }}>
-      <div className="quick-donation-heading mb-6 text-center">
-        <h2 className="quick-donation-title text-2xl font-black leading-tight text-hayat-dark md:text-3xl" style={quickDonation ? headingStyle(quickDonation, "#0a3a55", 32) : undefined}>{quickDonation?.title || "Hızlı Bağış"}</h2>
-        {quickDonation?.subtitle && <p className="quick-donation-subtitle mt-2 text-sm font-bold text-[#5d6b70]" style={quickDonation ? subtitleStyle(quickDonation, "#5d6b70", 15) : undefined}>{quickDonation.subtitle}</p>}
-      </div>
-      <form action="/bagis" method="GET" className="quick-donation-form grid gap-5 md:grid-cols-[1.15fr_1.15fr_auto]">
-        <select name="type" className="quick-donation-control h-14 rounded-[14px] border border-hayat-border bg-hayat-soft px-5 text-sm font-black text-hayat-dark outline-hayat-blue">
-          {donationTypes.length > 0 ? donationTypes.map((type) => (
-            <option key={type.code} value={type.code}>{type.label}</option>
-          )) : (
-            <option value="GENEL">Genel Bağış</option>
-          )}
-        </select>
-        <div className="relative">
-          <input required name="amount" type="number" min="1" step="0.01" placeholder="0" className="quick-donation-control h-14 w-full rounded-[14px] border border-hayat-border bg-hayat-soft px-5 pr-14 text-sm font-black text-hayat-dark outline-hayat-blue" />
-          <span className="quick-donation-currency absolute right-5 top-1/2 -translate-y-1/2 text-sm font-black text-hayat-dark">₺</span>
-        </div>
-        <button type="submit" className="quick-donation-button inline-flex h-14 w-full items-center justify-center gap-2 rounded-[14px] bg-hayat-green px-6 text-sm font-black text-white shadow-green transition hover:bg-hayat-blue md:w-auto md:min-w-[220px] md:px-8">
-          <Heart size={16} fill="currentColor" /> {quickDonation?.buttonLabel || "Şimdi Destek Ol"}
-        </button>
-      </form>
-    </div>
+    <QuickDonationCard
+      donationTypes={donationTypes}
+      title={quickDonation?.title || "Hızlı Bağış"}
+      subtitle={quickDonation?.subtitle || "Bağış türünü ve tutarını seç, anında destek ol"}
+      buttonLabel={quickDonation?.buttonLabel || "Şimdi Destek Ol"}
+      sidePanel={sidePanel}
+      className={`mx-auto ${quickDonation?.contentWidth === "full" && !sidePanel ? "w-full max-w-none" : sidePanel ? "w-full" : "max-w-[1840px]"}`}
+      style={{ ...cardStyle(quickDonation, { padding: 24 }), backgroundColor: "#ffffff", borderColor: "#e2ddd0", borderRadius: 20 }}
+    />
   );
 
   return (
