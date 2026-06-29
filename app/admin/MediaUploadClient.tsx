@@ -11,7 +11,7 @@ type UploadedMedia = {
   url: string;
 };
 
-async function uploadOne(file: File, title?: string, prefix?: string) {
+async function uploadOne(file: File, title?: string, prefix?: string): Promise<UploadedMedia> {
   const formData = new FormData();
   formData.set("file", file);
   if (title) formData.set("title", title);
@@ -51,7 +51,7 @@ export function SectionMediaUploader({ prefix, startOrder }: { prefix: string; s
             if (!files.length) return;
             startTransition(async () => {
               try {
-                const uploaded = [];
+                const uploaded: UploadedMedia[] = [];
                 for (const file of files) {
                   uploaded.push(await uploadOne(file, file.name, prefix));
                 }
