@@ -61,4 +61,66 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
             </div>
             {isBankPage && (
               <div className="grid h-14 w-14 shrink-0 place-items-center rounded-[14px] bg-hayat-mint text-hayat-green">
-         
+                <Building2 size={26} />
+              </div>
+            )}
+          </div>
+
+          {displayContent && (
+            <div className="mt-8 rounded-[20px] border border-hayat-border bg-white p-6 text-base font-semibold leading-8 text-[#5d6b70] shadow-stk sm:p-8">
+              <p className="whitespace-pre-line">{displayContent}</p>
+            </div>
+          )}
+
+          {isBankPage && (
+            <div className="mt-6 grid gap-5 lg:grid-cols-2">
+              {bankAccounts.map((account, accountIndex) => {
+                const logoUrl = normalizeMediaUrl(account.logoUrl) || account.logoUrl;
+                return (
+                  <section key={`${account.bank}-${accountIndex}`} className="overflow-hidden rounded-[20px] border border-hayat-border bg-white shadow-stk">
+                    <div className="flex flex-col gap-4 border-b border-hayat-border p-6 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex items-center gap-4">
+                        {logoUrl ? (
+                          <img src={logoUrl} alt={account.bank} loading="lazy" decoding="async" className="h-14 w-14 rounded-[14px] border border-hayat-border bg-white object-contain p-2" />
+                        ) : (
+                          <div className="grid h-14 w-14 place-items-center rounded-[14px] bg-hayat-mint text-hayat-green">
+                            <Building2 size={24} />
+                          </div>
+                        )}
+                        <div>
+                          <h2 className="text-2xl font-black text-hayat-dark">{account.bank || "Banka Bilgisi"}</h2>
+                          {account.type && <p className="mt-1 text-sm font-black uppercase text-hayat-green">{account.type}</p>}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 p-6">
+                      {(account.accountName || account.branch || account.description) && (
+                        <div className="grid gap-3 rounded-[14px] bg-hayat-soft p-4 text-sm font-bold text-[#5d6b70] sm:grid-cols-2">
+                          {account.accountName && <p><span className="block text-[11px] font-black uppercase text-hayat-dark">Hesap Adı</span>{account.accountName}</p>}
+                          {account.branch && <p><span className="block text-[11px] font-black uppercase text-hayat-dark">Şube</span>{account.branch}</p>}
+                          {account.description && <p className="sm:col-span-2"><span className="block text-[11px] font-black uppercase text-hayat-dark">Açıklama</span>{account.description}</p>}
+                        </div>
+                      )}
+
+                      {account.ibans.map((iban, ibanIndex) => (
+                        <div key={`${account.bank}-${iban.label}-${ibanIndex}`} className="flex flex-col gap-3 rounded-[14px] border border-hayat-border p-4 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="min-w-0">
+                            <p className="text-xs font-black uppercase text-hayat-green">{iban.label}</p>
+                            <p className="mt-1 break-all font-black text-hayat-dark">{iban.iban || "Henüz eklenmedi"}</p>
+                          </div>
+                          {iban.iban && <CopyIbanButton value={iban.iban} />}
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
+          )}
+        </article>
+      </main>
+      <Footer />
+    </>
+  );
+}
