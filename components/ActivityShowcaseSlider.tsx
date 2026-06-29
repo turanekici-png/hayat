@@ -92,8 +92,8 @@ export function ActivityShowcaseSlider({
 
   if (splitMedia) {
     return (
-      <div className="relative grid min-h-[460px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:min-h-[540px] lg:min-h-[680px] lg:grid-cols-[0.72fr_1.28fr]">
-        <div className="z-10 flex items-center bg-white px-6 py-9 sm:px-10 lg:px-10">
+      <div className="relative grid h-[620px] grid-rows-[minmax(0,1fr)_260px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[700px] sm:grid-rows-[minmax(0,1fr)_330px] lg:h-[680px] lg:grid-cols-[0.72fr_1.28fr] lg:grid-rows-none">
+        <div className="z-10 flex min-h-0 items-center overflow-hidden bg-white px-6 py-9 sm:px-10 lg:px-10">
           <div className="max-w-[430px]">
             {(current.badge || current.subtitle) && (
               <div className="mb-4 inline-flex w-fit items-center rounded-md border border-hayat-border bg-hayat-soft px-3 py-2 text-[10px] font-black uppercase text-hayat-green shadow-stk sm:px-4 sm:py-2.5 sm:text-[11px]">
@@ -122,7 +122,7 @@ export function ActivityShowcaseSlider({
           </div>
         </div>
 
-        <div className="relative min-h-[300px] bg-hayat-soft sm:min-h-[380px] lg:min-h-0">
+        <div className="relative min-h-0 overflow-hidden bg-hayat-soft">
           {activeImage ? (
             <img
               key={`${current.id}-${activeImage.src}`}
@@ -156,7 +156,7 @@ export function ActivityShowcaseSlider({
   }
 
   return (
-    <div className="relative min-h-[360px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:min-h-[460px] md:min-h-[600px]">
+    <div className="relative h-[360px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[460px] md:h-[600px]">
       {items.map((item, index) => {
         const image = item.slides[0];
         return image ? (
