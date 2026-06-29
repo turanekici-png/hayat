@@ -92,7 +92,7 @@ export function ActivityShowcaseSlider({
 
   if (splitMedia) {
     return (
-      <div className="relative overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk">
+      <div className="relative h-[320px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[420px] lg:h-[600px]">
         {activeImage ? (
           <img
             key={`${current.id}-${activeImage.src}`}
@@ -101,10 +101,10 @@ export function ActivityShowcaseSlider({
             loading={active === 0 ? "eager" : "lazy"}
             decoding="async"
             fetchPriority={active === 0 ? "high" : "auto"}
-            className="block h-auto w-full bg-white object-contain"
+            className="block h-full w-full bg-white object-cover"
           />
         ) : (
-          <div className="min-h-[360px] w-full bg-[#eef5f8]" />
+          <div className="h-full w-full bg-[#eef5f8]" />
         )}
 
         <div className="absolute inset-0 bg-gradient-to-r from-hayat-dark/78 via-hayat-dark/32 to-transparent" />
