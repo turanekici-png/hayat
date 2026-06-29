@@ -10,28 +10,29 @@ const config: Config = {
     extend: {
       colors: {
         hayat: {
-          green: "#6FB744",
-          greenDark: "#4F9832",
-          blue: "#0076B6",
-          blueDark: "#005F95",
-          orange: "#0076B6",
-          orangeDark: "#005F95",
-          mint: "#EAF7E6",
-          dark: "#0B3F60",
-          ink: "#2F4858",
-          soft: "#F6FAFC",
-          border: "#e1e1e1",
-          gold: "#F2B84B"
+          green: "#6fae2e",
+          greenDark: "#4f8a1e",
+          blue: "#1593cf",
+          blueDark: "#0c5e8a",
+          orange: "#1593cf",
+          orangeDark: "#0c5e8a",
+          mint: "#e7f1d9",
+          dark: "#0a3a55",
+          ink: "#16272e",
+          soft: "#f7f5ef",
+          border: "#e2ddd0",
+          gold: "#f4c762"
         }
       },
       fontFamily: {
-        montserrat: ['Montserrat', 'sans-serif'],
+        montserrat: ['Manrope', 'system-ui', 'sans-serif'],
+        jakarta: ['Plus Jakarta Sans', 'Manrope', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        soft: "0 10px 40px rgba(0,0,0,0.05)",
-        stk: "0 15px 50px -10px rgba(0, 0, 0, 0.08)",
-        green: "0 10px 40px rgba(111,183,68,0.22)",
-        orange: "0 10px 40px rgba(0,118,182,0.24)"
+        soft: "0 18px 45px rgba(10,58,85,0.08)",
+        stk: "0 18px 45px rgba(10,58,85,0.08)",
+        green: "0 14px 34px rgba(111,174,46,0.24)",
+        orange: "0 14px 34px rgba(21,147,207,0.22)"
       }
     },
   },

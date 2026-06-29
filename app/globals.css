@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,35 +7,45 @@
 :root { color-scheme: light; }
 html { scroll-behavior: smooth; }
 
-body { 
-  background:#f7fafc; 
-  color:#445668; 
-  font-family: 'Montserrat', sans-serif;
+body {
+  background:#f7f5ef;
+  color:#16272e;
+  font-family: 'Manrope', system-ui, sans-serif;
   font-size: 0.92rem;
   font-weight: 500;
   line-height: 1.75;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   word-spacing: 0;
 }
 
-/* Precisely Matching Target Site Aesthetics */
+body::selection {
+  background: #1593cf;
+  color: #ffffff;
+}
+
+main {
+  background: #f7f5ef;
+}
+
+/* Reference-inspired Hayat Ağacı visual system */
 .shadow-stk {
-  box-shadow: 0 18px 45px rgba(15, 39, 63, 0.07);
-  border-radius: 8px;
+  box-shadow: 0 18px 45px rgba(10, 58, 85, 0.08);
+  border-radius: 20px;
 }
 
 .shadow-stk-hover {
-  box-shadow: 0 22px 55px rgba(15, 39, 63, 0.12);
+  box-shadow: 0 24px 60px rgba(10, 58, 85, 0.13);
 }
 
 .corporate-panel {
-  border: 1px solid #dbe6ee;
-  border-radius: 8px;
+  border: 1px solid #e2ddd0;
+  border-radius: 20px;
   background: #ffffff;
 }
 
 .corporate-section {
-  border-top: 1px solid #e6eef4;
+  border-top: 1px solid #e2ddd0;
 }
 
 .corporate-kicker {
@@ -49,6 +59,7 @@ body {
 }
 
 h1, h2, h3 {
+  font-family: 'Plus Jakarta Sans', 'Manrope', system-ui, sans-serif;
   text-wrap: balance;
 }
 
@@ -69,6 +80,43 @@ input,
 select,
 textarea {
   min-width: 0;
+}
+
+input,
+select,
+textarea {
+  border-color: #e2ddd0;
+}
+
+.rounded-lg {
+  border-radius: 20px;
+}
+
+.rounded-md {
+  border-radius: 14px;
+}
+
+.rounded-xl,
+.rounded-2xl,
+.rounded-3xl,
+.rounded-\[1\.5rem\],
+.rounded-\[2rem\],
+.rounded-\[2\.5rem\] {
+  border-radius: 20px;
+}
+
+.border-\[\#dfe7ed\],
+.border-\[\#dfe7ed\],
+.border-\[\#e9eef2\],
+.border-slate-100,
+.border-slate-200 {
+  border-color: #e2ddd0 !important;
+}
+
+.bg-\[\#f5f9fb\],
+.bg-\[\#f6fafc\],
+.bg-hayat-soft {
+  background-color: #f7f5ef !important;
 }
 
 .progress-bar-container {
