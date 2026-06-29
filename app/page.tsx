@@ -293,9 +293,9 @@ export default async function HomePage() {
                   Tüm Faaliyetler <ArrowRight size={16} />
                 </Link>
               </div>
-              <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_440px] 2xl:grid-cols-[minmax(0,1fr)_480px]">
-                <ActivityShowcaseSlider items={activityShowcaseItems} splitMedia mediaFirst mediaWide />
-                <aside className="flex h-[620px] min-h-0 flex-col overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[700px] lg:h-[680px]">
+              <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_440px] 2xl:grid-cols-[minmax(0,1fr)_480px]">
+                <ActivityShowcaseSlider items={activityShowcaseItems} splitMedia compactMedia />
+                <aside className="flex h-[560px] min-h-0 flex-col overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[600px] lg:h-[520px]">
                 <div className="flex items-center justify-between border-b border-[#e9eef2] bg-hayat-green px-5 py-4 text-white">
                   <div>
                     <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em] text-white/80">
