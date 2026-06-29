@@ -66,6 +66,7 @@ export function ActivityShowcaseSlider({
   splitMedia = false,
   mediaFirst = false,
   mediaWide = false,
+  compactMedia = false,
   showBody = true
 }: {
   items: ActivityShowcaseItem[];
@@ -76,6 +77,7 @@ export function ActivityShowcaseSlider({
   splitMedia?: boolean;
   mediaFirst?: boolean;
   mediaWide?: boolean;
+  compactMedia?: boolean;
   showBody?: boolean;
 }) {
   const [active, setActive] = useState(0);
@@ -95,8 +97,12 @@ export function ActivityShowcaseSlider({
   const body = current.body?.trim();
 
   if (splitMedia) {
+    const splitHeightClass = compactMedia
+      ? "h-[560px] grid-rows-[minmax(0,1fr)_220px] sm:h-[600px] sm:grid-rows-[minmax(0,1fr)_280px] lg:h-[520px]"
+      : "h-[620px] grid-rows-[minmax(0,1fr)_260px] sm:h-[700px] sm:grid-rows-[minmax(0,1fr)_330px] lg:h-[680px]";
+
     return (
-      <div className={`relative grid h-[620px] grid-rows-[minmax(0,1fr)_260px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[700px] sm:grid-rows-[minmax(0,1fr)_330px] lg:h-[680px] lg:grid-rows-none ${mediaWide ? (mediaFirst ? "lg:grid-cols-[2fr_1fr]" : "lg:grid-cols-[1fr_2fr]") : "lg:grid-cols-[0.72fr_1.28fr]"}`}>
+      <div className={`relative grid ${splitHeightClass} overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk lg:grid-rows-none ${mediaWide ? (mediaFirst ? "lg:grid-cols-[2fr_1fr]" : "lg:grid-cols-[1fr_2fr]") : "lg:grid-cols-[0.72fr_1.28fr]"}`}>
         <div className={`z-10 flex min-h-0 items-center overflow-hidden bg-white px-6 py-9 sm:px-10 lg:px-10 ${mediaFirst ? "lg:order-2" : ""}`}>
           <div className="max-w-[430px]">
             {(current.badge || current.subtitle) && (
