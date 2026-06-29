@@ -3,9 +3,19 @@
 import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { defaultIbanLabels, type BankAccount } from "@/lib/bank-accounts";
+import { MediaField } from "../MediaField";
+
+type MediaItem = {
+  id: string;
+  title: string | null;
+  url: string;
+  filename: string;
+  mimeType: string | null;
+};
 
 const emptyAccount: BankAccount = {
   bank: "",
+  logoUrl: "",
   branch: "",
   accountName: "Hayat Ağacı Derneği",
   type: "",
@@ -16,6 +26,7 @@ const emptyAccount: BankAccount = {
 function withMinimumIbans(account: BankAccount): BankAccount {
   return {
     ...account,
+    logoUrl: account.logoUrl || "",
     ibans: defaultIbanLabels.map((label, index) => ({
       label: account.ibans?.[index]?.label || label,
       iban: account.ibans?.[index]?.iban || ""
@@ -23,8 +34,15 @@ function withMinimumIbans(account: BankAccount): BankAccount {
   };
 }
 
-export function BankAccountsEditor({ accounts }: { accounts: BankAccount[] }) {
-  const [rows, setRows] = useState<BankAccount[]>(accounts.length ? accounts.map(withMinimumIbans) : [{ ...emptyAccount }]);
+function createEmptyAccount(): BankAccount {
+  return {
+    ...emptyAccount,
+    ibans: defaultIbanLabels.map((label) => ({ label, iban: "" }))
+  };
+}
+
+export function BankAccountsEditor({ accounts, media }: { accounts: BankAccount[]; media: MediaItem[] }) {
+  const [rows, setRows] = useState<BankAccount[]>(accounts.length ? accounts.map(withMinimumIbans) : [createEmptyAccount()]);
 
   function update(index: number, key: keyof Omit<BankAccount, "ibans">, value: string) {
     setRows((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, [key]: value } : row));
@@ -35,17 +53,17 @@ export function BankAccountsEditor({ accounts }: { accounts: BankAccount[] }) {
       if (rowIndex !== accountIndex) return row;
       return {
         ...row,
-        ibans: row.ibans.map((iban, currentIbanIndex) => currentIbanIndex === ibanIndex ? { ...iban, iban: value } : iban)
+        ibans: withMinimumIbans(row).ibans.map((iban, currentIbanIndex) => currentIbanIndex === ibanIndex ? { ...iban, iban: value } : iban)
       };
     }));
   }
 
   function addRow() {
-    setRows((current) => [...current, { ...emptyAccount, ibans: defaultIbanLabels.map((label) => ({ label, iban: "" })) }]);
+    setRows((current) => [...current, createEmptyAccount()]);
   }
 
   function removeRow(index: number) {
-    setRows((current) => current.length > 1 ? current.filter((_, rowIndex) => rowIndex !== index) : [{ ...emptyAccount }]);
+    setRows((current) => current.length > 1 ? current.filter((_, rowIndex) => rowIndex !== index) : [createEmptyAccount()]);
   }
 
   return (
@@ -73,6 +91,10 @@ export function BankAccountsEditor({ accounts }: { accounts: BankAccount[] }) {
             <label className="text-sm font-black text-[#5d6b70]">
               Banka Adı
               <input name="bank" value={row.bank} onChange={(event) => update(index, "bank", event.target.value)} className="mt-2 w-full rounded-[14px] border border-hayat-border bg-white p-3 font-bold text-hayat-dark outline-hayat-blue" placeholder="T.C. Ziraat Bankası" />
+            </label>
+            <label className="text-sm font-black text-[#5d6b70]">
+              Banka Logosu
+              <MediaField name="logoUrl" defaultValue={row.logoUrl || ""} placeholder="/uploads/banka-logo.png" media={media} inputClassName="w-full rounded-[14px] border border-hayat-border bg-white p-3 font-bold text-hayat-dark outline-hayat-blue" />
             </label>
             <label className="text-sm font-black text-[#5d6b70]">
               Şube

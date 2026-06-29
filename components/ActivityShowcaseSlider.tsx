@@ -65,6 +65,7 @@ export function ActivityShowcaseSlider({
   showDefaultButton = false,
   splitMedia = false,
   mediaFirst = false,
+  mediaWide = false,
   showBody = true
 }: {
   items: ActivityShowcaseItem[];
@@ -74,6 +75,7 @@ export function ActivityShowcaseSlider({
   showDefaultButton?: boolean;
   splitMedia?: boolean;
   mediaFirst?: boolean;
+  mediaWide?: boolean;
   showBody?: boolean;
 }) {
   const [active, setActive] = useState(0);
@@ -94,7 +96,7 @@ export function ActivityShowcaseSlider({
 
   if (splitMedia) {
     return (
-      <div className="relative grid h-[620px] grid-rows-[minmax(0,1fr)_260px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[700px] sm:grid-rows-[minmax(0,1fr)_330px] lg:h-[680px] lg:grid-cols-[0.72fr_1.28fr] lg:grid-rows-none">
+      <div className={`relative grid h-[620px] grid-rows-[minmax(0,1fr)_260px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[700px] sm:grid-rows-[minmax(0,1fr)_330px] lg:h-[680px] lg:grid-rows-none ${mediaWide ? "lg:grid-cols-[1fr_2fr]" : "lg:grid-cols-[0.72fr_1.28fr]"}`}>
         <div className={`z-10 flex min-h-0 items-center overflow-hidden bg-white px-6 py-9 sm:px-10 lg:px-10 ${mediaFirst ? "lg:order-2" : ""}`}>
           <div className="max-w-[430px]">
             {(current.badge || current.subtitle) && (
@@ -133,7 +135,7 @@ export function ActivityShowcaseSlider({
               loading={active === 0 ? "eager" : "lazy"}
               decoding="async"
               fetchPriority={active === 0 ? "high" : "auto"}
-              className="block h-full w-full bg-white object-cover"
+              className={`block h-full w-full bg-white ${mediaWide ? "object-contain" : "object-cover"}`}
             />
           ) : (
             <div className="h-full w-full bg-[#eef5f8]" />

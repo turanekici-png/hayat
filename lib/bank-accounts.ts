@@ -5,6 +5,7 @@ export type BankIban = {
 
 export type BankAccount = {
   bank: string;
+  logoUrl?: string;
   branch?: string;
   accountName?: string;
   type?: string;
@@ -87,6 +88,7 @@ function normalizeAccount(value: unknown): BankAccount | null {
 
   return {
     bank,
+    logoUrl: clean(record.logoUrl),
     branch: clean(record.branch),
     accountName: clean(record.accountName),
     type: clean(record.type),
@@ -145,6 +147,7 @@ export function serializeBankAccountsContent(input: BankAccountsContent) {
       note: input.note.trim(),
       accounts: input.accounts.map((account) => ({
         bank: account.bank.trim(),
+        logoUrl: account.logoUrl?.trim() || "",
         branch: account.branch?.trim() || "",
         accountName: account.accountName?.trim() || "",
         type: account.type?.trim() || "",

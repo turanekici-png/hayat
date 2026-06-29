@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { CopyIbanButton } from "@/components/CopyIbanButton";
 import { prisma } from "@/lib/prisma";
 import { defaultBankAccounts, parseBankAccountsContent } from "@/lib/bank-accounts";
+import { normalizeMediaUrl } from "@/lib/media-url";
 
 const fallbackPolicies: Record<string, { title: string; content: string; label?: string }> = {
   kvkk: {
@@ -69,6 +70,11 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
             <div className="mt-8 grid gap-5 md:grid-cols-3">
               {bankAccounts.map((account, index) => (
                 <div key={`${account.bank}-${index}`} className="rounded-[20px] border border-hayat-border bg-white p-6 shadow-stk">
+                  {account.logoUrl && (
+                    <div className="mb-4 grid h-14 w-14 place-items-center overflow-hidden rounded-[14px] border border-hayat-border bg-white p-2 shadow-sm">
+                      <img src={normalizeMediaUrl(account.logoUrl) || account.logoUrl} alt={`${account.bank || "Banka"} logosu`} loading="lazy" decoding="async" className="h-full w-full object-contain" />
+                    </div>
+                  )}
                   <p className="text-xs font-black uppercase text-hayat-green">{account.type || "Banka Hesabı"}</p>
                   <h2 className="mt-3 text-xl font-black text-hayat-dark">{account.bank || "Banka adı girilmedi"}</h2>
                   {account.branch && <p className="mt-1 text-sm font-bold text-[#5d6b70]">{account.branch}</p>}

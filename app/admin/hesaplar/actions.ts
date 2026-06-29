@@ -20,6 +20,7 @@ export async function saveBankAccountsPage(formData: FormData) {
   const isActive = formData.get("isActive") === "on";
 
   const banks = textValues(formData, "bank");
+  const logoUrls = textValues(formData, "logoUrl");
   const branches = textValues(formData, "branch");
   const accountNames = textValues(formData, "accountName");
   const tlIbans = textValues(formData, "tlIban");
@@ -30,6 +31,7 @@ export async function saveBankAccountsPage(formData: FormData) {
 
   const accounts: BankAccount[] = banks.map((bank, index) => ({
     bank,
+    logoUrl: logoUrls[index] || "",
     branch: branches[index] || "",
     accountName: accountNames[index] || "",
     type: types[index] || "",
@@ -43,22 +45,38 @@ export async function saveBankAccountsPage(formData: FormData) {
 
   const content = serializeBankAccountsContent({ note, accounts });
 
-  await prisma.policyPage.upsert({
-    where: { type: "BANK_ACCOUNTS" },
-    create: {
-      type: "BANK_ACCOUNTS",
-      slug: "hesap-numaralarimiz",
-      title,
-      content,
-      isActive
+  const existingPage = await prisma.policyPage.findFirst({
+    where: {
+      OR: [
+        { type: "BANK_ACCOUNTS" },
+        { slug: "hesap-numaralarimiz" }
+      ]
     },
-    update: {
-      title,
-      slug: "hesap-numaralarimiz",
-      content,
-      isActive
-    }
+    select: { id: true }
   });
+
+  if (existingPage) {
+    await prisma.policyPage.update({
+      where: { id: existingPage.id },
+      data: {
+        type: "BANK_ACCOUNTS",
+        slug: "hesap-numaralarimiz",
+        title,
+        content,
+        isActive
+      }
+    });
+  } else {
+    await prisma.policyPage.create({
+      data: {
+        type: "BANK_ACCOUNTS",
+        slug: "hesap-numaralarimiz",
+        title,
+        content,
+        isActive
+      }
+    });
+  }
 
   revalidatePath("/admin/hesaplar");
   revalidatePath("/hesap-numaralarimiz");

@@ -5,13 +5,37 @@ import { AdminShell } from "../AdminShell";
 import { saveBankAccountsPage } from "./actions";
 import { BankAccountsEditor } from "./BankAccountsEditor";
 import { parseBankAccountsContent } from "@/lib/bank-accounts";
+import { normalizeMediaUrl } from "@/lib/media-url";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function BankAccountsAdminPage() {
-  const page = await prisma.policyPage.findUnique({ where: { type: "BANK_ACCOUNTS" } }).catch(() => null);
+  const [page, media] = await Promise.all([
+    prisma.policyPage.findFirst({
+      where: {
+        OR: [
+          { type: "BANK_ACCOUNTS" },
+          { slug: "hesap-numaralarimiz" }
+        ]
+      }
+    }).catch(() => null),
+    prisma.mediaAsset.findMany({
+      select: {
+        id: true,
+        title: true,
+        url: true,
+        filename: true,
+        mimeType: true
+      },
+      orderBy: { createdAt: "desc" },
+      take: 24
+    }).catch(() => [])
+  ]);
   const parsed = parseBankAccountsContent(page?.content);
+  const safeMedia = media
+    .filter((item) => item.url.trim().length > 0)
+    .map((item) => ({ ...item, url: normalizeMediaUrl(item.url) || item.url }));
 
   return (
     <AdminShell activePath="/admin/hesaplar" contentClassName="max-w-6xl">
@@ -46,7 +70,7 @@ export default async function BankAccountsAdminPage() {
         <label className="mt-5 block text-sm font-black text-[#5d6b70]">Sayfa Açıklaması</label>
         <textarea name="note" defaultValue={parsed.note} rows={4} className="mt-2 w-full rounded-[14px] border border-hayat-border bg-hayat-soft p-4 text-base font-semibold leading-7 text-hayat-dark outline-hayat-blue" />
 
-        <BankAccountsEditor accounts={parsed.accounts} />
+        <BankAccountsEditor accounts={parsed.accounts} media={safeMedia} />
 
         <button className="mt-6 inline-flex items-center gap-2 rounded-[14px] bg-hayat-green px-6 py-3 font-black text-white shadow-green hover:bg-hayat-blue">
           <Save size={18} /> Kaydet
