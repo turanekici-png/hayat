@@ -1,66 +1,69 @@
-﻿import Link from "next/link";
-import { Heart, Mail, Menu, Phone, Search } from "lucide-react";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Menu } from "lucide-react";
 
 const nav = [
-  ["Ana Sayfa", "/"],
-  ["Kurumsal", "/kurumsal"],
-  ["Faaliyetler", "/faaliyetler"],
-  ["Projelerimiz", "/projeler"],
-  ["Haberler", "/haberler"],
-  ["Hesap Numaralarımız", "/hesap-numaralarimiz"],
-  ["İletişim", "/iletisim"]
+  { label: "Ana Sayfa", href: "/" },
+  { label: "Kurumsal", href: "/kurumsal" },
+  { label: "Faaliyetler", href: "/faaliyetler" },
+  { label: "Projeler", href: "/projeler" },
+  { label: "Haberler", href: "/haberler" },
+  { label: "Hesap No", href: "/hesap-numaralarimiz" },
+  { label: "İletişim", href: "/iletisim" }
 ];
 
+function isActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function Header() {
+  const pathname = usePathname() || "/";
+
   return (
-    <header className="sticky top-0 z-[100] w-full border-b border-white/10 bg-hayat-dark shadow-[0_12px_34px_rgba(10,58,85,0.18)]">
-      <div className="hidden border-b border-white/10 bg-[#083046] py-2 lg:block">
-        <div className="mx-auto flex max-w-[1840px] items-center justify-center gap-10 px-3 sm:px-4 lg:px-4">
-          <a href="mailto:bilgi@hayatder.org.tr" className="flex items-center gap-2 text-xs font-extrabold text-[#cfe6f3] transition-colors hover:text-white">
-            <Mail size={16} className="text-hayat-green" /> bilgi@hayatder.org.tr
-          </a>
-          <a href="tel:+903462214100" className="flex items-center gap-2 text-xs font-extrabold text-[#cfe6f3] transition-colors hover:text-white">
-            <Phone size={16} className="text-hayat-green" /> +90 346 221 41 00
-          </a>
-        </div>
-      </div>
+    <header className="sticky top-0 z-[100] w-full border-t-2 border-hayat-dark border-b border-hayat-border bg-[#f7f5ef]/96 backdrop-blur">
+      <div className="mx-auto flex h-[84px] max-w-[1280px] items-center justify-between gap-5 px-4 sm:px-6">
+        <Link href="/" className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[10px] bg-white shadow-[0_8px_20px_rgba(10,58,85,0.08)]" aria-label="Hayat Ağacı Derneği ana sayfa">
+          <img src="/media/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" className="h-[46px] w-[46px] rounded-[8px] object-contain" />
+        </Link>
 
-      <div className="mx-auto flex h-16 max-w-[1840px] items-center justify-between gap-3 px-3 sm:h-20 sm:px-4 lg:h-[88px] lg:px-4">
-        <div className="flex min-w-0 flex-1 items-center gap-3 lg:gap-5">
-          <Link href="/" className="flex shrink-0 items-center rounded-[18px] bg-white p-2 shadow-[0_10px_24px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5" aria-label="Hayat Ağacı Derneği ana sayfa">
-            <img src="/media/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" className="h-10 w-[104px] rounded-sm object-contain sm:h-14 sm:w-[140px] lg:h-[72px] lg:w-[180px]" />
-          </Link>
-
-          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0 xl:flex 2xl:gap-1">
-            {nav.map(([label, href]) => (
-              <Link key={label} href={href} className="whitespace-nowrap rounded-[999px] px-3 py-2.5 text-sm font-extrabold text-[#cfe6f3] transition-all hover:bg-white hover:text-hayat-dark 2xl:px-4 2xl:text-base">
-                {label}
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-8 lg:flex">
+          {nav.map((item) => {
+            const active = isActive(pathname, item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`relative flex h-[84px] items-center whitespace-nowrap text-[15.5px] font-bold transition-colors ${active ? "text-hayat-dark" : "text-[#23323a] hover:text-hayat-blue"}`}
+              >
+                {item.label}
+                {active && <span className="absolute bottom-[22px] left-0 h-[2px] w-full rounded-full bg-hayat-blue" />}
               </Link>
-            ))}
-          </nav>
-        </div>
+            );
+          })}
+        </nav>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <div className="hidden h-10 w-10 cursor-pointer items-center justify-center rounded-full text-[#cfe6f3] transition-colors hover:bg-white hover:text-hayat-dark 2xl:flex">
-            <Search size={19} />
-          </div>
-
-          <Link href="/bagis" className="group flex h-11 items-center gap-2 rounded-[999px] bg-hayat-green px-3 text-sm font-black text-white shadow-green transition-all hover:-translate-y-0.5 hover:bg-white hover:text-hayat-dark active:scale-95 sm:h-12 sm:px-5 lg:h-auto lg:px-6 lg:py-4 2xl:px-8">
-            <Heart size={18} fill="currentColor" />
-            <span className="hidden sm:inline">BAĞIŞ YAP</span>
+        <div className="flex shrink-0 items-center gap-3">
+          <Link href="/bagis" className="inline-flex h-[46px] items-center justify-center rounded-full bg-hayat-green px-6 text-[15px] font-black text-white shadow-green transition hover:-translate-y-0.5 hover:bg-hayat-blue active:scale-95">
+            Bağış Yap
           </Link>
 
-          <details className="group relative xl:hidden">
-            <summary className="flex cursor-pointer list-none items-center gap-2 rounded-[999px] border border-white/20 bg-white/10 px-3 py-2 text-sm font-black text-white transition-colors hover:bg-white hover:text-hayat-dark [&::-webkit-details-marker]:hidden">
-              <Menu size={20} />
+          <details className="group relative lg:hidden">
+            <summary className="flex h-[44px] w-[44px] cursor-pointer list-none items-center justify-center rounded-full border border-hayat-border bg-white text-hayat-dark shadow-sm [&::-webkit-details-marker]:hidden">
+              <Menu size={21} />
             </summary>
-            <div className="absolute right-0 top-[calc(100%+12px)] w-[min(280px,calc(100vw-24px))] overflow-hidden rounded-[20px] border border-hayat-border bg-white p-3 shadow-2xl ring-1 ring-hayat-border">
-              <div className="grid gap-1 text-lg font-black">
-                {nav.map(([label, href]) => (
-                  <Link key={label} href={href} className="rounded-[14px] px-5 py-4 text-hayat-dark hover:bg-hayat-soft hover:text-hayat-blue">
-                    {label}
-                  </Link>
-                ))}
+            <div className="absolute right-0 top-[calc(100%+12px)] w-[min(310px,calc(100vw-24px))] overflow-hidden rounded-[20px] border border-hayat-border bg-white p-3 shadow-2xl">
+              <div className="grid gap-1 text-base font-black">
+                {nav.map((item) => {
+                  const active = isActive(pathname, item.href);
+                  return (
+                    <Link key={item.href} href={item.href} className={`rounded-[14px] px-5 py-3.5 ${active ? "bg-[#e1eef7] text-hayat-blue" : "text-hayat-dark hover:bg-hayat-soft hover:text-hayat-blue"}`}>
+                      {item.label}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </details>
