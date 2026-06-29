@@ -205,9 +205,9 @@ function SectionEditor({ section, media }: { section: SiteSectionWithImages; med
                 <input type="hidden" name="sectionImageId" value={image.id} />
                 <div className="md:col-span-2">
                   {isVideoMedia(image.url) ? (
-                    <video src={displayMediaUrl(image.url)} className="h-24 w-full rounded-xl object-cover" muted preload="metadata" />
+                    <video src={displayMediaUrl(image.url)} className="h-24 w-full rounded-xl object-contain" muted preload="metadata" />
                   ) : (
-                    <img src={displayMediaUrl(image.url)} alt={image.alt || section.title} loading="lazy" decoding="async" className="h-24 w-full rounded-xl object-cover" />
+                    <img src={displayMediaUrl(image.url)} alt={image.alt || section.title} loading="lazy" decoding="async" className="h-24 w-full rounded-xl object-contain" />
                   )}
                 </div>
                 <label className="text-sm font-bold text-slate-600 md:col-span-4">Medya yolu<MediaField name="sectionImageUrl" defaultValue={displayMediaUrl(image.url)} placeholder="/uploads/medya.jpg" media={media} /></label>
