@@ -92,44 +92,29 @@ export function ActivityShowcaseSlider({
 
   if (splitMedia) {
     return (
-      <div className="relative h-[320px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[420px] lg:h-[600px]">
-        {activeImage ? (
-          <img
-            key={`${current.id}-${activeImage.src}`}
-            src={activeImage.src}
-            alt={activeImage.alt}
-            loading={active === 0 ? "eager" : "lazy"}
-            decoding="async"
-            fetchPriority={active === 0 ? "high" : "auto"}
-            className="block h-full w-full bg-white object-cover"
-          />
-        ) : (
-          <div className="h-full w-full bg-[#eef5f8]" />
-        )}
-
-        <div className="absolute inset-0 bg-gradient-to-r from-hayat-dark/78 via-hayat-dark/32 to-transparent" />
-        <div className="absolute inset-0 z-10 flex items-center px-6 py-8 sm:px-10 lg:px-12">
-          <div className="max-w-[520px]">
+      <div className="relative grid min-h-[360px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk lg:min-h-[560px] lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="z-10 flex items-center bg-white px-6 py-8 sm:px-10 lg:px-12">
+          <div className="max-w-[540px]">
             {(current.badge || current.subtitle) && (
-              <div className="mb-4 inline-flex w-fit items-center rounded-md border border-white/20 bg-white/90 px-3 py-2 text-[10px] font-black uppercase text-hayat-green shadow-stk sm:px-4 sm:py-2.5 sm:text-[11px]">
+              <div className="mb-4 inline-flex w-fit items-center rounded-md border border-hayat-border bg-hayat-soft px-3 py-2 text-[10px] font-black uppercase text-hayat-green shadow-stk sm:px-4 sm:py-2.5 sm:text-[11px]">
                 <span style={subtitleStyle(current)}>{current.badge || current.subtitle}</span>
               </div>
             )}
             <h3
-              className="text-3xl font-black leading-[1.08] text-white sm:text-4xl md:text-5xl xl:text-6xl"
-              style={{ ...titleStyle(current, "#ffffff"), textShadow: "0 2px 16px rgba(0,0,0,.38)" }}
+              className="text-3xl font-black leading-[1.08] text-hayat-dark sm:text-4xl md:text-5xl"
+              style={titleStyle(current, "#0a3a55", 42)}
             >
               {current.title}
             </h3>
             {showBody && body && (
-              <p className="mt-4 line-clamp-4 whitespace-pre-line text-sm font-semibold leading-7 text-white sm:mt-7 md:text-lg md:leading-8" style={bodyStyle(current, "#ffffff")}>
+              <p className="mt-4 line-clamp-6 whitespace-pre-line text-sm font-semibold leading-7 text-[#5d6b70] sm:mt-6 md:text-base md:leading-8" style={bodyStyle(current, "#5d6b70", 16)}>
                 {body}
               </p>
             )}
             {(showDefaultButton || current.buttonLabel || current.href) && (
               <Link
                 href={current.href || defaultHref}
-                className="mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-md bg-hayat-green px-5 text-xs font-black text-white shadow-green transition hover:bg-hayat-dark sm:mt-8 sm:h-14 sm:px-8 sm:text-sm"
+                className="mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-md bg-hayat-green px-5 text-xs font-black text-white shadow-green transition hover:bg-hayat-blue sm:mt-8 sm:h-14 sm:px-8 sm:text-sm"
               >
                 {current.buttonLabel || defaultButtonLabel} <ArrowRight size={16} />
               </Link>
@@ -137,15 +122,31 @@ export function ActivityShowcaseSlider({
           </div>
         </div>
 
+        <div className="relative min-h-[240px] bg-hayat-soft sm:min-h-[320px] lg:min-h-0">
+          {activeImage ? (
+            <img
+              key={`${current.id}-${activeImage.src}`}
+              src={activeImage.src}
+              alt={activeImage.alt}
+              loading={active === 0 ? "eager" : "lazy"}
+              decoding="async"
+              fetchPriority={active === 0 ? "high" : "auto"}
+              className="block h-full w-full bg-white object-cover"
+            />
+          ) : (
+            <div className="h-full w-full bg-[#eef5f8]" />
+          )}
+        </div>
+
         {items.length > 1 && (
-          <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+          <div className="absolute bottom-5 left-6 z-20 flex gap-2 sm:left-10 lg:left-12">
             {items.map((item, index) => (
               <button
                 key={`${item.id}-dot`}
                 type="button"
                 aria-label={`${index + 1}. ${dotLabel}`}
                 onClick={() => setActive(index)}
-                className={`h-2.5 rounded-full transition-all ${index === active ? "w-9 bg-white shadow-stk" : "w-2.5 bg-white/60 hover:bg-white"}`}
+                className={`h-2.5 rounded-full transition-all ${index === active ? "w-9 bg-hayat-blue shadow-stk" : "w-2.5 bg-hayat-border hover:bg-hayat-blue"}`}
               />
             ))}
           </div>
