@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+﻿﻿import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { HomePopup } from "@/components/HomePopup";
@@ -365,7 +365,7 @@ export default async function HomePage() {
                   return (
                   <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label="Proje" className={`group shrink-0 snap-start ${cardWidthClass(item)} cursor-zoom-in overflow-hidden border border-[#e9eef2] bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover`} style={cardStyle(item, { padding: "0px" })}>
                     {slides.length > 0 && (
-                      <div className="relative h-56 overflow-hidden bg-hayat-soft">
+                      <div className="relative aspect-w-16 aspect-h-9 overflow-hidden bg-hayat-soft">
                         <HeroImageSlider images={slides} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} fitToParent />
                         <span className="absolute left-5 top-5 rounded-md bg-white px-4 py-2 text-[10px] font-black uppercase tracking-widest text-hayat-green shadow-stk" style={subtitleStyle(item, "#6FB744", 10)}>{item.badge || "Aktif Proje"}</span>
                       </div>
@@ -643,5 +643,3 @@ export default async function HomePage() {
     </div>
   );
 }
-
-

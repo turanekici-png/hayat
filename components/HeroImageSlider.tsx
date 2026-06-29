@@ -39,7 +39,7 @@ export function HeroImageSlider({
           loading={index === 0 ? "eager" : "lazy"}
           decoding="async"
           fetchPriority={index === 0 ? "high" : "auto"}
-          className={`absolute inset-0 h-full w-full bg-white object-contain transition-all duration-1000 ${
+          className={`absolute inset-0 h-full w-full bg-white ${fitToParent ? "object-cover" : "object-contain"} transition-all duration-1000 ${
             index === active ? "scale-100 opacity-100" : "scale-105 opacity-0"
           }`}
         />

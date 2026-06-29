@@ -94,7 +94,7 @@ export async function SectionIndexPage({
                 <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label={itemLabel} className="h-full cursor-zoom-in overflow-hidden rounded-[20px] border border-[#ded8ca] bg-white text-left shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover">
                   <div className="relative aspect-w-16 aspect-h-9 overflow-hidden bg-[repeating-linear-gradient(135deg,#e8f4fb_0,#e8f4fb_16px,#deedf5_16px,#deedf5_32px)]">
                     {image ? (
-                      <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-contain" />
+                      <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-cover" />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-hayat-blue/50">
                         <ImageIcon size={44} />
