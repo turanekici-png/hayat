@@ -23,7 +23,7 @@ export default async function BagisPage({ searchParams }: { searchParams: BagisS
     <>
       <Header />
       <main className="bg-hayat-soft">
-        <section className="mx-auto grid max-w-7xl gap-10 px-5 py-16 md:grid-cols-[1fr_.9fr]">
+        <section className="mx-auto grid max-w-[1840px] gap-10 px-3 py-16 sm:px-4 md:grid-cols-[1fr_.9fr] lg:px-4">
           <div>
             <p className="font-bold text-hayat-green">ONLINE BAĞIŞ</p>
             <h1 className="mt-3 text-5xl font-black text-hayat-dark">Bağışınızı güvenli şekilde iletin</h1>

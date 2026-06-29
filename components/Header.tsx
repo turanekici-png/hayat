@@ -15,7 +15,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-[100] w-full border-b border-white/10 bg-hayat-blue shadow-sm">
       <div className="hidden border-b border-white/10 bg-hayat-blueDark/30 py-2 lg:block">
-        <div className="mx-auto flex max-w-[1320px] items-center justify-center gap-10 px-5 sm:px-8 lg:px-10">
+        <div className="mx-auto flex max-w-[1840px] items-center justify-center gap-10 px-3 sm:px-4 lg:px-4">
           <a href="mailto:bilgi@hayatder.org.tr" className="flex items-center gap-2 text-xs font-extrabold text-white/90 transition-colors hover:text-white">
             <Mail size={16} className="text-white" /> bilgi@hayatder.org.tr
           </a>
@@ -25,7 +25,7 @@ export function Header() {
         </div>
       </div>
 
-      <div className="mx-auto flex h-16 max-w-[1500px] items-center justify-between gap-3 px-3 sm:h-20 sm:px-5 lg:h-[88px] lg:px-10">
+      <div className="mx-auto flex h-16 max-w-[1840px] items-center justify-between gap-3 px-3 sm:h-20 sm:px-4 lg:h-[88px] lg:px-4">
         <div className="flex min-w-0 flex-1 items-center gap-3 lg:gap-5">
           <Link href="/" className="flex shrink-0 items-center rounded-md bg-white p-2 shadow-sm transition hover:-translate-y-0.5" aria-label="Hayat Ağacı Derneği ana sayfa">
             <img src="/media/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" className="h-10 w-[104px] rounded-sm object-contain sm:h-14 sm:w-[140px] lg:h-[72px] lg:w-[180px]" />

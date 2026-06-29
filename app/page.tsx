@@ -237,15 +237,15 @@ export default async function HomePage() {
         {/* 1. NEWS WELCOME */}
         {heroNewsItems.length > 0 && (
           <section className="relative overflow-hidden border-b border-[#d5e4ec]" style={{ backgroundColor: heroNewsLead?.backgroundColor || "#eef5f8", paddingTop: `${heroNewsLead?.paddingY || 0}px`, paddingBottom: `${heroNewsLead?.paddingY || 0}px` }}>
-            <div className={`mx-auto ${heroNewsLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"} px-5 py-1 sm:px-8 lg:px-10`}>
+            <div className={`mx-auto ${heroNewsLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"} px-3 py-1 sm:px-4 lg:px-4`}>
               <ActivityShowcaseSlider items={heroNewsItems} defaultHref="/haberler" defaultButtonLabel="Haberi İncele" dotLabel="haber" showDefaultButton splitMedia showBody={false} />
             </div>
           </section>
         )}
 
         {/* 2. QUICK DONATION OVERLAY */}
-        <section className="quick-donation-section px-5 sm:px-8 lg:px-10" style={{ backgroundColor: quickDonation?.backgroundColor || "#eef5f8", paddingTop: 12, paddingBottom: 12 }}>
-          <div className={`quick-donation-card mx-auto ${quickDonation?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"} rounded-lg border border-white/25 bg-hayat-green p-4 shadow-green sm:p-6 md:p-8`} style={cardStyle(quickDonation, { backgroundColor: "#6FB744", borderRadius: 8, padding: 24 })}>
+        <section className="quick-donation-section px-3 sm:px-4 lg:px-4" style={{ backgroundColor: quickDonation?.backgroundColor || "#eef5f8", paddingTop: 12, paddingBottom: 12 }}>
+          <div className={`quick-donation-card mx-auto ${quickDonation?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"} rounded-lg border border-white/25 bg-hayat-green p-4 shadow-green sm:p-6 md:p-8`} style={cardStyle(quickDonation, { backgroundColor: "#6FB744", borderRadius: 8, padding: 24 })}>
             <div className="quick-donation-heading mb-6 text-center">
               <h2 className="quick-donation-title text-2xl font-black leading-tight text-white md:text-3xl" style={quickDonation ? headingStyle(quickDonation, "#ffffff", 32) : undefined}>{quickDonation?.title || "Hızlı Bağış"}</h2>
               {quickDonation?.subtitle && <p className="quick-donation-subtitle mt-2 text-sm font-bold text-white/85" style={quickDonation ? subtitleStyle(quickDonation, "rgba(255,255,255,.85)", 15) : undefined}>{quickDonation.subtitle}</p>}
@@ -271,8 +271,8 @@ export default async function HomePage() {
 
         {/* 3. DONATION SHORTCUTS */}
         {donationShortcuts.length > 0 && (
-          <section className="px-5 py-3 sm:px-8 lg:px-10" style={{ backgroundColor: shortcutSections[0]?.backgroundColor || "#ffffff" }}>
-            <div className={`mx-auto grid ${shortcutSections[0]?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"} gap-4 md:grid-cols-5`}>
+          <section className="px-3 py-3 sm:px-4 lg:px-4" style={{ backgroundColor: shortcutSections[0]?.backgroundColor || "#ffffff" }}>
+            <div className={`mx-auto grid ${shortcutSections[0]?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"} gap-4 md:grid-cols-5`}>
               {donationShortcuts.map(([label, href], index) => {
                 const source = shortcutSections[index];
                 return (
@@ -287,8 +287,8 @@ export default async function HomePage() {
 
         {/* 4. ACTIVITIES */}
         {activityItems.length > 0 && (
-          <section id="faaliyetler" className="px-5 sm:px-8 lg:px-10" style={{ backgroundColor: activityLead?.backgroundColor || "#f5f9fb", paddingTop: 16, paddingBottom: 24 }}>
-            <div className={`mx-auto ${activityLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"}`}>
+          <section id="faaliyetler" className="px-3 sm:px-4 lg:px-4" style={{ backgroundColor: activityLead?.backgroundColor || "#f5f9fb", paddingTop: 16, paddingBottom: 24 }}>
+            <div className={`mx-auto ${activityLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"}`}>
               <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
                   <h2 className="mt-1 text-3xl font-black tracking-tight text-[#1f3444] sm:text-4xl md:text-6xl" style={activityLead ? headingStyle(activityLead, "#1f3444", 56) : undefined}>{activitiesTitle}</h2>
@@ -352,8 +352,8 @@ export default async function HomePage() {
 
         {/* 5. CAMPAIGNS */}
         {featuredCampaigns.length > 0 && (
-          <section id="projeler" className="px-5 sm:px-8 lg:px-10" style={{ backgroundColor: campaignLead?.backgroundColor || "#ffffff", ...sectionStyle(campaignLead, 96) }}>
-            <div className={`mx-auto ${campaignLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"}`}>
+          <section id="projeler" className="px-3 sm:px-4 lg:px-4" style={{ backgroundColor: campaignLead?.backgroundColor || "#ffffff", ...sectionStyle(campaignLead, 96) }}>
+            <div className={`mx-auto ${campaignLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"}`}>
               <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
                   <h2 className="mt-1 text-3xl font-black tracking-tight text-[#1f3444] sm:text-4xl md:text-6xl" style={campaignLead ? headingStyle(campaignLead, "#1f3444", 56) : undefined}>{campaignsTitle}</h2>
@@ -390,8 +390,8 @@ export default async function HomePage() {
 
         {/* 6. VIDEOS */}
         {videoMediaItems.length > 0 && (
-          <section id="video" className="px-5 text-white sm:px-8 lg:px-10" style={{ backgroundColor: videoLead?.backgroundColor || "#102f47", ...sectionStyle(videoLead, 96) }}>
-            <div className={`mx-auto ${videoLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"}`}>
+          <section id="video" className="px-3 text-white sm:px-4 lg:px-4" style={{ backgroundColor: videoLead?.backgroundColor || "#102f47", ...sectionStyle(videoLead, 96) }}>
+            <div className={`mx-auto ${videoLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"}`}>
               <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
                   <h2 className="mt-1 text-3xl font-black sm:text-4xl md:text-6xl" style={videoLead ? headingStyle(videoLead, "#ffffff", 56) : undefined}>{videosTitle}</h2>
@@ -415,8 +415,8 @@ export default async function HomePage() {
 
         {/* 9. GALLERY */}
         {galleryMediaItems.length > 0 && (
-          <section id="galeri" className="px-5 sm:px-8 lg:px-10" style={{ backgroundColor: galleryLead?.backgroundColor || "#ffffff", ...sectionStyle(galleryLead, 96) }}>
-            <div className={`mx-auto ${galleryLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"}`}>
+          <section id="galeri" className="px-3 sm:px-4 lg:px-4" style={{ backgroundColor: galleryLead?.backgroundColor || "#ffffff", ...sectionStyle(galleryLead, 96) }}>
+            <div className={`mx-auto ${galleryLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"}`}>
               <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
                   <h2 className="mt-1 text-3xl font-black tracking-tight text-[#1f3444] sm:text-4xl md:text-6xl" style={galleryLead ? headingStyle(galleryLead, "#1f3444", 56) : undefined}>{galleryTitle}</h2>
@@ -440,8 +440,8 @@ export default async function HomePage() {
 
         {/* 10. BLOGS */}
         {blogs.length > 0 && (
-          <section id="blog" className="px-5 sm:px-8 lg:px-10" style={{ backgroundColor: blogLead?.backgroundColor || "#f5f9fb", ...sectionStyle(blogLead, 96) }}>
-            <div className={`mx-auto ${blogLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"}`}>
+          <section id="blog" className="px-3 sm:px-4 lg:px-4" style={{ backgroundColor: blogLead?.backgroundColor || "#f5f9fb", ...sectionStyle(blogLead, 96) }}>
+            <div className={`mx-auto ${blogLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"}`}>
               <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
                   <h2 className="mt-1 text-3xl font-black tracking-tight text-[#1f3444] sm:text-4xl md:text-6xl" style={blogLead ? headingStyle(blogLead, "#1f3444", 56) : undefined}>{blogsTitle}</h2>
@@ -479,8 +479,8 @@ export default async function HomePage() {
 
         {/* 11. STORIES */}
         {stories.length > 0 && (
-          <section id="hikayeler" className="px-5 sm:px-8 lg:px-10" style={{ backgroundColor: storyLead?.backgroundColor || "#ffffff", ...sectionStyle(storyLead, 96) }}>
-            <div className={`mx-auto ${storyLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"}`}>
+          <section id="hikayeler" className="px-3 sm:px-4 lg:px-4" style={{ backgroundColor: storyLead?.backgroundColor || "#ffffff", ...sectionStyle(storyLead, 96) }}>
+            <div className={`mx-auto ${storyLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"}`}>
               <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
                   <h2 className="mt-1 text-3xl font-black tracking-tight text-[#1f3444] sm:text-4xl md:text-6xl" style={storyLead ? headingStyle(storyLead, "#1f3444", 56) : undefined}>{storiesTitle}</h2>
@@ -518,8 +518,8 @@ export default async function HomePage() {
 
         {/* 12. CUSTOMS */}
         {customs.length > 0 && (
-          <section id="ozel-alanlar" className="px-5 sm:px-8 lg:px-10" style={{ backgroundColor: customLead?.backgroundColor || "#f5f9fb", ...sectionStyle(customLead, 96) }}>
-            <div className={`mx-auto ${customLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"}`}>
+          <section id="ozel-alanlar" className="px-3 sm:px-4 lg:px-4" style={{ backgroundColor: customLead?.backgroundColor || "#f5f9fb", ...sectionStyle(customLead, 96) }}>
+            <div className={`mx-auto ${customLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"}`}>
               <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
                   <h2 className="mt-1 text-3xl font-black tracking-tight text-[#1f3444] sm:text-4xl md:text-6xl" style={customLead ? headingStyle(customLead, "#1f3444", 56) : undefined}>{customsTitle}</h2>
@@ -556,8 +556,8 @@ export default async function HomePage() {
         )}
 
         {/* 13. CORPORATE */}
-        <section id="kurumsal" className="px-5 sm:px-8 lg:px-10" style={{ backgroundColor: mainCorporate?.backgroundColor || "#f5f9fb", ...sectionStyle(mainCorporate, 96) }}>
-          <div className={`mx-auto ${mainCorporate?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"}`}>
+        <section id="kurumsal" className="px-3 sm:px-4 lg:px-4" style={{ backgroundColor: mainCorporate?.backgroundColor || "#f5f9fb", ...sectionStyle(mainCorporate, 96) }}>
+          <div className={`mx-auto ${mainCorporate?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"}`}>
             <div className={mainCorporate?.layout === "SPLIT" ? "grid gap-6 lg:grid-cols-[minmax(0,430px)_minmax(0,1fr)] items-stretch" : "flex flex-col gap-5"}>
               {mainCorporate?.layout !== "MINIMAL" && mainCorporate?.layout === "SPLIT" && (
                 <div className="col-span-1 w-full max-w-[430px] h-full overflow-hidden bg-white shadow-stk rounded-lg" style={{ borderColor: mainCorporate?.borderColor || "transparent", borderWidth: mainCorporate?.borderColor ? "1px" : "0px" }}>
@@ -610,7 +610,7 @@ export default async function HomePage() {
 
         {/* 14. STATS */}
         {stats.length > 0 && (
-          <section className="px-5 py-6 text-white sm:px-8 lg:px-10" style={{ backgroundColor: statsSection?.backgroundColor || "#6FB744" }}>
+          <section className="px-3 py-6 text-white sm:px-4 lg:px-4" style={{ backgroundColor: statsSection?.backgroundColor || "#6FB744" }}>
             <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-4">
               <div className="min-w-0">
                 <h2 className="mt-1 text-2xl font-black leading-tight md:text-4xl lg:text-5xl" style={statsSection ? headingStyle(statsSection, "#ffffff", 44) : undefined}>{statsSection?.title || "Desteklerinizle büyüyen iyilik ağı"}</h2>
@@ -629,8 +629,8 @@ export default async function HomePage() {
 
         {/* 14. CTA */}
         {cta && (
-          <section className="px-5 text-white sm:px-8 lg:px-10" style={{ backgroundColor: cta?.backgroundColor || "#102033", ...cardStyle(cta), ...sectionStyle(cta, 80) }}>
-            <div className={`mx-auto flex ${cta?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1320px]"} flex-col gap-4 md:flex-row md:items-center md:justify-between`}>
+          <section className="px-3 text-white sm:px-4 lg:px-4" style={{ backgroundColor: cta?.backgroundColor || "#102033", ...cardStyle(cta), ...sectionStyle(cta, 80) }}>
+            <div className={`mx-auto flex ${cta?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"} flex-col gap-4 md:flex-row md:items-center md:justify-between`}>
               <div>
                 <h2 className="mt-1 max-w-4xl text-3xl font-black leading-tight sm:text-4xl md:text-6xl" style={headingStyle(cta, "#ffffff", 56)}>{cta.title}</h2>
                 <p className="mt-2 max-w-3xl text-lg font-semibold leading-8 text-white/75" style={bodyStyle(cta, "rgba(255,255,255,.75)")}>{cta.body}</p>

@@ -10,9 +10,9 @@ export default function ApplicationPage() {
     <>
       <Header />
       <main className="bg-hayat-soft">
-        <section className="relative overflow-hidden bg-hayat-dark px-5 py-20 text-white">
+        <section className="relative overflow-hidden bg-hayat-dark px-3 py-20 text-white sm:px-4 lg:px-4">
           <div className="absolute inset-0 opacity-20 [background:radial-gradient(circle_at_top_left,#d9b56d,transparent_35%),radial-gradient(circle_at_bottom_right,#16a34a,transparent_35%)]" />
-          <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-[1fr_.8fr]">
+          <div className="relative mx-auto grid max-w-[1840px] items-center gap-10 md:grid-cols-[1fr_.8fr]">
             <div>
               <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-black uppercase tracking-[.18em] text-hayat-gold"><HeartHandshake size={18} /> Online başvuru</p>
               <h1 className="mt-6 max-w-4xl text-5xl font-black tracking-tight md:text-6xl">Yardım başvurunuzu güvenli şekilde bize ulaştırın.</h1>
@@ -32,7 +32,7 @@ export default function ApplicationPage() {
           </div>
         </section>
 
-        <section className="mx-auto grid max-w-7xl gap-8 px-5 py-14 lg:grid-cols-[.75fr_1.25fr]">
+        <section className="mx-auto grid max-w-[1840px] gap-8 px-3 py-14 sm:px-4 lg:grid-cols-[.75fr_1.25fr] lg:px-4">
           <aside className="h-fit rounded-[2rem] bg-white p-7 shadow-sm lg:sticky lg:top-24">
             <ClipboardCheck className="text-hayat-green" size={42} />
             <h2 className="mt-5 text-2xl font-black text-hayat-dark">Başvuru Bilgilendirmesi</h2>

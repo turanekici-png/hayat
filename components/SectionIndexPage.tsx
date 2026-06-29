@@ -65,8 +65,8 @@ export async function SectionIndexPage({
     <>
       <Header />
       <main className="bg-[#f6fafc]">
-        <section className="border-b border-[#dfe7ed] bg-white px-5 py-8 sm:px-8 sm:py-12 lg:px-10">
-          <div className="mx-auto flex max-w-[1320px] flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <section className="border-b border-[#dfe7ed] bg-white px-3 py-8 sm:px-4 sm:py-12 lg:px-4">
+          <div className="mx-auto flex max-w-[1840px] flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <div>
               <Link href={backHref} className="inline-flex items-center gap-2 text-sm font-black text-hayat-blue transition hover:text-hayat-green">
                 <ArrowLeft size={18} /> Ana sayfaya dön
@@ -83,8 +83,8 @@ export async function SectionIndexPage({
         </section>
 
         {featured && (
-          <section className="px-5 py-8 sm:px-8 sm:py-12 lg:px-10">
-            <div className="mx-auto grid max-w-[1320px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk lg:grid-cols-[1.05fr_.95fr]">
+          <section className="px-3 py-8 sm:px-4 sm:py-12 lg:px-4">
+            <div className="mx-auto grid max-w-[1840px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk lg:grid-cols-[1.05fr_.95fr]">
               <div className="min-h-[260px] bg-hayat-soft sm:min-h-[360px]">
                 {sectionImages(featured)[0] ? (
                   <img src={sectionImages(featured)[0].src} alt={sectionImages(featured)[0].alt} loading="eager" decoding="async" fetchPriority="high" className="h-full min-h-[260px] w-full bg-white object-contain sm:min-h-[360px]" />
@@ -113,8 +113,8 @@ export async function SectionIndexPage({
           </section>
         )}
 
-        <section className={`px-5 ${featured ? "pb-16" : "py-16"} sm:px-8 lg:px-10`}>
-          <div className="mx-auto grid max-w-[1320px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <section className={`px-3 ${featured ? "pb-16" : "py-16"} sm:px-4 lg:px-4`}>
+          <div className="mx-auto grid max-w-[1840px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => {
               const image = sectionImages(item)[0];
               const linkHref = item.href || (item.type === "NEWS" ? `/haberler/${item.id}` : undefined);

@@ -15,7 +15,7 @@ export default async function AnnouncementDetailPage({ params }: { params: Promi
   return (
     <>
       <Header />
-      <main className="bg-hayat-soft px-5 py-14 sm:px-8 lg:px-10">
+      <main className="bg-hayat-soft px-3 py-14 sm:px-4 lg:px-4">
         <article className="mx-auto max-w-5xl rounded-[2rem] bg-white p-6 shadow-soft md:p-10">
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <div>

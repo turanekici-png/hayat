@@ -45,8 +45,8 @@ export default async function AllImagesPage({ searchParams }: { searchParams: Al
     <>
       <Header />
       <main className="min-h-screen bg-[#f6fafc]">
-        <section className="border-b border-[#dfe7ed] bg-white px-5 py-8 sm:px-8 sm:py-10 lg:px-10">
-          <div className="mx-auto flex max-w-[1320px] flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <section className="border-b border-[#dfe7ed] bg-white px-3 py-8 sm:px-4 sm:py-10 lg:px-4">
+          <div className="mx-auto flex max-w-[1840px] flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div>
               <Link href={selectedGallery ? "/tum-resimler" : "/#galeri"} className="inline-flex items-center gap-2 text-sm font-black text-hayat-blue transition hover:text-hayat-green">
                 <ArrowLeft size={18} /> {selectedGallery ? "Galerilere dön" : "Ana sayfaya dön"}
@@ -63,8 +63,8 @@ export default async function AllImagesPage({ searchParams }: { searchParams: Al
           </div>
         </section>
 
-        <section className="px-5 py-10 sm:px-8 lg:px-10">
-          <div className="mx-auto max-w-[1320px]">
+        <section className="px-3 py-10 sm:px-4 lg:px-4">
+          <div className="mx-auto max-w-[1840px]">
             {selectedGallery ? (
               <>
                 <GalleryLightboxGrid images={mediaItems(selectedGallery)} />
