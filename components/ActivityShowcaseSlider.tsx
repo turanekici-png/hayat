@@ -64,6 +64,7 @@ export function ActivityShowcaseSlider({
   dotLabel = "faaliyet",
   showDefaultButton = false,
   splitMedia = false,
+  mediaFirst = false,
   showBody = true
 }: {
   items: ActivityShowcaseItem[];
@@ -72,6 +73,7 @@ export function ActivityShowcaseSlider({
   dotLabel?: string;
   showDefaultButton?: boolean;
   splitMedia?: boolean;
+  mediaFirst?: boolean;
   showBody?: boolean;
 }) {
   const [active, setActive] = useState(0);
@@ -93,7 +95,7 @@ export function ActivityShowcaseSlider({
   if (splitMedia) {
     return (
       <div className="relative grid h-[620px] grid-rows-[minmax(0,1fr)_260px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[700px] sm:grid-rows-[minmax(0,1fr)_330px] lg:h-[680px] lg:grid-cols-[0.72fr_1.28fr] lg:grid-rows-none">
-        <div className="z-10 flex min-h-0 items-center overflow-hidden bg-white px-6 py-9 sm:px-10 lg:px-10">
+        <div className={`z-10 flex min-h-0 items-center overflow-hidden bg-white px-6 py-9 sm:px-10 lg:px-10 ${mediaFirst ? "lg:order-2" : ""}`}>
           <div className="max-w-[430px]">
             {(current.badge || current.subtitle) && (
               <div className="mb-4 inline-flex w-fit items-center rounded-md border border-hayat-border bg-hayat-soft px-3 py-2 text-[10px] font-black uppercase text-hayat-green shadow-stk sm:px-4 sm:py-2.5 sm:text-[11px]">
@@ -122,7 +124,7 @@ export function ActivityShowcaseSlider({
           </div>
         </div>
 
-        <div className="relative min-h-0 overflow-hidden bg-hayat-soft">
+        <div className={`relative min-h-0 overflow-hidden bg-hayat-soft ${mediaFirst ? "lg:order-1" : ""}`}>
           {activeImage ? (
             <img
               key={`${current.id}-${activeImage.src}`}

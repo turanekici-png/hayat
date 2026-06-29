@@ -77,7 +77,7 @@ export async function SectionIndexPage({
       <Header />
       <main className="bg-[#f7f5ef]">
         <section className="border-b border-[#ded8ca] bg-[#eee9dd] px-3 py-16 sm:px-4 sm:py-20 lg:px-4">
-          <div className="mx-auto max-w-[1160px]">
+          <div className="mx-auto max-w-[1840px]">
             <p className="text-[12px] font-black uppercase tracking-[0.16em] text-hayat-green">{eyebrow}</p>
             <h1 className="mt-5 max-w-[780px] text-[42px] font-black leading-[1.08] text-hayat-dark sm:text-[56px] md:text-[64px]">{pageTitle}</h1>
             <p className="mt-5 max-w-[660px] text-[18px] font-medium leading-8 text-[#65737d] md:text-[20px] md:leading-9">{description}</p>
@@ -85,7 +85,7 @@ export async function SectionIndexPage({
         </section>
 
         <section className="px-3 py-12 sm:px-4 lg:px-4">
-          <div className="mx-auto grid max-w-[1160px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto grid max-w-[1840px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             {items.map((item) => {
               const image = sectionImages(item)[0];
               const href = detailHref(item);

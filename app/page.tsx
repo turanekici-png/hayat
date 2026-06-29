@@ -241,7 +241,7 @@ export default async function HomePage() {
   );
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-hayat-soft font-montserrat text-hayat-ink selection:bg-hayat-blue selection:text-white">
+    <div className="min-h-screen overflow-x-clip bg-hayat-soft font-montserrat text-hayat-ink selection:bg-hayat-blue selection:text-white">
       <HomePopup popup={popup ? { id: popup.id, title: popup.title, content: popup.content, imageUrl: normalizeMediaUrl(popup.imageUrl) || popup.imageUrl, imageAlt: popup.imageAlt, buttonLabel: popup.buttonLabel, buttonUrl: popup.buttonUrl, showOnce: popup.showOnce, delaySeconds: popup.delaySeconds } : null} />
       <Header />
       
@@ -294,7 +294,7 @@ export default async function HomePage() {
                 </Link>
               </div>
               <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_440px] 2xl:grid-cols-[minmax(0,1fr)_480px]">
-                <ActivityShowcaseSlider items={activityShowcaseItems} splitMedia />
+                <ActivityShowcaseSlider items={activityShowcaseItems} splitMedia mediaFirst />
                 <aside className="flex h-[620px] min-h-0 flex-col overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[700px] lg:h-[680px]">
                 <div className="flex items-center justify-between border-b border-[#e9eef2] bg-hayat-green px-5 py-4 text-white">
                   <div>

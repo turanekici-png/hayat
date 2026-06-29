@@ -24,19 +24,19 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-[100] w-full border-t-2 border-hayat-dark border-b border-hayat-border bg-[#f7f5ef]/96 backdrop-blur">
-      <div className="mx-auto flex h-[84px] max-w-[1840px] items-center justify-between gap-5 px-3 sm:px-4 lg:px-4">
+      <div className="mx-auto flex h-[84px] max-w-[1840px] items-center justify-between gap-6 px-3 sm:px-4 lg:px-4">
         <Link href="/" className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[10px] bg-white shadow-[0_8px_20px_rgba(10,58,85,0.08)]" aria-label="Hayat Ağacı Derneği ana sayfa">
           <img src="/media/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" className="h-[46px] w-[46px] rounded-[8px] object-contain" />
         </Link>
 
-        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-8 lg:flex">
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-9 lg:flex xl:gap-11 2xl:gap-12">
           {nav.map((item) => {
             const active = isActive(pathname, item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative flex h-[84px] items-center whitespace-nowrap text-[15.5px] font-bold transition-colors ${active ? "text-hayat-dark" : "text-[#23323a] hover:text-hayat-blue"}`}
+                className={`relative flex h-[84px] items-center whitespace-nowrap text-[16px] font-bold transition-colors xl:text-[17px] ${active ? "text-hayat-dark" : "text-[#23323a] hover:text-hayat-blue"}`}
               >
                 {item.label}
                 {active && <span className="absolute bottom-[22px] left-0 h-[2px] w-full rounded-full bg-hayat-blue" />}
@@ -46,7 +46,7 @@ export function Header() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-3">
-          <Link href="/bagis" className="inline-flex h-[46px] items-center justify-center rounded-full bg-hayat-green px-6 text-[15px] font-black text-white shadow-green transition hover:-translate-y-0.5 hover:bg-hayat-blue active:scale-95">
+          <Link href="/bagis" className="inline-flex h-[48px] items-center justify-center rounded-full bg-hayat-green px-7 text-[16px] font-black text-white shadow-green transition hover:-translate-y-0.5 hover:bg-hayat-blue active:scale-95">
             Bağış Yap
           </Link>
 
