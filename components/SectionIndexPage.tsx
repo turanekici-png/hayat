@@ -64,8 +64,8 @@ export async function SectionIndexPage({
   return (
     <>
       <Header />
-      <main className="bg-[#f6fafc]">
-        <section className="border-b border-[#dfe7ed] bg-white px-3 py-8 sm:px-4 sm:py-12 lg:px-4">
+      <main className="bg-hayat-soft">
+        <section className="border-b border-hayat-border bg-hayat-soft px-3 py-8 sm:px-4 sm:py-12 lg:px-4">
           <div className="mx-auto flex max-w-[1840px] flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <div>
               <Link href={backHref} className="inline-flex items-center gap-2 text-sm font-black text-hayat-blue transition hover:text-hayat-green">
@@ -75,7 +75,7 @@ export async function SectionIndexPage({
               <h1 className="mt-3 max-w-5xl text-3xl font-black tracking-tight text-[#1f3444] sm:text-5xl md:text-7xl">{pageTitle}</h1>
               <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#607081] sm:mt-6 md:text-lg md:leading-8">{description}</p>
             </div>
-            <div className="flex w-fit items-center gap-3 rounded-md border border-[#dfe7ed] bg-[#f6fafc] px-5 py-4 text-sm font-black text-[#607081]">
+            <div className="flex w-fit items-center gap-3 rounded-[14px] border border-hayat-border bg-white px-5 py-4 text-sm font-black text-[#5d6b70] shadow-stk">
               <Icon className="text-hayat-blue" size={20} />
               {items.length} {countLabel}
             </div>
@@ -84,7 +84,7 @@ export async function SectionIndexPage({
 
         {featured && (
           <section className="px-3 py-8 sm:px-4 sm:py-12 lg:px-4">
-            <div className="mx-auto grid max-w-[1840px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk lg:grid-cols-[1.05fr_.95fr]">
+            <div className="mx-auto grid max-w-[1840px] overflow-hidden rounded-[20px] border border-hayat-border bg-white shadow-stk lg:grid-cols-[1.05fr_.95fr]">
               <div className="min-h-[260px] bg-hayat-soft sm:min-h-[360px]">
                 {sectionImages(featured)[0] ? (
                   <img src={sectionImages(featured)[0].src} alt={sectionImages(featured)[0].alt} loading="eager" decoding="async" fetchPriority="high" className="h-full min-h-[260px] w-full bg-white object-contain sm:min-h-[360px]" />
@@ -104,7 +104,7 @@ export async function SectionIndexPage({
                   <ExpandableText title={featured.title} text={featured.body || ""} className="text-base font-semibold leading-8 text-[#607081]" />
                 </div>
                 {featured.href && (
-                  <Link href={featured.href} className="mt-8 inline-flex w-fit items-center gap-2 rounded-md bg-hayat-green px-6 py-4 text-xs font-black uppercase tracking-widest text-white transition hover:bg-hayat-dark">
+                  <Link href={featured.href} className="mt-8 inline-flex w-fit items-center gap-2 rounded-[14px] bg-hayat-green px-6 py-4 text-xs font-black uppercase tracking-widest text-white shadow-green transition hover:bg-hayat-blue">
                     Detay <ArrowRight size={16} />
                   </Link>
                 )}
@@ -120,7 +120,7 @@ export async function SectionIndexPage({
               const linkHref = item.href || (item.type === "NEWS" ? `/haberler/${item.id}` : undefined);
 
               const card = (
-                <ExpandableCard title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label={itemLabel} className="cursor-zoom-in overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover">
+                <ExpandableCard title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label={itemLabel} className="cursor-zoom-in overflow-hidden rounded-[20px] border border-hayat-border bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover">
                   {image ? (
                     <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-64 w-full bg-white object-contain" />
                   ) : (
@@ -159,7 +159,7 @@ export async function SectionIndexPage({
           </div>
 
           {!items.length && (
-            <div className="mx-auto max-w-3xl rounded-lg border border-[#dfe7ed] bg-white p-10 text-center shadow-stk">
+            <div className="mx-auto max-w-3xl rounded-[20px] border border-hayat-border bg-white p-10 text-center shadow-stk">
               <Icon className="mx-auto text-hayat-blue" size={44} />
               <h2 className="mt-5 text-3xl font-black text-[#1f3444]">{emptyTitle}</h2>
               <p className="mt-3 text-[#607081]">{emptyBody}</p>

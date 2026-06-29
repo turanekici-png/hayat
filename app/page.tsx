@@ -228,7 +228,7 @@ export default async function HomePage() {
     item.href || "/bagis"
   ]);
   const renderQuickDonation = (sidePanel = false) => (
-    <div className={`quick-donation-card ${sidePanel ? "quick-donation-side h-full" : ""} mx-auto ${quickDonation?.contentWidth === "full" && !sidePanel ? "w-full max-w-none" : sidePanel ? "w-full" : "max-w-[1840px]"} rounded-[20px] border border-hayat-border bg-white p-4 shadow-stk sm:p-6 md:p-8`} style={cardStyle(quickDonation, { backgroundColor: "#ffffff", borderColor: "#e2ddd0", borderRadius: 20, padding: 24 })}>
+    <div className={`quick-donation-card ${sidePanel ? "quick-donation-side h-full" : ""} mx-auto ${quickDonation?.contentWidth === "full" && !sidePanel ? "w-full max-w-none" : sidePanel ? "w-full" : "max-w-[1840px]"} rounded-[20px] border border-hayat-border bg-white p-4 shadow-stk sm:p-6 md:p-8`} style={{ ...cardStyle(quickDonation, { padding: 24 }), backgroundColor: "#ffffff", borderColor: "#e2ddd0", borderRadius: 20 }}>
       <div className="quick-donation-heading mb-6 text-center">
         <h2 className="quick-donation-title text-2xl font-black leading-tight text-hayat-dark md:text-3xl" style={quickDonation ? headingStyle(quickDonation, "#0a3a55", 32) : undefined}>{quickDonation?.title || "Hızlı Bağış"}</h2>
         {quickDonation?.subtitle && <p className="quick-donation-subtitle mt-2 text-sm font-bold text-[#5d6b70]" style={quickDonation ? subtitleStyle(quickDonation, "#5d6b70", 15) : undefined}>{quickDonation.subtitle}</p>}

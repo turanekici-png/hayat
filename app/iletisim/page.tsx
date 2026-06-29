@@ -33,8 +33,8 @@ export default function ContactPage() {
   return (
     <>
       <Header />
-      <main className="bg-[#f6fafc]">
-        <section className="border-b border-[#dfe7ed] bg-white px-3 py-12 sm:px-4 lg:px-4">
+      <main className="bg-hayat-soft">
+        <section className="border-b border-hayat-border bg-hayat-soft px-3 py-12 sm:px-4 lg:px-4">
           <div className="mx-auto flex max-w-[1840px] flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <div>
               <Link href="/" className="inline-flex items-center gap-2 text-sm font-black text-hayat-blue transition hover:text-hayat-green">
@@ -48,7 +48,7 @@ export default function ContactPage() {
                 Bağış, başvuru, kurumsal süreçler ve saha faaliyetleriyle ilgili sorularınız için bizimle iletişime geçebilirsiniz.
               </p>
             </div>
-            <div className="flex w-fit items-center gap-3 rounded-md border border-[#dfe7ed] bg-[#f6fafc] px-5 py-4 text-sm font-black text-[#607081]">
+            <div className="flex w-fit items-center gap-3 rounded-[14px] border border-hayat-border bg-white px-5 py-4 text-sm font-black text-[#5d6b70] shadow-stk">
               <Building2 className="text-hayat-blue" size={20} />
               Hayat Ağacı Derneği
             </div>
@@ -64,9 +64,9 @@ export default function ContactPage() {
                   href={href}
                   target={label === "Adres" ? "_blank" : undefined}
                   rel={label === "Adres" ? "noreferrer" : undefined}
-                  className="group flex items-start gap-5 rounded-lg border border-[#dfe7ed] bg-white p-6 shadow-stk transition hover:-translate-y-1 hover:border-hayat-green hover:shadow-stk-hover"
+                  className="group flex items-start gap-5 rounded-[20px] border border-hayat-border bg-white p-6 shadow-stk transition hover:-translate-y-1 hover:border-hayat-green hover:shadow-stk-hover"
                 >
-                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-hayat-mint text-hayat-green">
+                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[14px] bg-hayat-mint text-hayat-green">
                     <Icon size={25} />
                   </span>
                   <span>
@@ -76,9 +76,9 @@ export default function ContactPage() {
                 </a>
               ))}
 
-              <div className="rounded-lg border border-[#dfe7ed] bg-white p-6 shadow-stk">
+              <div className="rounded-[20px] border border-hayat-border bg-white p-6 shadow-stk">
                 <div className="flex items-start gap-5">
-                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-[#eef6fb] text-hayat-blue">
+                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[14px] bg-[#cfe6f3] text-hayat-blue">
                     <Clock size={25} />
                   </span>
                   <div>
@@ -89,8 +89,8 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk">
-              <div className="flex flex-col gap-5 border-b border-[#dfe7ed] p-6 md:flex-row md:items-center md:justify-between">
+            <div className="overflow-hidden rounded-[20px] border border-hayat-border bg-white shadow-stk">
+              <div className="flex flex-col gap-5 border-b border-hayat-border p-6 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.2em] text-hayat-green">Konum</p>
                   <h2 className="mt-2 text-3xl font-black text-[#1f3444]">Merkez/Sivas</h2>
@@ -99,7 +99,7 @@ export default function ContactPage() {
                   href={directionsUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-12 w-fit items-center justify-center gap-2 rounded-md bg-hayat-green px-5 text-xs font-black uppercase tracking-widest text-white transition hover:bg-hayat-dark"
+                  className="inline-flex h-12 w-fit items-center justify-center gap-2 rounded-[14px] bg-hayat-green px-5 text-xs font-black uppercase tracking-widest text-white shadow-green transition hover:bg-hayat-blue"
                 >
                   <Navigation size={16} /> Yol Tarifi
                 </a>
@@ -112,9 +112,9 @@ export default function ContactPage() {
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                 />
-                <div className="pointer-events-none absolute left-5 top-5 max-w-[calc(100%-40px)] rounded-lg border border-[#dfe7ed] bg-white/95 p-4 shadow-stk backdrop-blur">
+                <div className="pointer-events-none absolute left-5 top-5 max-w-[calc(100%-40px)] rounded-[20px] border border-hayat-border bg-white/95 p-4 shadow-stk backdrop-blur">
                   <div className="flex items-start gap-3">
-                    <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-hayat-green text-white">
+                    <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-hayat-green text-white">
                       <MapPin size={20} />
                     </span>
                     <div>

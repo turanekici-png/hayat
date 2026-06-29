@@ -11,7 +11,6 @@ export default function ApplicationPage() {
       <Header />
       <main className="bg-hayat-soft">
         <section className="relative overflow-hidden bg-hayat-dark px-3 py-20 text-white sm:px-4 lg:px-4">
-          <div className="absolute inset-0 opacity-20 [background:radial-gradient(circle_at_top_left,#d9b56d,transparent_35%),radial-gradient(circle_at_bottom_right,#16a34a,transparent_35%)]" />
           <div className="relative mx-auto grid max-w-[1840px] items-center gap-10 md:grid-cols-[1fr_.8fr]">
             <div>
               <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-black uppercase tracking-[.18em] text-hayat-gold"><HeartHandshake size={18} /> Online başvuru</p>
@@ -23,24 +22,24 @@ export default function ApplicationPage() {
                 <span className="rounded-full bg-white/10 px-4 py-2">Admin inceleme</span>
               </div>
             </div>
-            <div className="rounded-[2rem] border border-white/10 bg-white/10 p-6 backdrop-blur">
+            <div className="rounded-[20px] border border-white/15 bg-white/10 p-6 backdrop-blur">
               <ShieldCheck className="text-hayat-gold" size={44} />
               <h2 className="mt-5 text-2xl font-black">Başvurular tek yerde toplanır</h2>
               <p className="mt-3 leading-7 text-white/70">Ad soyad, telefon, adres, hane bilgisi, gelir durumu, yardım türü ve açıklama alanları kayıt altına alınır.</p>
-              <Link href="/admin/basvurular" className="mt-6 inline-flex rounded-full bg-hayat-gold px-5 py-3 font-black text-hayat-dark">Başvuruları Yönet</Link>
+              <Link href="/admin/basvurular" className="mt-6 inline-flex rounded-[14px] bg-hayat-gold px-5 py-3 font-black text-hayat-dark">Başvuruları Yönet</Link>
             </div>
           </div>
         </section>
 
         <section className="mx-auto grid max-w-[1840px] gap-8 px-3 py-14 sm:px-4 lg:grid-cols-[.75fr_1.25fr] lg:px-4">
-          <aside className="h-fit rounded-[2rem] bg-white p-7 shadow-sm lg:sticky lg:top-24">
+          <aside className="h-fit rounded-[20px] border border-hayat-border bg-white p-7 shadow-stk lg:sticky lg:top-24">
             <ClipboardCheck className="text-hayat-green" size={42} />
             <h2 className="mt-5 text-2xl font-black text-hayat-dark">Başvuru Bilgilendirmesi</h2>
-            <p className="mt-3 leading-7 text-slate-600">Lütfen iletişim bilgilerini doğru girin. Yetkililerimiz gerekirse telefonla dönüş yapacaktır.</p>
-            <div className="mt-6 space-y-3 text-sm font-bold text-slate-600">
-              <div className="rounded-2xl bg-hayat-soft p-4">1. Bilgiler forma girilir.</div>
-              <div className="rounded-2xl bg-hayat-soft p-4">2. Başvuru veritabanına kaydedilir.</div>
-              <div className="rounded-2xl bg-hayat-soft p-4">3. Admin panelde incelenir.</div>
+            <p className="mt-3 leading-7 text-[#5d6b70]">Lütfen iletişim bilgilerini doğru girin. Yetkililerimiz gerekirse telefonla dönüş yapacaktır.</p>
+            <div className="mt-6 space-y-3 text-sm font-bold text-[#5d6b70]">
+              <div className="rounded-[14px] border border-hayat-border bg-hayat-soft p-4">1. Bilgiler forma girilir.</div>
+              <div className="rounded-[14px] border border-hayat-border bg-hayat-soft p-4">2. Başvuru veritabanına kaydedilir.</div>
+              <div className="rounded-[14px] border border-hayat-border bg-hayat-soft p-4">3. Admin panelde incelenir.</div>
             </div>
           </aside>
 

@@ -27,7 +27,7 @@ export default async function BagisPage({ searchParams }: { searchParams: BagisS
           <div>
             <p className="font-bold text-hayat-green">ONLINE BAĞIŞ</p>
             <h1 className="mt-3 text-5xl font-black text-hayat-dark">Bağışınızı güvenli şekilde iletin</h1>
-            <p className="mt-5 text-lg leading-8 text-slate-600">Tutarınızı, bağış türünüzü ve açıklamanızı yazıp ödeme adımına geçebilirsiniz.</p>
+            <p className="mt-5 text-lg leading-8 text-[#5d6b70]">Tutarınızı, bağış türünüzü ve açıklamanızı yazıp ödeme adımına geçebilirsiniz.</p>
             {paymentStatus === "basarisiz" && (
               <div className="mt-6 flex gap-3 rounded-3xl border border-red-100 bg-red-50 p-5 text-red-700">
                 <AlertCircle className="mt-1 shrink-0" />
@@ -37,7 +37,7 @@ export default async function BagisPage({ searchParams }: { searchParams: BagisS
                 </div>
               </div>
             )}
-            <div className="mt-8 rounded-3xl bg-white p-6 shadow-sm">
+            <div className="mt-8 rounded-[20px] border border-hayat-border bg-white p-6 shadow-stk">
               <b>Not:</b> Canlı POS aktif olduğunda ödeme bankanın 3D güvenlik ekranında doğrulanır.
             </div>
           </div>

@@ -39,9 +39,9 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
   }
 
   return (
-    <form onSubmit={submit} className="rounded-[2rem] bg-white p-6 shadow-soft ring-1 ring-slate-100 md:p-8">
+    <form onSubmit={submit} className="rounded-[20px] border border-hayat-border bg-white p-6 shadow-stk md:p-8">
       <div className="mb-6 flex items-center gap-3">
-        <span className="grid h-12 w-12 place-items-center rounded-2xl bg-hayat-soft text-hayat-green"><Heart /></span>
+        <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-hayat-mint text-hayat-green"><Heart /></span>
         <div>
           <h2 className="text-2xl font-black">Online Bağış</h2>
           <p className="text-sm text-slate-500">Kart bilgileriniz bankanın güvenli ödeme sayfasında alınır.</p>
@@ -49,22 +49,22 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
       </div>
 
       <div className="space-y-6">
-        <div className="grid gap-4 rounded-2xl border border-hayat-green/10 bg-hayat-soft p-4 md:grid-cols-2">
+        <div className="grid gap-4 rounded-[20px] border border-hayat-border bg-hayat-soft p-4 md:grid-cols-2">
           <label className="relative md:col-span-2">
             <UserRound className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-hayat-green" size={18} />
-            <input required name="fullName" placeholder="Ad Soyad" className="w-full rounded-2xl border py-4 pl-11 pr-4 outline-hayat-green" />
+            <input required name="fullName" placeholder="Ad Soyad" className="w-full rounded-[14px] border border-hayat-border bg-white py-4 pl-11 pr-4 outline-hayat-blue" />
           </label>
-          <select name="type" defaultValue={defaultType} className="rounded-2xl border p-4 outline-hayat-green">
+          <select name="type" defaultValue={defaultType} className="rounded-[14px] border border-hayat-border bg-white p-4 outline-hayat-blue">
             {donationTypes.map((type) => (
               <option key={type.code} value={type.code}>{type.label}</option>
             ))}
           </select>
-          <input required name="amount" type="number" min="1" step="0.01" defaultValue={defaultAmount} placeholder="Bağış Tutarı (TL)" className="rounded-2xl border p-4 outline-hayat-green" />
-          <textarea name="description" placeholder="Bağış açıklaması / notunuz" rows={4} className="rounded-2xl border p-4 outline-hayat-green md:col-span-2" />
+          <input required name="amount" type="number" min="1" step="0.01" defaultValue={defaultAmount} placeholder="Bağış Tutarı (TL)" className="rounded-[14px] border border-hayat-border bg-white p-4 outline-hayat-blue" />
+          <textarea name="description" placeholder="Bağış açıklaması / notunuz" rows={4} className="rounded-[14px] border border-hayat-border bg-white p-4 outline-hayat-blue md:col-span-2" />
         </div>
       </div>
 
-      <div className="mt-5 rounded-2xl border border-hayat-blue/10 bg-hayat-soft p-4 text-sm text-slate-700">
+      <div className="mt-5 rounded-[20px] border border-hayat-border bg-hayat-soft p-4 text-sm text-[#5d6b70]">
         <div className="mb-3 flex items-center gap-2 font-black text-hayat-dark"><ShieldCheck className="text-hayat-green" size={20} /> Yasal bilgilendirme ve onaylar</div>
         <label className="mt-3 flex gap-3 font-semibold leading-6">
           <input required name="kvkkConsent" type="checkbox" value="true" className="mt-1" />
@@ -81,7 +81,7 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
       </div>
 
       {message && <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{message}</p>}
-      <button disabled={loading} className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-hayat-green px-6 py-4 font-black text-white hover:bg-hayat-dark disabled:opacity-60">
+      <button disabled={loading} className="mt-6 flex w-full items-center justify-center gap-2 rounded-[14px] bg-hayat-green px-6 py-4 font-black text-white shadow-green hover:bg-hayat-blue disabled:opacity-60">
         <CreditCard /> {loading ? "Güvenli ödeme sayfası açılıyor..." : "Güvenli Ödeme Sayfasına Geç"}
       </button>
       <p className="mt-3 text-center text-xs text-slate-400">Kart bilgileriniz dernek sitesinde tutulmaz; ödeme Vakıf Katılım güvenli ödeme sayfasında tamamlanır.</p>
@@ -92,7 +92,7 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
 export function DonationForm({ donationTypes }: { donationTypes: DonationTypeOption[] }) {
   return (
     <Suspense fallback={
-      <div className="rounded-[2rem] bg-white p-6 text-center font-bold text-slate-500 shadow-soft ring-1 ring-slate-100 md:p-8">
+      <div className="rounded-[20px] border border-hayat-border bg-white p-6 text-center font-bold text-[#5d6b70] shadow-stk md:p-8">
         Bağış formu yükleniyor...
       </div>
     }>
