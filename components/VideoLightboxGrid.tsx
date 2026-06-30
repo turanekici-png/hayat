@@ -10,9 +10,38 @@ type GalleryVideo = {
   title: string;
 };
 
+function externalVideoEmbedUrl(src: string) {
+  try {
+    const url = new URL(src);
+    const host = url.hostname.replace(/^www\./, "");
+
+    if (host === "youtu.be") {
+      const id = url.pathname.split("/").filter(Boolean)[0];
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+
+    if (host.includes("youtube.com")) {
+      const watchId = url.searchParams.get("v");
+      const pathParts = url.pathname.split("/").filter(Boolean);
+      const embedId = pathParts[0] === "embed" || pathParts[0] === "shorts" ? pathParts[1] : watchId;
+      return embedId ? `https://www.youtube.com/embed/${embedId}` : null;
+    }
+
+    if (host === "vimeo.com" || host === "player.vimeo.com") {
+      const id = url.pathname.split("/").filter(Boolean).pop();
+      return id ? `https://player.vimeo.com/video/${id}` : null;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 export function VideoLightboxGrid({ videos }: { videos: GalleryVideo[] }) {
   const [selectedVideo, setSelectedVideo] = useState<GalleryVideo | null>(null);
   const [mounted, setMounted] = useState(false);
+  const selectedEmbedUrl = selectedVideo ? externalVideoEmbedUrl(selectedVideo.src) : null;
 
   useEffect(() => {
     setMounted(true);
@@ -40,7 +69,11 @@ export function VideoLightboxGrid({ videos }: { videos: GalleryVideo[] }) {
         {videos.map((video) => (
           <button key={video.id} type="button" onClick={() => setSelectedVideo(video)} className="group overflow-hidden rounded-lg border border-[#dfe7ed] bg-white text-left shadow-stk outline-none transition hover:-translate-y-1 hover:shadow-stk-hover focus-visible:ring-4 focus-visible:ring-hayat-green/30">
             <div className="relative aspect-video bg-hayat-dark">
-              <video src={video.src} className="h-full w-full object-cover" preload="metadata" muted />
+              {externalVideoEmbedUrl(video.src) ? (
+                <div className="h-full w-full bg-black" />
+              ) : (
+                <video src={video.src} className="h-full w-full object-cover" preload="metadata" muted />
+              )}
               <span className="absolute inset-0 flex items-center justify-center bg-slate-950/20 transition group-hover:bg-slate-950/35">
                 <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-hayat-blue shadow-2xl transition group-hover:scale-110 group-hover:text-hayat-green">
                   <Play size={28} fill="currentColor" />
@@ -59,7 +92,18 @@ export function VideoLightboxGrid({ videos }: { videos: GalleryVideo[] }) {
           <button type="button" onClick={() => setSelectedVideo(null)} className="absolute right-5 top-5 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-hayat-dark shadow-stk transition hover:bg-hayat-green hover:text-white" aria-label="Kapat">
             <X size={22} />
           </button>
-          <video src={selectedVideo.src} className="max-h-[88vh] max-w-[94vw] rounded-lg bg-black shadow-2xl" controls autoPlay onClick={(event) => event.stopPropagation()} />
+          {selectedEmbedUrl ? (
+            <iframe
+              src={`${selectedEmbedUrl}?autoplay=1`}
+              title={selectedVideo.title}
+              allow="autoplay; encrypted-media; picture-in-picture"
+              allowFullScreen
+              className="aspect-video w-[min(94vw,1180px)] rounded-lg bg-black shadow-2xl"
+              onClick={(event) => event.stopPropagation()}
+            />
+          ) : (
+            <video src={selectedVideo.src} className="max-h-[88vh] max-w-[94vw] rounded-lg bg-black shadow-2xl" controls autoPlay onClick={(event) => event.stopPropagation()} />
+          )}
         </div>,
         document.body
       )}

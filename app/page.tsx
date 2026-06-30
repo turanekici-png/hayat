@@ -59,7 +59,7 @@ function firstSlide(section: any, fallbackSrc?: string, fallbackAlt?: string): S
 }
 
 function isVideoSrc(src?: string | null) {
-  return Boolean(src && /\.(mp4|webm|ogg|mov)$/i.test(src));
+  return Boolean(src && (/(\.mp4|\.webm|\.ogg|\.mov)(\?.*)?$/i.test(src) || /(?:youtube\.com|youtu\.be|vimeo\.com)/i.test(src)));
 }
 
 function safeAlign(value?: string | null): CSSProperties["textAlign"] {

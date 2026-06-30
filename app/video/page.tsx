@@ -12,7 +12,7 @@ export const revalidate = 0;
 type VideoSearchParams = Promise<{ video?: string | string[] }>;
 
 function isVideoSrc(src?: string | null) {
-  return Boolean(src && /\.(mp4|webm|ogg|mov)$/i.test(src));
+  return Boolean(src && (/(\.mp4|\.webm|\.ogg|\.mov)(\?.*)?$/i.test(src) || /(?:youtube\.com|youtu\.be|vimeo\.com)/i.test(src)));
 }
 
 function allMediaItems(section: {
