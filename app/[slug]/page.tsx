@@ -102,7 +102,7 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
                     </div>
 
                     {account.description && (
-                      <p className="mt-4 rounded-[14px] bg-hayat-soft px-4 py-3 text-sm font-semibold leading-6 text-[#5d6b70]">
+                      <p className="mt-4 rounded-[14px] bg-hayat-green px-4 py-3 text-center text-base font-black uppercase leading-6 tracking-wide text-white shadow-green">
                         {account.description}
                       </p>
                     )}
