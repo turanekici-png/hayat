@@ -20,6 +20,7 @@ export async function saveBankAccountsPage(formData: FormData) {
   const isActive = formData.get("isActive") === "on";
 
   const banks = textValues(formData, "bank");
+  const sortOrders = textValues(formData, "sortOrder");
   const logoUrls = textValues(formData, "logoUrl");
   const branches = textValues(formData, "branch");
   const accountNames = textValues(formData, "accountName");
@@ -31,6 +32,7 @@ export async function saveBankAccountsPage(formData: FormData) {
 
   const accounts: BankAccount[] = banks.map((bank, index) => ({
     bank,
+    sortOrder: Number(sortOrders[index]) || 0,
     logoUrl: logoUrls[index] || "",
     branch: branches[index] || "",
     accountName: accountNames[index] || "",

@@ -293,8 +293,8 @@ export default async function HomePage() {
                 </Link>
               </div>
               <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_440px] 2xl:grid-cols-[minmax(0,1fr)_480px]">
-                <ActivityShowcaseSlider items={activityShowcaseItems} splitMedia compactMedia blurMediaFill />
-                <aside className="flex h-[560px] min-h-0 flex-col overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[600px] lg:h-[520px]">
+                <ActivityShowcaseSlider items={activityShowcaseItems} splitMedia compactMedia reducedMedia blurMediaFill />
+                <aside className="flex h-[522px] min-h-0 flex-col overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[562px] lg:h-[482px]">
                 <div className="flex items-center justify-between border-b border-[#e9eef2] bg-hayat-green px-5 py-4 text-white">
                   <div>
                     <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em] text-white/80">

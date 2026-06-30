@@ -70,20 +70,14 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
       <>
         <Header />
         <main className="bg-white">
-          <section className="bg-hayat-soft px-3 py-14 sm:px-4 lg:px-4 lg:py-20">
+          <section className="bg-hayat-soft px-3 py-8 sm:px-4 lg:px-4">
             <div className="mx-auto max-w-[1840px]">
-              <p className="text-[13px] font-black uppercase tracking-wider text-hayat-green">{label}</p>
-              <h1 className="mt-4 max-w-4xl text-[34px] font-black leading-tight text-hayat-dark sm:text-[44px] md:text-[52px]">{title}</h1>
-              {displayContent && (
-                <p className="mt-5 max-w-3xl whitespace-pre-line text-lg font-semibold leading-9 text-[#5d6b70]">
-                  {displayContent}
-                </p>
-              )}
+              <h1 className="text-[34px] font-black leading-tight text-hayat-dark sm:text-[44px] md:text-[52px]">Hesap Numaralarımız</h1>
             </div>
           </section>
 
-          <section className="bg-[#f5f9fc] px-3 py-10 sm:px-4 lg:px-4">
-            <div className="mx-auto grid max-w-[1840px] gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <section className="bg-[#f5f9fc] px-3 py-8 sm:px-4 lg:px-4">
+            <div className="mx-auto grid max-w-[1840px] gap-4 md:grid-cols-2 2xl:grid-cols-4">
               {bankAccounts.map((account, accountIndex) => {
                 const logoUrl = normalizeMediaUrl(account.logoUrl) || account.logoUrl;
                 const ibans = visibleIbans(account);
@@ -113,9 +107,9 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
                       </p>
                     )}
 
-                    <div className="mt-4 space-y-2.5">
+                    <div className="mt-3 space-y-2">
                       {ibans.map((iban, ibanIndex) => (
-                        <div key={`${account.bank}-${iban.label}-${ibanIndex}`} className="flex min-w-0 flex-col rounded-[16px] border border-[#d6e1ec] bg-white px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                        <div key={`${account.bank}-${iban.label}-${ibanIndex}`} className="flex min-w-0 flex-col rounded-[16px] border border-[#d6e1ec] bg-white px-3.5 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
                           <div className="flex items-center gap-3">
                             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#061b55] text-white shadow-[0_0_0_6px_#eef3f7]">
                               <CurrencyIcon label={iban.label} />
@@ -125,7 +119,7 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
                               <span className="mt-2 block h-px w-full bg-[#d6e1ec]" />
                             </div>
                           </div>
-                          <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="mt-2.5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                             <p className="min-w-0 break-all font-mono text-[15px] font-black leading-6 tracking-wide text-[#06122e]">{iban.iban}</p>
                             <CopyIbanButton value={iban.iban} label="IBAN Kopyala" className="min-h-10 w-full justify-center rounded-[12px] bg-gradient-to-br from-[#1977dc] to-[#0747ad] px-4 text-xs shadow-[0_10px_18px_rgba(25,119,220,0.16)] hover:from-hayat-green hover:to-hayat-green sm:w-auto sm:min-w-[132px]" />
                           </div>

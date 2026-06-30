@@ -5,6 +5,7 @@ export type BankIban = {
 
 export type BankAccount = {
   bank: string;
+  sortOrder?: number;
   logoUrl?: string;
   branch?: string;
   accountName?: string;
@@ -56,6 +57,11 @@ function clean(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function cleanSortOrder(value: unknown) {
+  const numberValue = typeof value === "number" ? value : Number(clean(value));
+  return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : 0;
+}
+
 function ibanKey(label: string) {
   const value = label.toLocaleLowerCase("tr-TR");
   if (value.includes("dolar") || value.includes("usd") || value.includes("$")) return "dolar";
@@ -99,6 +105,7 @@ function normalizeAccount(value: unknown): BankAccount | null {
 
   return {
     bank,
+    sortOrder: cleanSortOrder(record.sortOrder),
     logoUrl: clean(record.logoUrl),
     branch: clean(record.branch),
     accountName: clean(record.accountName),
@@ -132,18 +139,32 @@ function parseLegacyContent(content: string): BankAccountsContent {
   };
 }
 
+export function sortBankAccounts(accounts: BankAccount[]) {
+  return accounts
+    .map((account, index) => ({ account, index }))
+    .sort((a, b) => {
+      const aOrder = a.account.sortOrder || 0;
+      const bOrder = b.account.sortOrder || 0;
+      if (aOrder && bOrder && aOrder !== bOrder) return aOrder - bOrder;
+      if (aOrder && !bOrder) return -1;
+      if (!aOrder && bOrder) return 1;
+      return a.index - b.index;
+    })
+    .map((item) => item.account);
+}
+
 export function parseBankAccountsContent(content?: string | null): BankAccountsContent {
   if (!content?.trim()) return { note: defaultNote, accounts: [] };
 
   try {
     const parsed = JSON.parse(content) as unknown;
     if (Array.isArray(parsed)) {
-      return { note: defaultNote, accounts: parsed.map(normalizeAccount).filter(Boolean) as BankAccount[] };
+      return { note: defaultNote, accounts: sortBankAccounts(parsed.map(normalizeAccount).filter(Boolean) as BankAccount[]) };
     }
     if (parsed && typeof parsed === "object") {
       const record = parsed as Record<string, unknown>;
       const accounts = Array.isArray(record.accounts) ? record.accounts.map(normalizeAccount).filter(Boolean) as BankAccount[] : [];
-      return { note: clean(record.note) || defaultNote, accounts };
+      return { note: clean(record.note) || defaultNote, accounts: sortBankAccounts(accounts) };
     }
   } catch {
     return parseLegacyContent(content);
@@ -158,6 +179,7 @@ export function serializeBankAccountsContent(input: BankAccountsContent) {
       note: input.note.trim(),
       accounts: input.accounts.map((account) => ({
         bank: account.bank.trim(),
+        sortOrder: account.sortOrder || 0,
         logoUrl: account.logoUrl?.trim() || "",
         branch: account.branch?.trim() || "",
         accountName: account.accountName?.trim() || "",

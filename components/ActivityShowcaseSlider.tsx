@@ -71,6 +71,7 @@ export function ActivityShowcaseSlider({
   blurMediaFill = false,
   compactMedia = false,
   extendedMedia = false,
+  reducedMedia = false,
   equalColumns = false,
   showBody = true
 }: {
@@ -87,6 +88,7 @@ export function ActivityShowcaseSlider({
   blurMediaFill?: boolean;
   compactMedia?: boolean;
   extendedMedia?: boolean;
+  reducedMedia?: boolean;
   equalColumns?: boolean;
   showBody?: boolean;
 }) {
@@ -109,6 +111,8 @@ export function ActivityShowcaseSlider({
   if (splitMedia) {
     const splitHeightClass = extendedMedia
       ? "h-[calc(560px+4cm)] grid-rows-[minmax(0,1fr)_220px] sm:h-[calc(600px+4cm)] sm:grid-rows-[minmax(0,1fr)_280px] lg:h-[calc(520px+4cm)]"
+      : reducedMedia
+      ? "h-[522px] grid-rows-[minmax(0,1fr)_200px] sm:h-[562px] sm:grid-rows-[minmax(0,1fr)_250px] lg:h-[482px]"
       : compactMedia
       ? "h-[560px] grid-rows-[minmax(0,1fr)_220px] sm:h-[600px] sm:grid-rows-[minmax(0,1fr)_280px] lg:h-[520px]"
       : "h-[620px] grid-rows-[minmax(0,1fr)_260px] sm:h-[700px] sm:grid-rows-[minmax(0,1fr)_330px] lg:h-[680px]";

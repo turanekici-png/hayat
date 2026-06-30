@@ -15,6 +15,7 @@ type MediaItem = {
 
 const emptyAccount: BankAccount = {
   bank: "",
+  sortOrder: 0,
   logoUrl: "",
   branch: "",
   accountName: "Hayat Ağacı Derneği",
@@ -26,6 +27,7 @@ const emptyAccount: BankAccount = {
 function withMinimumIbans(account: BankAccount): BankAccount {
   return {
     ...account,
+    sortOrder: account.sortOrder || 0,
     logoUrl: account.logoUrl || "",
     ibans: defaultIbanLabels.map((label, index) => ({
       label,
@@ -51,7 +53,10 @@ export function BankAccountsEditor({ accounts, media }: { accounts: BankAccount[
   const [rows, setRows] = useState<BankAccount[]>(accounts.length ? accounts.map(withMinimumIbans) : [createEmptyAccount()]);
 
   function update(index: number, key: keyof Omit<BankAccount, "ibans">, value: string) {
-    setRows((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, [key]: value } : row));
+    setRows((current) => current.map((row, rowIndex) => {
+      if (rowIndex !== index) return row;
+      return key === "sortOrder" ? { ...row, sortOrder: Number(value) || 0 } : { ...row, [key]: value };
+    }));
   }
 
   function updateIban(accountIndex: number, ibanIndex: number, value: string) {
@@ -94,6 +99,10 @@ export function BankAccountsEditor({ accounts, media }: { accounts: BankAccount[
           </div>
 
           <div className="grid gap-3 md:grid-cols-2">
+            <label className="text-sm font-black text-[#5d6b70]">
+              Sıra No
+              <input name="sortOrder" type="number" min="0" value={row.sortOrder || ""} onChange={(event) => update(index, "sortOrder", event.target.value)} className="mt-2 w-full rounded-[14px] border border-hayat-border bg-white p-3 font-bold text-hayat-dark outline-hayat-blue" placeholder={`${index + 1}`} />
+            </label>
             <label className="text-sm font-black text-[#5d6b70]">
               Banka Adı
               <input name="bank" value={row.bank} onChange={(event) => update(index, "bank", event.target.value)} className="mt-2 w-full rounded-[14px] border border-hayat-border bg-white p-3 font-bold text-hayat-dark outline-hayat-blue" placeholder="T.C. Ziraat Bankası" />
