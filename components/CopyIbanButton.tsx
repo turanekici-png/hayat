@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Copy } from "lucide-react";
 
 export function CopyIbanButton({ value, className = "", label = "Kopyala" }: { value: string; className?: string; label?: string }) {
   const [copied, setCopied] = useState(false);
@@ -19,8 +20,9 @@ export function CopyIbanButton({ value, className = "", label = "Kopyala" }: { v
     <button
       type="button"
       onClick={copy}
-      className={`shrink-0 rounded-[12px] bg-hayat-blue px-4 py-2 text-xs font-black text-white transition hover:bg-hayat-green ${className}`}
+      className={`inline-flex shrink-0 items-center gap-2 rounded-[12px] bg-hayat-blue px-4 py-2 text-xs font-black text-white transition hover:bg-hayat-green ${className}`}
     >
+      <Copy size={18} />
       {copied ? "Kopyalandı" : label}
     </button>
   );

@@ -5,6 +5,7 @@ import { CopyIbanButton } from "@/components/CopyIbanButton";
 import { prisma } from "@/lib/prisma";
 import { defaultBankAccounts, parseBankAccountsContent, type BankAccount } from "@/lib/bank-accounts";
 import { normalizeMediaUrl } from "@/lib/media-url";
+import { DollarSign, Euro } from "lucide-react";
 
 const fallbackPolicies: Record<string, { title: string; content: string; label?: string }> = {
   kvkk: {
@@ -35,6 +36,17 @@ export const revalidate = 0;
 
 function visibleIbans(account: BankAccount) {
   return account.ibans.filter((iban) => iban.iban.trim().length > 0);
+}
+
+function ibanCurrencyLabel(label: string, isSingle: boolean) {
+  return (isSingle ? "IBAN" : label.replace(" IBAN", "")).toLocaleUpperCase("tr-TR");
+}
+
+function CurrencyIcon({ label }: { label: string }) {
+  const key = label.toLocaleLowerCase("tr-TR");
+  if (key.includes("dolar") || key.includes("usd")) return <DollarSign size={42} strokeWidth={2.8} />;
+  if (key.includes("euro") || key.includes("eur")) return <Euro size={42} strokeWidth={2.8} />;
+  return <span className="text-[42px] font-black leading-none">₺</span>;
 }
 
 export default async function PolicyPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -70,44 +82,55 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
             </div>
           </section>
 
-          <section className="px-3 py-10 sm:px-4 lg:px-4">
-            <div className="mx-auto grid max-w-[1840px] gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <section className="bg-[#f5f9fc] px-3 py-10 sm:px-4 lg:px-4">
+            <div className="mx-auto grid max-w-[1500px] gap-8">
               {bankAccounts.map((account, accountIndex) => {
                 const logoUrl = normalizeMediaUrl(account.logoUrl) || account.logoUrl;
                 const ibans = visibleIbans(account);
 
                 return (
-                  <article key={`${account.bank}-${accountIndex}`} className="rounded-[20px] border border-hayat-border bg-white p-6 shadow-stk">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex min-w-0 items-start gap-3">
+                  <article key={`${account.bank}-${accountIndex}`} className="rounded-[32px] border border-[#d6e1ec] bg-white p-6 shadow-[0_24px_70px_rgba(10,58,85,0.14)] sm:p-8 lg:p-12">
+                    <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center sm:gap-8">
                         {logoUrl && (
-                          <img src={logoUrl} alt={account.bank || "Banka logosu"} loading="lazy" decoding="async" className="h-12 w-12 shrink-0 rounded-[12px] border border-hayat-border bg-white object-contain p-1.5" />
+                          <img src={logoUrl} alt={account.bank || "Banka logosu"} loading="lazy" decoding="async" className="h-24 w-24 shrink-0 rounded-[22px] border border-[#d6e1ec] bg-white object-contain p-4 shadow-[0_14px_35px_rgba(10,58,85,0.08)] sm:h-32 sm:w-32" />
                         )}
-                        <div className="min-w-0">
-                          <h2 className="text-xl font-black leading-tight text-hayat-dark">{account.bank || "Banka Bilgisi"}</h2>
-                          {account.branch && <p className="mt-1 text-sm font-semibold text-[#334b5f]">{account.branch}</p>}
+                        <div className="hidden h-20 w-px bg-[#d6e1ec] sm:block" />
+                        <div className="min-w-0 flex-1">
+                          <h2 className="text-3xl font-black leading-tight text-[#061b55] sm:text-4xl lg:text-5xl">{account.bank || "Banka Bilgisi"}</h2>
+                          {account.branch && <p className="mt-2 text-base font-semibold text-[#334b5f] sm:text-lg">{account.branch}</p>}
                         </div>
                       </div>
                       {account.type && (
-                        <span className="shrink-0 rounded-full bg-hayat-mint px-3 py-2 text-xs font-black text-hayat-green">
+                        <span className="w-fit shrink-0 rounded-full bg-hayat-mint px-4 py-2 text-sm font-black text-hayat-green">
                           {account.type}
                         </span>
                       )}
                     </div>
 
                     {account.description && (
-                      <p className="mt-4 rounded-[14px] bg-hayat-soft px-4 py-3 text-sm font-semibold leading-6 text-[#5d6b70]">
+                      <p className="mt-8 rounded-[18px] bg-hayat-soft px-5 py-4 text-base font-semibold leading-7 text-[#5d6b70]">
                         {account.description}
                       </p>
                     )}
 
-                    <div className="mt-5 space-y-3">
+                    <div className="mt-8 space-y-5">
                       {ibans.map((iban, ibanIndex) => (
-                        <div key={`${account.bank}-${iban.label}-${ibanIndex}`} className="rounded-[14px] border border-hayat-border bg-hayat-soft p-4">
-                          <p className="text-xs font-black uppercase tracking-wide text-[#8a928f]">{ibans.length === 1 ? "IBAN" : iban.label.replace(" IBAN", "")}</p>
-                          <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <p className="min-w-0 break-all font-mono text-sm font-black tracking-wide text-hayat-dark sm:text-base">{iban.iban}</p>
-                            <CopyIbanButton value={iban.iban} label="IBAN Kopyala" className="w-full justify-center py-3 text-sm sm:w-auto sm:px-5" />
+                        <div key={`${account.bank}-${iban.label}-${ibanIndex}`} className="grid gap-5 rounded-[24px] border border-[#d6e1ec] bg-white px-5 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] sm:grid-cols-[92px_minmax(0,1fr)] sm:items-center lg:grid-cols-[132px_minmax(0,1fr)_320px] lg:px-7 lg:py-7">
+                          <div className="flex items-center gap-4 sm:justify-center">
+                            <span className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-[#061b55] text-white shadow-[0_0_0_14px_#eef3f7] sm:h-20 sm:w-20">
+                              <CurrencyIcon label={iban.label} />
+                            </span>
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-5">
+                              <p className="shrink-0 text-2xl font-black tracking-wide text-[#061b55] sm:text-3xl">{ibanCurrencyLabel(iban.label, ibans.length === 1)}</p>
+                              <span className="h-px flex-1 bg-[#d6e1ec]" />
+                            </div>
+                            <p className="mt-4 min-w-0 break-all font-mono text-2xl font-black tracking-wide text-[#06122e] sm:text-3xl lg:text-[34px]">{iban.iban}</p>
+                          </div>
+                          <div className="lg:justify-self-end">
+                            <CopyIbanButton value={iban.iban} label="IBAN Kopyala" className="min-h-14 w-full justify-center rounded-[16px] bg-gradient-to-br from-[#1977dc] to-[#0747ad] px-7 text-lg shadow-[0_18px_30px_rgba(25,119,220,0.24)] hover:from-hayat-green hover:to-hayat-green lg:min-w-[260px]" />
                           </div>
                         </div>
                       ))}
