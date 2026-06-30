@@ -13,7 +13,7 @@ import { getHomeSections, allByType, firstByType } from "@/lib/site-content";
 import { getActiveDonationTypes } from "@/lib/donation-types";
 import { normalizeMediaUrl } from "@/lib/media-url";
 import { prisma } from "@/lib/prisma";
-import { ArrowRight, ChevronRight, ShieldCheck, CalendarDays, Megaphone, ImageIcon } from "lucide-react";
+import { ArrowRight, CalendarDays, Camera, ChevronRight, ImageIcon, Megaphone, PlayCircle, ShieldCheck, Video } from "lucide-react";
 import type { CSSProperties } from "react";
 
 export const dynamic = "force-dynamic";
@@ -285,15 +285,31 @@ export default async function HomePage() {
     );
   };
   const renderVideoCard = (item: { id: string; section: any; slide?: SectionSlide }, scrolling: boolean) => (
-    <article key={item.id} className={`relative aspect-video ${scrolling ? `shrink-0 snap-start ${cardWidthClass(item.section)}` : "w-full"} overflow-hidden bg-hayat-dark shadow-2xl`} style={cardStyle(item.section, { padding: "0px" })}>
+    <article key={item.id} className={`group relative aspect-video ${scrolling ? `shrink-0 snap-start ${cardWidthClass(item.section)}` : "w-full"} overflow-hidden rounded-[26px] border border-white/12 bg-[#06283b] shadow-[0_24px_70px_rgba(0,22,36,0.35)] ring-1 ring-white/10 transition hover:-translate-y-1 hover:border-hayat-green/60 hover:shadow-[0_30px_90px_rgba(0,22,36,0.48)]`} style={cardStyle(item.section, { padding: "0px" })}>
       <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-contain" videoClassName="h-full w-full bg-black object-contain" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#061f2e]/85 via-transparent to-[#061f2e]/20 opacity-90" />
+      <div className="pointer-events-none absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-white/92 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-hayat-blue shadow-[0_12px_28px_rgba(0,0,0,0.18)]">
+        <Video size={14} /> Video Blog
+      </div>
+      <div className="pointer-events-none absolute inset-0 grid place-items-center">
+        <span className="grid h-16 w-16 place-items-center rounded-full bg-white/95 text-hayat-blue shadow-[0_18px_42px_rgba(0,0,0,0.25)] transition duration-300 group-hover:scale-110 group-hover:bg-hayat-green group-hover:text-white">
+          <PlayCircle size={34} />
+        </span>
+      </div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 p-5">
+        <p className="line-clamp-2 max-w-[90%] text-lg font-black leading-tight text-white drop-shadow">{item.slide?.alt || item.section.title}</p>
+      </div>
     </article>
   );
   const renderGalleryCard = (item: { id: string; section: any; slide?: SectionSlide }, scrolling: boolean) => (
-    <article key={item.id} className={`group relative h-[260px] ${scrolling ? "w-[min(82vw,420px)] shrink-0 snap-start lg:w-[440px]" : "w-full"} overflow-hidden rounded-[22px] border border-[#dbe6ee] bg-white shadow-[0_18px_46px_rgba(10,58,85,0.1)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(10,58,85,0.16)] sm:h-[320px]`} style={cardStyle(item.section, { padding: "0px" })}>
+    <article key={item.id} className={`group relative h-[270px] ${scrolling ? "w-[min(82vw,430px)] shrink-0 snap-start lg:w-[460px]" : "w-full"} overflow-hidden rounded-[26px] border border-[#dbe6ee] bg-white shadow-[0_20px_54px_rgba(10,58,85,0.12)] ring-1 ring-white transition hover:-translate-y-1 hover:border-hayat-blue/35 hover:shadow-[0_28px_72px_rgba(10,58,85,0.18)] sm:h-[330px]`} style={cardStyle(item.section, { padding: "0px" })}>
       <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-cover transition duration-700 group-hover:scale-105" videoClassName="h-full w-full bg-black object-cover" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0a3a55]/85 via-[#0a3a55]/20 to-transparent p-5">
-        <span className="inline-flex max-w-full rounded-full bg-white/92 px-3 py-1.5 text-[11px] font-black text-hayat-blue shadow-sm">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a3a55]/82 via-[#0a3a55]/12 to-transparent" />
+      <div className="pointer-events-none absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-white/92 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-hayat-green shadow-[0_12px_28px_rgba(10,58,85,0.16)]">
+        <Camera size={14} /> Sahadan
+      </div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 p-5">
+        <span className="inline-flex max-w-full rounded-full bg-white px-4 py-2 text-[12px] font-black text-hayat-blue shadow-[0_12px_30px_rgba(10,58,85,0.18)]">
           {item.slide?.alt || item.section.title}
         </span>
       </div>
@@ -458,13 +474,19 @@ export default async function HomePage() {
 
         {/* 6. VIDEOS */}
         {videoMediaItems.length > 0 && (
-          <section id="video" className="px-3 text-white sm:px-4 lg:px-4" style={{ backgroundColor: videoLead?.backgroundColor || "#102f47", ...sectionStyle(videoLead, 96) }}>
+          <section id="video" className="relative overflow-hidden border-y border-white/10 bg-[#082f45] px-3 text-white sm:px-4 lg:px-4" style={{ backgroundColor: videoLead?.backgroundColor || "#082f45", ...sectionStyle(videoLead, 96) }}>
             <div className={`mx-auto ${videoLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"}`}>
-              <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+              <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div>
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#8addf8] ring-1 ring-white/12">
+                    <Video size={16} /> Video Blog
+                  </div>
                   <h2 className="mt-1 text-3xl font-black sm:text-4xl md:text-6xl" style={videoLead ? headingStyle(videoLead, "#ffffff", 56) : undefined}>{videosTitle}</h2>
+                  <p className="mt-3 max-w-2xl text-base font-semibold leading-8 text-white/68">
+                    Sahadaki çalışmalarımızı, ziyaretleri ve destek süreçlerini video akışıyla daha yakından izleyin.
+                  </p>
                 </div>
-                <Link href={videoLead?.href || "/video"} className="inline-flex w-fit items-center gap-2 rounded-md border-2 border-white/15 px-6 py-3 text-xs font-black uppercase tracking-widest text-white transition hover:border-hayat-green hover:text-hayat-green">
+                <Link href={videoLead?.href || "/video"} className="inline-flex h-12 w-fit items-center gap-2 rounded-[14px] border border-white/15 bg-white/10 px-5 text-xs font-black uppercase tracking-widest text-white shadow-[0_14px_34px_rgba(0,0,0,0.16)] transition hover:-translate-y-0.5 hover:border-hayat-green hover:bg-hayat-green hover:text-white">
                   {videoLead?.buttonLabel || "Tüm Videolar"} <ArrowRight size={16} />
                 </Link>
               </div>
@@ -483,11 +505,13 @@ export default async function HomePage() {
 
         {/* 9. GALLERY */}
         {galleryMediaItems.length > 0 && (
-          <section id="galeri" className="bg-[#f5f9fc] px-3 sm:px-4 lg:px-4" style={{ backgroundColor: galleryLead?.backgroundColor || "#f5f9fc", ...sectionStyle(galleryLead, 90) }}>
+          <section id="galeri" className="bg-[#f4f9fb] px-3 sm:px-4 lg:px-4" style={{ backgroundColor: galleryLead?.backgroundColor || "#f4f9fb", ...sectionStyle(galleryLead, 90) }}>
             <div className={`mx-auto ${galleryLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"}`}>
               <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.24em] text-hayat-green">Galeri</p>
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-hayat-green shadow-[0_12px_28px_rgba(10,58,85,0.08)] ring-1 ring-[#dbe6ee]">
+                    <Camera size={16} /> Sahadan Gelenler
+                  </div>
                   <h2 className="mt-2 text-3xl font-black tracking-tight text-[#1f3444] sm:text-4xl md:text-6xl" style={galleryLead ? headingStyle(galleryLead, "#1f3444", 56) : undefined}>{galleryTitle}</h2>
                   <p className="mt-3 max-w-2xl text-base font-semibold leading-8 text-[#607081]">
                     Sahadan yansıyan çalışmalarımızı, ziyaretlerimizi ve destek süreçlerimizi tek bir görsel akışta keşfedin.
