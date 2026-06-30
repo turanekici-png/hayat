@@ -222,6 +222,7 @@ export default async function HomePage() {
 
   const parsedStats = statsSection?.body?.split("\n").map(line => line.split("|")).filter(parts => parts.length === 2) || [];
   const stats = parsedStats.length > 0 ? parsedStats : [["12.450+", "Ulaşılan aile"], ["7/24", "Online bağış"], ["%100", "Kayıtlı süreç"], ["Güvenli", "Başvuru takibi"]];
+  const shouldScrollProjects = featuredCampaigns.length > 5;
 
   const donationShortcuts = shortcutSections.map((item) => [
     sectionText((item.title || "").replace(/Kısayolu|Kisayolu/gi, "").trim(), item.body || "Bağış"),
@@ -238,6 +239,46 @@ export default async function HomePage() {
       style={{ ...cardStyle(quickDonation, { padding: 24 }), backgroundColor: "#6fae2e", borderColor: "rgba(79, 138, 30, 0.35)", borderRadius: 20 }}
     />
   );
+  const renderProjectCard = (item: any, scrolling: boolean) => {
+    const image = firstSlide(item);
+    const href = item.href || `/projeler/${item.id}`;
+    const widthClass = scrolling ? "w-[min(86vw,430px)] shrink-0 snap-start" : "w-full";
+
+    return (
+      <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label="Proje" className={`group ${widthClass} cursor-zoom-in overflow-hidden rounded-[24px] border border-[#dbe6ee] bg-white text-left shadow-[0_18px_46px_rgba(10,58,85,0.1)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(10,58,85,0.16)]`} style={cardStyle(item, { padding: "0px" })}>
+        <div className="relative h-[290px] overflow-hidden bg-[linear-gradient(135deg,#e8f4fb,#f5fafc)]">
+          {image ? (
+            <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-cover transition duration-700 group-hover:scale-105" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-hayat-blue/50">
+              <ImageIcon size={44} />
+            </div>
+          )}
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0a3a55]/90 via-[#0a3a55]/30 to-transparent p-5">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-white px-3 py-1.5 text-[11px] font-black text-hayat-blue shadow-sm">
+                {item.badge || "Proje"}
+              </span>
+              {item.subtitle && (
+                <span className="rounded-full bg-hayat-green px-3 py-1.5 text-[11px] font-black text-white shadow-sm">
+                  {item.subtitle}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="flex min-h-[235px] flex-col p-5 sm:p-6">
+          <h3 className="text-2xl font-black leading-tight text-hayat-dark" style={headingStyle(item, "#0a3a55", 26)}>{item.title}</h3>
+          <div className="mt-4 flex-1">
+            <ExpandableText title={item.title} text={item.body || ""} className="line-clamp-3 text-[15px] font-semibold leading-7 text-[#5d6b70]" style={bodyStyle(item, "#5d6b70", 15)} />
+          </div>
+          <Link href={href} className="mt-5 inline-flex h-12 w-fit items-center justify-center gap-2 rounded-[14px] bg-hayat-blue px-5 text-sm font-black text-white shadow-[0_14px_26px_rgba(25,151,207,0.2)] transition hover:-translate-y-0.5 hover:bg-hayat-green">
+            Projeyi İncele <ArrowRight size={16} />
+          </Link>
+        </div>
+      </ExpandableCard>
+    );
+  };
 
   return (
     <div className="min-h-screen overflow-x-clip bg-hayat-soft font-montserrat text-hayat-ink selection:bg-hayat-blue selection:text-white">
@@ -361,45 +402,15 @@ export default async function HomePage() {
                   Tüm Projeler <ArrowRight size={16} />
                 </Link>
               </div>
-              <AutoScrollRow animate={featuredCampaigns.length > 5} setClassName="gap-5">
-                {featuredCampaigns.map((item) => {
-                  const image = firstSlide(item);
-                  const href = item.href || `/projeler/${item.id}`;
-                  return (
-                  <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label="Proje" className="group w-[min(86vw,430px)] shrink-0 snap-start cursor-zoom-in overflow-hidden rounded-[24px] border border-[#dbe6ee] bg-white text-left shadow-[0_18px_46px_rgba(10,58,85,0.1)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(10,58,85,0.16)]" style={cardStyle(item, { padding: "0px" })}>
-                    <div className="relative h-[290px] overflow-hidden bg-[linear-gradient(135deg,#e8f4fb,#f5fafc)]">
-                      {image ? (
-                        <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-cover transition duration-700 group-hover:scale-105" />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-hayat-blue/50">
-                          <ImageIcon size={44} />
-                        </div>
-                      )}
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0a3a55]/90 via-[#0a3a55]/30 to-transparent p-5">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="rounded-full bg-white px-3 py-1.5 text-[11px] font-black text-hayat-blue shadow-sm">
-                            {item.badge || "Proje"}
-                          </span>
-                          {item.subtitle && (
-                            <span className="rounded-full bg-hayat-green px-3 py-1.5 text-[11px] font-black text-white shadow-sm">
-                              {item.subtitle}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex min-h-[235px] flex-col p-5 sm:p-6">
-                      <h3 className="text-2xl font-black leading-tight text-hayat-dark" style={headingStyle(item, "#0a3a55", 26)}>{item.title}</h3>
-                      <div className="mt-4 flex-1">
-                        <ExpandableText title={item.title} text={item.body || ""} className="line-clamp-3 text-[15px] font-semibold leading-7 text-[#5d6b70]" style={bodyStyle(item, "#5d6b70", 15)} />
-                      </div>
-                      <Link href={href} className="mt-5 inline-flex h-12 w-fit items-center justify-center gap-2 rounded-[14px] bg-hayat-blue px-5 text-sm font-black text-white shadow-[0_14px_26px_rgba(25,151,207,0.2)] transition hover:-translate-y-0.5 hover:bg-hayat-green">
-                        Projeyi İncele <ArrowRight size={16} />
-                      </Link>
-                    </div>
-                  </ExpandableCard>
-                )})}
-              </AutoScrollRow>
+              {shouldScrollProjects ? (
+                <AutoScrollRow animate setClassName="gap-5">
+                  {featuredCampaigns.map((item) => renderProjectCard(item, true))}
+                </AutoScrollRow>
+              ) : (
+                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+                  {featuredCampaigns.map((item) => renderProjectCard(item, false))}
+                </div>
+              )}
             </div>
           </section>
         )}
