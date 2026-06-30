@@ -22,7 +22,7 @@ export function CopyIbanButton({ value, className = "", label = "Kopyala", iconO
       onClick={copy}
       aria-label={copied ? "IBAN kopyalandı" : label}
       title={copied ? "Kopyalandı!" : label}
-      className={`inline-flex items-center gap-2 ${className}`}
+      className={`inline-flex items-center gap-2 rounded-full bg-hayat-green px-4 py-2 text-white transition hover:bg-hayat-blue ${className}`}
     >
       <Copy size={16} />
       {!iconOnly && <span>{copied ? "Kopyalandı!" : label}</span>}
