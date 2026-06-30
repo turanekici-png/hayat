@@ -13,7 +13,7 @@ import { getHomeSections, allByType, firstByType } from "@/lib/site-content";
 import { getActiveDonationTypes } from "@/lib/donation-types";
 import { normalizeMediaUrl } from "@/lib/media-url";
 import { prisma } from "@/lib/prisma";
-import { ArrowRight, ChevronRight, ShieldCheck, CalendarDays, Megaphone } from "lucide-react";
+import { ArrowRight, ChevronRight, ShieldCheck, CalendarDays, Megaphone, ImageIcon } from "lucide-react";
 import type { CSSProperties } from "react";
 
 export const dynamic = "force-dynamic";
@@ -143,7 +143,7 @@ export default async function HomePage() {
   const shortcutSections = features.filter((s) => s.id !== quickDonation?.id);
 
   const activitiesTitle = getSectionTitle("ACTIVITY", activities, "Yardım Faaliyetleri");
-  const campaignsTitle = getSectionTitle("CAMPAIGN", campaigns, "Bağış Vitrini");
+  const campaignsTitle = "Projelerimiz";
   const videosTitle = getSectionTitle("VIDEO", videos, "Video Blog");
   const galleryTitle = getSectionTitle("GALLERY", gallery, "Sahadan Kareler");
   const blogsTitle = getSectionTitle("BLOG", blogs, "Blog Yazıları");
@@ -359,22 +359,34 @@ export default async function HomePage() {
               </div>
               <AutoScrollRow animate={featuredCampaigns.length > 1}>
                 {featuredCampaigns.map((item) => {
-                  const slides = sectionSlides(item);
-                  const image = slides[0];
+                  const image = firstSlide(item);
+                  const href = item.href || `/projeler/${item.id}`;
                   return (
-                  <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label="Proje" className={`group shrink-0 snap-start ${cardWidthClass(item)} cursor-zoom-in overflow-hidden border border-[#e9eef2] bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover`} style={cardStyle(item, { padding: "0px" })}>
-                    {slides.length > 0 && (
-                      <div className="relative aspect-w-16 aspect-h-9 overflow-hidden bg-hayat-soft">
-                        <HeroImageSlider images={slides} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} fitToParent />
-                        <span className="absolute left-5 top-5 rounded-md bg-white px-4 py-2 text-[10px] font-black uppercase tracking-widest text-hayat-green shadow-stk" style={subtitleStyle(item, "#6FB744", 10)}>{item.badge || "Aktif Proje"}</span>
+                  <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label="Proje" className={`group shrink-0 snap-start ${cardWidthClass(item)} cursor-zoom-in overflow-hidden rounded-[20px] border border-[#ded8ca] bg-white text-left shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover`} style={cardStyle(item, { padding: "0px" })}>
+                    <div className="relative aspect-w-16 aspect-h-9 overflow-hidden bg-[repeating-linear-gradient(135deg,#e8f4fb_0,#e8f4fb_16px,#deedf5_16px,#deedf5_32px)]">
+                      {image ? (
+                        <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-cover" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-hayat-blue/50">
+                          <ImageIcon size={44} />
+                        </div>
+                      )}
+                      <span className="absolute bottom-4 left-4 max-w-[calc(100%-2rem)] truncate rounded-md bg-white px-3 py-1.5 text-[10px] font-black text-hayat-blue shadow-sm">
+                        foto: {image?.alt || item.title}
+                      </span>
+                    </div>
+                    <div className="flex min-h-[205px] flex-col p-5 sm:p-6">
+                      <div className="w-fit rounded-full bg-[#dff1fa] px-3 py-1.5 text-xs font-black text-hayat-blue">
+                        {item.badge || "Proje"}
                       </div>
-                    )}
-                    <div className="p-6">
-                      {slides.length === 0 && <p className="mb-4 text-[10px] font-black uppercase tracking-widest text-hayat-green" style={subtitleStyle(item, "#6FB744", 10)}>{item.badge || "Aktif Proje"}</p>}
-                      <h3 className="min-h-[4rem] text-2xl font-black leading-tight text-[#1f3444]" style={headingStyle(item, "#1f3444", 24)}>{item.title}</h3>
-                      <div className="mt-4 min-h-[100px]">
-                        <ExpandableText title={item.title} text={item.body} className="text-sm font-semibold leading-8 text-[#607081]" style={bodyStyle(item, "#607081", 14)} />
+                      <h3 className="mt-3 text-xl font-black leading-tight text-hayat-dark" style={headingStyle(item, "#0a3a55", 22)}>{item.title}</h3>
+                      {item.subtitle && <p className="mt-2 text-sm font-bold text-hayat-blue">{item.subtitle}</p>}
+                      <div className="mt-3 flex-1">
+                        <ExpandableText title={item.title} text={item.body || ""} className="line-clamp-3 text-[15px] font-medium leading-7 text-[#5d6b70]" style={bodyStyle(item, "#5d6b70", 15)} />
                       </div>
+                      <Link href={href} className="mt-5 inline-flex w-fit items-center gap-1 text-sm font-black text-hayat-blue transition hover:text-hayat-green">
+                        Projeyi İncele <ArrowRight size={15} />
+                      </Link>
                     </div>
                   </ExpandableCard>
                 )})}
