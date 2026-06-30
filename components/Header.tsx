@@ -24,9 +24,9 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-[100] w-full border-t-2 border-hayat-dark border-b border-hayat-border bg-[#f7f5ef]/96 backdrop-blur">
-      <div className="mx-auto flex h-[84px] max-w-[1840px] items-center justify-between gap-6 px-3 sm:px-4 lg:px-4">
-        <Link href="/" className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-[16px] border border-white/80 bg-white p-1.5 shadow-[0_18px_38px_rgba(10,58,85,0.16)] ring-1 ring-hayat-green/10 transition hover:-translate-y-0.5 hover:shadow-[0_22px_44px_rgba(10,58,85,0.2)]" aria-label="Hayat Ağacı Derneği ana sayfa">
-          <img src="/media/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" className="h-full w-full rounded-[12px] object-contain" />
+      <div className="mx-auto flex h-[104px] max-w-[1840px] items-center justify-between gap-6 px-3 sm:px-4 lg:px-4">
+        <Link href="/" className="flex h-[92px] w-[92px] shrink-0 items-center justify-center overflow-hidden rounded-[20px] border border-white/90 bg-white p-1 shadow-[0_22px_48px_rgba(10,58,85,0.2)] ring-2 ring-hayat-green/15 transition hover:-translate-y-0.5 hover:shadow-[0_26px_54px_rgba(10,58,85,0.24)]" aria-label="Hayat Ağacı Derneği ana sayfa">
+          <img src="/media/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" className="h-full w-full scale-125 rounded-[16px] object-contain" />
         </Link>
 
         <nav className="hidden min-w-0 flex-1 items-center justify-center gap-9 lg:flex xl:gap-11 2xl:gap-12">
@@ -36,10 +36,10 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative flex h-[84px] items-center whitespace-nowrap text-[16px] font-bold transition-colors xl:text-[17px] ${active ? "text-hayat-dark" : "text-[#23323a] hover:text-hayat-blue"}`}
+                className={`relative flex h-[104px] items-center whitespace-nowrap text-[16px] font-bold transition-colors xl:text-[17px] ${active ? "text-hayat-dark" : "text-[#23323a] hover:text-hayat-blue"}`}
               >
                 {item.label}
-                {active && <span className="absolute bottom-[22px] left-0 h-[2px] w-full rounded-full bg-hayat-blue" />}
+                {active && <span className="absolute bottom-[30px] left-0 h-[2px] w-full rounded-full bg-hayat-blue" />}
               </Link>
             );
           })}
