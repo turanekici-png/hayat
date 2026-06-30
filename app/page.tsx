@@ -250,7 +250,7 @@ export default async function HomePage() {
           <section className="relative overflow-hidden border-b border-[#d5e4ec]" style={{ backgroundColor: heroNewsLead?.backgroundColor || "#eef5f8", paddingTop: `${heroNewsLead?.paddingY || 0}px`, paddingBottom: `${heroNewsLead?.paddingY || 0}px` }}>
             <div className={`mx-auto grid ${heroNewsLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"} items-stretch gap-4 px-3 py-1 sm:px-4 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-4 xl:grid-cols-[minmax(0,1fr)_400px] 2xl:grid-cols-[minmax(0,1fr)_430px]`}>
               <div className="min-w-0">
-                <ActivityShowcaseSlider items={heroNewsItems} defaultHref="/haberler" defaultButtonLabel="Haberi İncele" dotLabel="haber" showDefaultButton splitMedia compactMedia extendedMedia mediaFirst equalColumns />
+                <ActivityShowcaseSlider items={heroNewsItems} defaultHref="/haberler" defaultButtonLabel="Haberi İncele" dotLabel="haber" showDefaultButton splitMedia compactMedia extendedMedia mediaFirst mediaWide equalColumns />
               </div>
               {renderQuickDonation(true)}
             </div>
