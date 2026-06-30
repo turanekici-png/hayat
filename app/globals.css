@@ -220,8 +220,7 @@ header {
 }
 
 footer {
-  background-color: #343f52;
-  color: #cacfe3;
+  color: inherit;
 }
 
 footer h3 {

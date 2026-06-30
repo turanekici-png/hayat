@@ -25,8 +25,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-[100] w-full border-t-2 border-hayat-dark border-b border-hayat-border bg-[#f7f5ef]/96 backdrop-blur">
       <div className="mx-auto flex h-[84px] max-w-[1840px] items-center justify-between gap-6 px-3 sm:px-4 lg:px-4">
-        <Link href="/" className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[10px] bg-white shadow-[0_8px_20px_rgba(10,58,85,0.08)]" aria-label="Hayat Ağacı Derneği ana sayfa">
-          <img src="/media/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" className="h-[46px] w-[46px] rounded-[8px] object-contain" />
+        <Link href="/" className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-[16px] border border-white/80 bg-white p-1.5 shadow-[0_18px_38px_rgba(10,58,85,0.16)] ring-1 ring-hayat-green/10 transition hover:-translate-y-0.5 hover:shadow-[0_22px_44px_rgba(10,58,85,0.2)]" aria-label="Hayat Ağacı Derneği ana sayfa">
+          <img src="/media/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" className="h-full w-full rounded-[12px] object-contain" />
         </Link>
 
         <nav className="hidden min-w-0 flex-1 items-center justify-center gap-9 lg:flex xl:gap-11 2xl:gap-12">

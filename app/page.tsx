@@ -596,16 +596,22 @@ export default async function HomePage() {
 
         {/* 14. STATS */}
         {stats.length > 0 && (
-          <section className="px-3 py-6 text-white sm:px-4 lg:px-4" style={{ backgroundColor: statsSection?.backgroundColor || "#6FB744" }}>
-            <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-4">
-              <div className="min-w-0">
-                <h2 className="mt-1 text-2xl font-black leading-tight md:text-4xl lg:text-5xl" style={statsSection ? headingStyle(statsSection, "#ffffff", 44) : undefined}>{statsSection?.title || "Desteklerinizle büyüyen iyilik ağı"}</h2>
+          <section className="relative overflow-hidden bg-[#0b3f38] px-3 py-10 text-white sm:px-4 lg:px-4">
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(111,183,68,0.95),rgba(17,92,75,0.96)_52%,rgba(7,52,72,0.98))]" />
+            <div className="absolute inset-x-0 top-0 h-px bg-white/30" />
+            <div className="relative mx-auto flex w-full max-w-[1840px] flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
+              <div className="min-w-0 lg:max-w-2xl">
+                <p className="text-xs font-black uppercase tracking-[0.24em] text-white/70">Etki Özeti</p>
+                <h2 className="mt-3 text-3xl font-black leading-tight md:text-5xl" style={statsSection ? headingStyle(statsSection, "#ffffff", 46) : undefined}>{statsSection?.title || "Desteklerinizle büyüyen iyilik ağı"}</h2>
+                <p className="mt-4 max-w-xl text-sm font-semibold leading-7 text-white/75 md:text-base">
+                  Bağış, başvuru ve sosyal destek süreçlerini şeffaf, izlenebilir ve güvenli biçimde büyütüyoruz.
+                </p>
               </div>
-              <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-3">
+              <div className="grid min-w-0 flex-1 grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-3 lg:max-w-4xl">
                 {stats.map(([value, label]) => (
-                  <div key={label} className="min-w-0 border border-white/20 p-4" style={statsSection ? cardStyle(statsSection, { padding: "16px" }) : undefined}>
-                    <b className="block break-words text-2xl font-black lg:text-3xl">{value}</b>
-                    <span className="mt-2 block text-[10px] font-black uppercase tracking-widest text-white/80">{label}</span>
+                  <div key={label} className="min-w-0 rounded-[18px] border border-white/18 bg-white/10 p-5 shadow-[0_18px_38px_rgba(0,0,0,0.12)] backdrop-blur" style={statsSection ? cardStyle(statsSection, { padding: "20px" }) : undefined}>
+                    <b className="block break-words text-3xl font-black leading-none lg:text-4xl">{value}</b>
+                    <span className="mt-3 block text-[11px] font-black uppercase tracking-[0.18em] text-white/75">{label}</span>
                   </div>
                 ))}
               </div>
