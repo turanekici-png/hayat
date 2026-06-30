@@ -27,3 +27,8 @@ export function CopyIbanButton({ value, className = "", label = "Kopyala", iconO
       <Copy size={16} />
       {!iconOnly && <span>{copied ? "Kopyalandı!" : label}</span>}
     </button>
+      className={`inline-flex items-center gap-2 ${className}`}
+    >
+      <Copy size={16} />
+      {!iconOnly && <span>{copied ? "Kopyalandı!" : label}</span>}
+    </button>
