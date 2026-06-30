@@ -67,6 +67,7 @@ export function ActivityShowcaseSlider({
   mediaFirst = false,
   mediaWide = false,
   mediaExtraWidth = false,
+  showFullMedia = false,
   compactMedia = false,
   extendedMedia = false,
   equalColumns = false,
@@ -81,6 +82,7 @@ export function ActivityShowcaseSlider({
   mediaFirst?: boolean;
   mediaWide?: boolean;
   mediaExtraWidth?: boolean;
+  showFullMedia?: boolean;
   compactMedia?: boolean;
   extendedMedia?: boolean;
   equalColumns?: boolean;
@@ -156,7 +158,7 @@ export function ActivityShowcaseSlider({
               loading={active === 0 ? "eager" : "lazy"}
               decoding="async"
               fetchPriority={active === 0 ? "high" : "auto"}
-              className={`block h-full w-full bg-white object-center ${mediaWide ? "object-cover" : "object-contain"}`}
+              className={`block h-full w-full bg-white object-center ${mediaWide && !showFullMedia ? "object-cover" : "object-contain"}`}
             />
           ) : (
             <div className="h-full w-full bg-[#eef5f8]" />
