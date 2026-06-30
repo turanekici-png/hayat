@@ -540,6 +540,25 @@ export async function updateSection(formData: FormData) {
   redirectToSectionTab(formData);
 }
 
+export async function updateSectionSortOrdersBulk(formData: FormData) {
+  const ids = formData.getAll("sectionId").filter((value): value is string => typeof value === "string");
+  const sortOrders = formData.getAll("sortOrder").map((value) => (typeof value === "string" ? Number(value) : 0));
+
+  await prisma.$transaction(
+    ids.map((id, index) =>
+      prisma.siteSection.update({
+        where: { id },
+        data: {
+          sortOrder: Number.isFinite(sortOrders[index]) ? sortOrders[index] : 0
+        }
+      })
+    )
+  );
+
+  revalidateSiteContent();
+  redirectToSectionTab(formData);
+}
+
 export async function deleteSection(formData: FormData) {
   const id = textValue(formData, "id");
   if (!id) return;

@@ -17,7 +17,8 @@ import {
   updateDonationType,
   updateDonationTypesBulk,
   updateAdminUser,
-  updateSection
+  updateSection,
+  updateSectionSortOrdersBulk
 } from "./actions";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -528,6 +529,32 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
 
               {/* Listeleme ve Düzenleme Alanı */}
               <div id="anasayfa-alanlari">
+                {selectedGroupItems.length > 0 && (
+                  <form action={updateSectionSortOrdersBulk} className="mb-5 overflow-hidden rounded-[1.5rem] border border-hayat-green/20 bg-white shadow-sm">
+                    <input type="hidden" name="type" value={selectedGroup.type} />
+                    <div className="flex flex-col gap-2 border-b border-slate-100 bg-hayat-soft p-5 md:flex-row md:items-center md:justify-between">
+                      <div>
+                        <h2 className="flex items-center gap-2 text-xl font-black text-hayat-dark"><ListOrdered className="text-hayat-green" /> Sıra Numaraları</h2>
+                        <p className="mt-1 text-sm font-semibold text-slate-500">Küçük numara önce görünür. Bu sıra hem ana sayfada hem ilgili liste sayfasında kullanılır.</p>
+                      </div>
+                      <button className="h-11 rounded-xl bg-hayat-green px-6 text-sm font-black text-white shadow-green transition hover:bg-hayat-dark">Sıralamayı Kaydet</button>
+                    </div>
+                    <div className="grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-3">
+                      {selectedGroupItems.map((section) => (
+                        <label key={`sort-${section.id}`} className="grid grid-cols-[84px_1fr] items-center gap-3 rounded-2xl border border-slate-100 bg-white p-3 shadow-sm">
+                          <span className="text-xs font-black uppercase tracking-widest text-slate-400">Sıra</span>
+                          <span className="text-xs font-black uppercase tracking-widest text-slate-400">İçerik</span>
+                          <input type="hidden" name="sectionId" value={section.id} />
+                          <input name="sortOrder" type="number" defaultValue={section.sortOrder} className="h-12 w-full rounded-xl border border-slate-200 bg-hayat-soft px-3 text-center text-lg font-black text-hayat-dark outline-hayat-blue" />
+                          <span className="min-w-0">
+                            <span className="block truncate text-sm font-black text-slate-800">{section.title || "İsimsiz İçerik"}</span>
+                            <span className="mt-1 block truncate text-xs font-semibold text-slate-500">{section.customTitle || section.subtitle || section.badge || selectedGroup.title}</span>
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </form>
+                )}
                 {selectedGroupItems.length > 0 ? (
                   selectedGroupItems.map((section) => <SectionEditor key={`${section.id}-${section.updatedAt.getTime()}`} section={section} media={safeMedia} />)
                 ) : (
@@ -544,12 +571,12 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                 <h2 className="flex items-center gap-2 text-xl font-black text-hayat-blue"><PlusCircle /> Yeni İçerik Bloğu Ekle</h2>
                 <p className="mt-2 text-sm font-semibold text-hayat-blue/80">Sadece temel ayarları seçip ekleyin, detayları yukarıda oluşan karttan doldurabilirsiniz.</p>
                 <form action={createSection} className="mt-5 grid gap-4 md:grid-cols-12">
-                  <input name="title" placeholder="Paneldeki Adı (Örn: Hakkımızda Kartı 1)" required className="rounded-xl border border-white bg-white p-3 md:col-span-5 shadow-sm" />
+                  <input name="title" placeholder="Paneldeki Adı (Örn: Hakkımızda Kartı 1)" required className="rounded-xl border border-white bg-white p-3 shadow-sm md:col-span-4" />
                   <select name="type" defaultValue={selectedGroup.type} className="rounded-2xl border p-3 md:col-span-2"><SelectOptions items={sectionTypes} /></select>
-                  <select name="layout" defaultValue="CARD" className="rounded-xl border border-white bg-white p-3 md:col-span-4 shadow-sm"><SelectOptions items={layouts} /></select>
+                  <select name="layout" defaultValue="CARD" className="rounded-xl border border-white bg-white p-3 shadow-sm md:col-span-3"><SelectOptions items={layouts} /></select>
+                  <input name="sortOrder" type="number" defaultValue={(selectedGroupItems.at(-1)?.sortOrder || 0) + 1} className="rounded-xl border border-white bg-white p-3 text-center font-black text-hayat-dark shadow-sm md:col-span-1" aria-label="Sıra numarası" />
                   <div className="hidden">
                     <select name="theme" defaultValue="LIGHT"><SelectOptions items={themes} /></select>
-                    <input name="sortOrder" type="number" defaultValue="50" />
                     <input name="isActive" type="checkbox" defaultChecked />
                   </div>
                   <button className="rounded-xl bg-hayat-green px-6 py-3 font-black text-white md:col-span-3 shadow-md hover:bg-hayat-dark transition-colors">Ekle</button>

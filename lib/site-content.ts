@@ -254,6 +254,12 @@ function withNormalizedMedia<T extends HomeSection>(section: T): T {
   };
 }
 
+function compareSections(a: HomeSection, b: HomeSection) {
+  const orderDiff = (a.sortOrder || 0) - (b.sortOrder || 0);
+  if (orderDiff !== 0) return orderDiff;
+  return a.title.localeCompare(b.title, "tr");
+}
+
 async function loadHomeSections() {
   try {
     const activeRows = await prisma.siteSection.findMany({
@@ -270,9 +276,9 @@ async function loadHomeSections() {
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
-    }).map(withNormalizedMedia);
+    }).map(withNormalizedMedia).sort(compareSections);
   } catch {
-    return fallbackSections.map(withNormalizedMedia);
+    return fallbackSections.map(withNormalizedMedia).sort(compareSections);
   }
 }
 
@@ -291,9 +297,9 @@ async function loadSectionsByType(type: SectionType) {
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
     });
 
-    return (activeRows.length ? activeRows : fallbackSections.filter((section) => section.type === type)).map(withNormalizedMedia);
+    return (activeRows.length ? activeRows : fallbackSections.filter((section) => section.type === type)).map(withNormalizedMedia).sort(compareSections);
   } catch {
-    return fallbackSections.filter((section) => section.type === type).map(withNormalizedMedia);
+    return fallbackSections.filter((section) => section.type === type).map(withNormalizedMedia).sort(compareSections);
   }
 }
 
@@ -312,9 +318,9 @@ export const getSectionGroupLabel = unstable_cache(loadSectionGroupLabel, ["sect
 });
 
 export function firstByType(sections: HomeSection[], type: SectionType) {
-  return sections.find((s) => s.type === type);
+  return sections.filter((s) => s.type === type).sort(compareSections)[0];
 }
 
 export function allByType(sections: HomeSection[], type: SectionType) {
-  return sections.filter((s) => s.type === type);
+  return sections.filter((s) => s.type === type).sort(compareSections);
 }
