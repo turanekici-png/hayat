@@ -357,7 +357,7 @@ export default async function HomePage() {
                   Tüm Projeler <ArrowRight size={16} />
                 </Link>
               </div>
-              <AutoScrollRow animate={false}>
+              <AutoScrollRow animate={featuredCampaigns.length > 5}>
                 {featuredCampaigns.map((item) => {
                   const image = firstSlide(item);
                   const href = item.href || `/projeler/${item.id}`;
