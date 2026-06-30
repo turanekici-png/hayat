@@ -66,6 +66,7 @@ export function ActivityShowcaseSlider({
   splitMedia = false,
   mediaFirst = false,
   mediaWide = false,
+  mediaExtraWidth = false,
   compactMedia = false,
   extendedMedia = false,
   equalColumns = false,
@@ -79,6 +80,7 @@ export function ActivityShowcaseSlider({
   splitMedia?: boolean;
   mediaFirst?: boolean;
   mediaWide?: boolean;
+  mediaExtraWidth?: boolean;
   compactMedia?: boolean;
   extendedMedia?: boolean;
   equalColumns?: boolean;
@@ -109,7 +111,9 @@ export function ActivityShowcaseSlider({
     const splitColumnsClass = equalColumns
       ? "lg:grid-cols-2"
       : mediaWide
-      ? (mediaFirst ? "lg:grid-cols-[2fr_1fr]" : "lg:grid-cols-[1fr_2fr]")
+      ? mediaExtraWidth
+        ? (mediaFirst ? "lg:grid-cols-[calc(66.666667%+1.5cm)_minmax(0,calc(33.333333%-1.5cm))]" : "lg:grid-cols-[minmax(0,calc(33.333333%-1.5cm))_calc(66.666667%+1.5cm)]")
+        : (mediaFirst ? "lg:grid-cols-[2fr_1fr]" : "lg:grid-cols-[1fr_2fr]")
       : "lg:grid-cols-[0.72fr_1.28fr]";
 
     return (
