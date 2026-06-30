@@ -422,21 +422,30 @@ export default async function HomePage() {
 
         {/* 9. GALLERY */}
         {galleryMediaItems.length > 0 && (
-          <section id="galeri" className="px-3 sm:px-4 lg:px-4" style={{ backgroundColor: galleryLead?.backgroundColor || "#ffffff", ...sectionStyle(galleryLead, 96) }}>
+          <section id="galeri" className="bg-[#f5f9fc] px-3 sm:px-4 lg:px-4" style={{ backgroundColor: galleryLead?.backgroundColor || "#f5f9fc", ...sectionStyle(galleryLead, 90) }}>
             <div className={`mx-auto ${galleryLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"}`}>
-              <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+              <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div>
-                  <h2 className="mt-1 text-3xl font-black tracking-tight text-[#1f3444] sm:text-4xl md:text-6xl" style={galleryLead ? headingStyle(galleryLead, "#1f3444", 56) : undefined}>{galleryTitle}</h2>
+                  <p className="text-xs font-black uppercase tracking-[0.24em] text-hayat-green">Galeri</p>
+                  <h2 className="mt-2 text-3xl font-black tracking-tight text-[#1f3444] sm:text-4xl md:text-6xl" style={galleryLead ? headingStyle(galleryLead, "#1f3444", 56) : undefined}>{galleryTitle}</h2>
+                  <p className="mt-3 max-w-2xl text-base font-semibold leading-8 text-[#607081]">
+                    Sahadan yansıyan çalışmalarımızı, ziyaretlerimizi ve destek süreçlerimizi tek bir görsel akışta keşfedin.
+                  </p>
                 </div>
-                <Link href="/tum-resimler" className="inline-flex w-fit items-center gap-2 rounded-md border-2 border-[#dfe7ed] bg-white px-6 py-3 text-xs font-black uppercase tracking-widest text-[#1f3444] transition hover:border-hayat-green hover:text-hayat-green">
+                <Link href="/tum-resimler" className="inline-flex h-12 w-fit items-center gap-2 rounded-[14px] border border-[#d9e4ec] bg-white px-5 text-xs font-black uppercase tracking-widest text-[#1f3444] shadow-stk transition hover:-translate-y-0.5 hover:border-hayat-green hover:text-hayat-green">
                   Tüm Resimler <ArrowRight size={16} />
                 </Link>
               </div>
-              <AutoScrollRow animate={galleryMediaItems.length > 1} setClassName="gap-5">
+              <AutoScrollRow animate={galleryMediaItems.length > 3} setClassName="gap-5">
                 {galleryMediaItems.map((item) => {
                   return (
-                    <article key={item.id} className={`relative h-[220px] shrink-0 snap-start ${cardWidthClass(item.section)} overflow-hidden bg-hayat-soft sm:h-[280px]`} style={cardStyle(item.section, { padding: "0px" })}>
-                      <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-contain" videoClassName="h-full w-full bg-black object-contain" />
+                    <article key={item.id} className="group relative h-[260px] w-[min(82vw,420px)] shrink-0 snap-start overflow-hidden rounded-[22px] border border-[#dbe6ee] bg-white shadow-[0_18px_46px_rgba(10,58,85,0.1)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(10,58,85,0.16)] sm:h-[320px] lg:w-[440px]" style={cardStyle(item.section, { padding: "0px" })}>
+                      <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-cover transition duration-700 group-hover:scale-105" videoClassName="h-full w-full bg-black object-cover" />
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0a3a55]/85 via-[#0a3a55]/20 to-transparent p-5">
+                        <span className="inline-flex max-w-full rounded-full bg-white/92 px-3 py-1.5 text-[11px] font-black text-hayat-blue shadow-sm">
+                          {item.slide?.alt || item.section.title}
+                        </span>
+                      </div>
                     </article>
                   );
                 })}
@@ -563,31 +572,41 @@ export default async function HomePage() {
         )}
 
         {/* 13. CORPORATE */}
-        <section id="kurumsal" className="px-3 sm:px-4 lg:px-4" style={{ backgroundColor: mainCorporate?.backgroundColor || "#f5f9fb", ...sectionStyle(mainCorporate, 96) }}>
+        <section id="kurumsal" className="bg-white px-3 sm:px-4 lg:px-4" style={{ backgroundColor: mainCorporate?.backgroundColor || "#ffffff", ...sectionStyle(mainCorporate, 90) }}>
           <div className={`mx-auto ${mainCorporate?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"}`}>
-            <div className={mainCorporate?.layout === "SPLIT" ? "grid gap-6 lg:grid-cols-[minmax(0,430px)_minmax(0,1fr)] items-stretch" : "flex flex-col gap-5"}>
-              {mainCorporate?.layout !== "MINIMAL" && mainCorporate?.layout === "SPLIT" && (
-                <div className="col-span-1 w-full max-w-[430px] h-full overflow-hidden bg-white shadow-stk rounded-lg" style={{ borderColor: mainCorporate?.borderColor || "transparent", borderWidth: mainCorporate?.borderColor ? "1px" : "0px" }}>
-                  <div className="h-full min-h-[360px] overflow-hidden">
-                    <HeroImageSlider images={sectionSlides(mainCorporate, undefined, corporateTitle)} className="h-full w-full" showOverlay={false} fitToParent />
-                  </div>
+            <div className="grid items-stretch gap-7 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
+              <div className="relative min-h-[360px] overflow-hidden rounded-[24px] border border-[#dbe6ee] bg-hayat-soft shadow-[0_24px_70px_rgba(10,58,85,0.12)] lg:min-h-[480px]" style={{ borderColor: mainCorporate?.borderColor || undefined }}>
+                <HeroImageSlider images={sectionSlides(mainCorporate, undefined, corporateTitle)} className="h-full w-full rounded-[24px]" showOverlay fitToParent />
+                <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-white/92 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-hayat-green shadow-sm">
+                  <ShieldCheck size={15} /> Kurumsal Güven
                 </div>
-              )}
+              </div>
 
-              <div className="col-span-1 flex flex-col justify-center">
-                <div className="flex items-start gap-4">
-                  <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-hayat-mint text-hayat-green"><ShieldCheck size={34} /></div>
-                  <div>
-                    <h2 className="mt-2 text-3xl font-black leading-tight text-[#1f3444] sm:text-4xl md:text-7xl" style={headingStyle(mainCorporate, "#1f3444", 64)}>{corporateTitle}</h2>
-                    <p className="mt-3 text-lg font-semibold leading-9 text-[#607081]" style={bodyStyle(mainCorporate)}>{mainCorporate?.body}</p>
-                    {(mainCorporate?.buttonLabel || mainCorporate?.secondaryButtonLabel) && (
-                      <div className="mt-4 flex flex-wrap gap-3">
-                        {mainCorporate.buttonLabel && <Link href={mainCorporate.href || "/kurumsal"} className="inline-flex h-14 items-center justify-center rounded-md bg-hayat-green px-8 text-sm font-black text-white transition hover:bg-hayat-dark">{mainCorporate.buttonLabel}</Link>}
-                        {mainCorporate.secondaryButtonLabel && <Link href={mainCorporate.secondaryHref || "/iletisim"} className="inline-flex h-14 items-center justify-center rounded-md border-2 border-[#dfe7ed] bg-white px-8 text-sm font-black text-hayat-dark transition hover:border-hayat-green hover:text-hayat-green">{mainCorporate.secondaryButtonLabel}</Link>}
-                      </div>
-                    )}
-                  </div>
+              <div className="flex flex-col justify-center rounded-[24px] border border-[#dbe6ee] bg-[#f8fbfd] p-6 shadow-[0_18px_50px_rgba(10,58,85,0.08)] sm:p-8 lg:p-10">
+                <div className="flex h-16 w-16 items-center justify-center rounded-[18px] bg-hayat-mint text-hayat-green shadow-sm">
+                  <ShieldCheck size={34} />
                 </div>
+                <p className="mt-6 text-xs font-black uppercase tracking-[0.24em] text-hayat-green">Dayanışmayla Büyüyoruz</p>
+                <h2 className="mt-3 text-3xl font-black leading-tight text-[#1f3444] sm:text-4xl md:text-6xl" style={headingStyle(mainCorporate, "#1f3444", 58)}>{corporateTitle}</h2>
+                <p className="mt-5 max-w-4xl text-base font-semibold leading-8 text-[#607081] sm:text-lg sm:leading-9" style={bodyStyle(mainCorporate)}>{mainCorporate?.body}</p>
+
+                <div className="mt-7 grid gap-3 sm:grid-cols-3">
+                  {["Şeffaf Süreç", "Yerel Dayanışma", "Güvenli Takip"].map((label) => (
+                    <div key={label} className="rounded-[16px] border border-[#dbe6ee] bg-white px-4 py-4 shadow-sm">
+                      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-hayat-mint text-hayat-green">
+                        <ShieldCheck size={18} />
+                      </div>
+                      <p className="text-sm font-black text-[#1f3444]">{label}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {(mainCorporate?.buttonLabel || mainCorporate?.secondaryButtonLabel) && (
+                  <div className="mt-7 flex flex-wrap gap-3">
+                    {mainCorporate.buttonLabel && <Link href={mainCorporate.href || "/kurumsal"} className="inline-flex h-[52px] items-center justify-center rounded-[14px] bg-hayat-green px-7 text-sm font-black text-white shadow-green transition hover:-translate-y-0.5 hover:bg-hayat-dark">{mainCorporate.buttonLabel}</Link>}
+                    {mainCorporate.secondaryButtonLabel && <Link href={mainCorporate.secondaryHref || "/iletisim"} className="inline-flex h-[52px] items-center justify-center rounded-[14px] border border-[#d9e4ec] bg-white px-7 text-sm font-black text-hayat-dark shadow-sm transition hover:-translate-y-0.5 hover:border-hayat-green hover:text-hayat-green">{mainCorporate.secondaryButtonLabel}</Link>}
+                  </div>
+                )}
               </div>
             </div>
 
