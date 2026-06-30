@@ -26,7 +26,7 @@ export function Header() {
     <header className="sticky top-0 z-[100] w-full border-t-2 border-hayat-dark border-b border-hayat-border bg-[#f7f5ef]/96 backdrop-blur">
       <div className="mx-auto flex h-[76px] max-w-[1840px] items-center justify-between gap-3 px-3 sm:h-[88px] sm:px-4 lg:h-[104px] lg:gap-6 lg:px-4">
         <Link href="/" className="block min-w-0 shrink" aria-label="Hayat Ağacı Derneği ana sayfa">
-          <img src="/media/brand/logolar-vektorel-yatay.png" alt="Hayat Ağacı Derneği" className="h-[54px] w-auto max-w-[min(58vw,240px)] object-contain sm:h-[66px] sm:max-w-[300px] lg:h-[92px] lg:max-w-[360px]" />
+          <img src="/media/brand/logolar-vektorel-yatay.png" alt="Hayat Ağacı Derneği" className="h-[72px] w-auto max-w-[min(62vw,300px)] object-contain sm:h-[84px] sm:max-w-[390px] lg:h-[100px] lg:max-w-[480px]" />
         </Link>
 
         <nav className="hidden min-w-0 flex-1 items-center justify-center gap-9 lg:flex xl:gap-11 2xl:gap-12">
