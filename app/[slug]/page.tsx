@@ -253,7 +253,7 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
                           </div>
                           <div className="mt-2.5 flex min-w-0 items-center gap-2">
                             <p className="min-w-0 flex-1 whitespace-nowrap font-mono text-[14px] font-black leading-6 tracking-wide text-[#06122e]">{iban.iban}</p>
-                            <CopyIbanButton value={iban.iban} label="IBAN Kopyala" iconOnly className="h-9 w-9 justify-center rounded-[10px] bg-[color:var(--bank-primary)] p-0 shadow-[0_10px_18px_rgba(10,58,85,0.16)] hover:bg-[color:var(--bank-secondary)] [&_svg]:h-4 [&_svg]:w-4" />
+                            <CopyIbanButton value={iban.iban} label="Kopyala" className="h-9 min-w-[86px] justify-center rounded-[10px] bg-[color:var(--bank-primary)] px-3 py-0 text-xs font-black shadow-[0_10px_18px_rgba(10,58,85,0.16)] hover:bg-[color:var(--bank-secondary)]" />
                           </div>
                         </div>
                       ))}
