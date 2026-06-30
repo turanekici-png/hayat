@@ -157,7 +157,6 @@ export default async function HomePage() {
   const corporateDisplaySections = corporateIdentitySections.length ? corporateIdentitySections : fallbackCorporateSections;
 
   const mainCorporate = corporateDisplaySections.find(s => s.layout === "SPLIT" || s.layout === "BANNER" || s.layout === "MINIMAL" || (s.title || "").toLocaleLowerCase("tr-TR").includes("ana") || (s.title || "").toLocaleLowerCase("tr-TR").includes("hakkımızda") || (s.title || "").toLocaleLowerCase("tr-TR").includes("hakkimizda")) || corporateDisplaySections[0];
-  const corporateCards = corporateDisplaySections.filter(s => s.id !== mainCorporate?.id);
 
   const featuredCampaigns = campaigns.slice(0, 8);
   const heroNews = newsSections.slice(0, 8);
@@ -235,7 +234,7 @@ export default async function HomePage() {
       subtitle={quickDonation?.subtitle || "Bağış türünü ve tutarını seç, anında destek ol"}
       buttonLabel={quickDonation?.buttonLabel || "Şimdi Destek Ol"}
       sidePanel={sidePanel}
-      className={`mx-auto ${quickDonation?.contentWidth === "full" && !sidePanel ? "w-full max-w-none" : sidePanel ? "w-full lg:h-[520px]" : "max-w-[1840px]"}`}
+      className={`mx-auto ${quickDonation?.contentWidth === "full" && !sidePanel ? "w-full max-w-none" : sidePanel ? "w-full h-[calc(560px+4cm)] sm:h-[calc(600px+4cm)] lg:h-[calc(520px+4cm)]" : "max-w-[1840px]"}`}
       style={{ ...cardStyle(quickDonation, { padding: 24 }), backgroundColor: "#ffffff", borderColor: "#e2ddd0", borderRadius: 20 }}
     />
   );
@@ -251,7 +250,7 @@ export default async function HomePage() {
           <section className="relative overflow-hidden border-b border-[#d5e4ec]" style={{ backgroundColor: heroNewsLead?.backgroundColor || "#eef5f8", paddingTop: `${heroNewsLead?.paddingY || 0}px`, paddingBottom: `${heroNewsLead?.paddingY || 0}px` }}>
             <div className={`mx-auto grid ${heroNewsLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"} items-stretch gap-4 px-3 py-1 sm:px-4 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-4 xl:grid-cols-[minmax(0,1fr)_400px] 2xl:grid-cols-[minmax(0,1fr)_430px]`}>
               <div className="min-w-0">
-                <ActivityShowcaseSlider items={heroNewsItems} defaultHref="/haberler" defaultButtonLabel="Haberi İncele" dotLabel="haber" showDefaultButton splitMedia compactMedia />
+                <ActivityShowcaseSlider items={heroNewsItems} defaultHref="/haberler" defaultButtonLabel="Haberi İncele" dotLabel="haber" showDefaultButton splitMedia compactMedia extendedMedia mediaFirst equalColumns />
               </div>
               {renderQuickDonation(true)}
             </div>
@@ -580,27 +579,6 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {mainCorporate?.layout === "SPLIT" && corporateCards.length > 0 && (
-              <div className="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                {corporateCards.map((item) => (
-                  <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={firstSlide(item)?.src} imageAlt={firstSlide(item)?.alt} label={item.badge || "Kurumsal"} className="cursor-zoom-in border border-[#dfe7ed] bg-white p-6 shadow-stk transition hover:-translate-y-1 hover:border-hayat-green hover:shadow-stk-hover text-left" style={cardStyle(item)}>
-                    <h3 className="mt-3 text-2xl font-black leading-tight text-[#1f3444]" style={headingStyle(item, "#1f3444", 26)}>{item.title}</h3>
-                    <p className="mt-4 text-sm font-semibold leading-7 text-[#607081]" style={bodyStyle(item, "#607081", 15)}>{item.body}</p>
-                  </ExpandableCard>
-                ))}
-              </div>
-            )}
-
-            {corporateCards.length > 0 && mainCorporate?.layout !== "SPLIT" && (
-              <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {corporateCards.map((item) => (
-                  <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={firstSlide(item)?.src} imageAlt={firstSlide(item)?.alt} label={item.badge || "Kurumsal"} className="cursor-zoom-in border border-[#dfe7ed] bg-white p-6 shadow-stk transition hover:-translate-y-1 hover:border-hayat-green hover:shadow-stk-hover text-left" style={cardStyle(item)}>
-                    <h3 className="mt-3 text-2xl font-black leading-tight text-[#1f3444]" style={headingStyle(item, "#1f3444", 26)}>{item.title}</h3>
-                    <p className="mt-4 text-sm font-semibold leading-7 text-[#607081]" style={bodyStyle(item, "#607081", 15)}>{item.body}</p>
-                  </ExpandableCard>
-                ))}
-              </div>
-            )}
           </div>
         </section>
 

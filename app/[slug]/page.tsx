@@ -105,9 +105,9 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
                       {ibans.map((iban, ibanIndex) => (
                         <div key={`${account.bank}-${iban.label}-${ibanIndex}`} className="rounded-[14px] border border-hayat-border bg-hayat-soft p-4">
                           <p className="text-xs font-black uppercase tracking-wide text-[#8a928f]">{ibans.length === 1 ? "IBAN" : iban.label.replace(" IBAN", "")}</p>
-                          <p className="mt-2 break-all font-mono text-sm font-black tracking-wide text-hayat-dark sm:text-base">{iban.iban}</p>
-                          <div className="mt-3">
-                            <CopyIbanButton value={iban.iban} label="IBAN Kopyala" className="w-full justify-center py-3 text-sm" />
+                          <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <p className="min-w-0 break-all font-mono text-sm font-black tracking-wide text-hayat-dark sm:text-base">{iban.iban}</p>
+                            <CopyIbanButton value={iban.iban} label="IBAN Kopyala" className="w-full justify-center py-3 text-sm sm:w-auto sm:px-5" />
                           </div>
                         </div>
                       ))}
