@@ -96,17 +96,13 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
         <div className="space-y-8 p-5 sm:p-7 lg:p-8">
           <section>
             <StepTitle number={1} title="Bağış Türü" icon={HeartHandshake} />
-            <div className="mt-4 flex flex-wrap gap-2.5">
+            <div className="donation-type-grid mt-4">
               {donationTypes.map((type) => (
                 <button
                   key={type.code}
                   type="button"
                   onClick={() => setSelectedType(type.code)}
-                  className={`inline-flex h-11 items-center justify-center rounded-full border px-5 text-sm font-black transition ${
-                    selectedType === type.code
-                      ? "border-hayat-blue bg-hayat-blue text-white shadow-[0_14px_30px_rgba(21,147,207,0.22)]"
-                      : "border-[#dcd4c7] bg-[#fbfaf7] text-hayat-blue hover:border-hayat-blue hover:bg-white"
-                  }`}
+                  className={`donation-type-button ${selectedType === type.code ? "is-active" : ""}`}
                 >
                   {type.label}
                 </button>
