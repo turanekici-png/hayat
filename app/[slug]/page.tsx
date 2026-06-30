@@ -113,10 +113,10 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
                       </p>
                     )}
 
-                    <div className="mt-5 space-y-3">
+                    <div className="mt-4 space-y-2.5">
                       {ibans.map((iban, ibanIndex) => (
-                        <div key={`${account.bank}-${iban.label}-${ibanIndex}`} className="flex min-w-0 flex-col rounded-[16px] border border-[#d6e1ec] bg-white px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
-                          <div className="flex items-center gap-4">
+                        <div key={`${account.bank}-${iban.label}-${ibanIndex}`} className="flex min-w-0 flex-col rounded-[16px] border border-[#d6e1ec] bg-white px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                          <div className="flex items-center gap-3">
                             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#061b55] text-white shadow-[0_0_0_6px_#eef3f7]">
                               <CurrencyIcon label={iban.label} />
                             </span>
@@ -125,9 +125,9 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
                               <span className="mt-2 block h-px w-full bg-[#d6e1ec]" />
                             </div>
                           </div>
-                          <p className="mt-4 min-w-0 break-all font-mono text-sm font-black leading-6 tracking-wide text-[#06122e]">{iban.iban}</p>
-                          <div className="mt-4">
-                            <CopyIbanButton value={iban.iban} label="IBAN Kopyala" className="min-h-10 w-full justify-center rounded-[12px] bg-gradient-to-br from-[#1977dc] to-[#0747ad] px-4 text-xs shadow-[0_10px_18px_rgba(25,119,220,0.16)] hover:from-hayat-green hover:to-hayat-green" />
+                          <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <p className="min-w-0 break-all font-mono text-[15px] font-black leading-6 tracking-wide text-[#06122e]">{iban.iban}</p>
+                            <CopyIbanButton value={iban.iban} label="IBAN Kopyala" className="min-h-10 w-full justify-center rounded-[12px] bg-gradient-to-br from-[#1977dc] to-[#0747ad] px-4 text-xs shadow-[0_10px_18px_rgba(25,119,220,0.16)] hover:from-hayat-green hover:to-hayat-green sm:w-auto sm:min-w-[132px]" />
                           </div>
                         </div>
                       ))}
