@@ -97,9 +97,11 @@ export function ActivityShowcaseSlider({
 
   useEffect(() => {
     if (items.length < 2) return;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
     const timer = window.setInterval(() => {
+      if (document.hidden) return;
       setActive((value) => (value + 1) % items.length);
-    }, 4200);
+    }, isMobile ? 6500 : 4200);
     return () => window.clearInterval(timer);
   }, [items.length]);
 
@@ -165,9 +167,9 @@ export function ActivityShowcaseSlider({
                     src={activeImage.src}
                     alt=""
                     aria-hidden="true"
-                    loading={active === 0 ? "eager" : "lazy"}
+                    loading="lazy"
                     decoding="async"
-                    className="absolute inset-0 h-full w-full scale-110 object-cover object-center opacity-55 blur-2xl"
+                    className="absolute inset-0 hidden h-full w-full scale-110 object-cover object-center opacity-55 blur-2xl sm:block"
                   />
                   <div className="absolute inset-0 bg-white/28" />
                 </>

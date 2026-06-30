@@ -23,9 +23,11 @@ export function HeroImageSlider({
 
   useEffect(() => {
     if (slides.length < 2) return;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
     const timer = window.setInterval(() => {
+      if (document.hidden) return;
       setActive((current) => (current + 1) % slides.length);
-    }, 3200);
+    }, isMobile ? 6200 : 3200);
     return () => window.clearInterval(timer);
   }, [slides.length]);
 

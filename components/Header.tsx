@@ -23,10 +23,16 @@ export function Header() {
   const pathname = usePathname() || "/";
 
   return (
-    <header className="sticky top-0 z-[100] w-full border-t-2 border-hayat-dark border-b border-hayat-border bg-[#f7f5ef]/96 backdrop-blur">
+    <header className="sticky top-0 z-[100] w-full border-t-2 border-hayat-dark border-b border-hayat-border bg-[#f7f5ef]/98">
       <div className="mx-auto flex h-[86px] max-w-[1840px] items-center justify-between gap-2 px-3 sm:h-[100px] sm:px-4 lg:h-[116px] lg:gap-6 lg:px-4">
         <Link href="/" className="block min-w-0 shrink" aria-label="Hayat Ağacı Derneği ana sayfa">
-          <img src="/media/brand/logolar-vektorel-yatay.png" alt="Hayat Ağacı Derneği" className="h-[104px] w-auto max-w-[min(60vw,350px)] object-contain sm:h-[122px] sm:max-w-[480px] lg:h-[148px] lg:max-w-[700px]" />
+          <img
+            src="/media/brand/logolar-vektorel-yatay.png"
+            alt="Hayat Ağacı Derneği"
+            loading="eager"
+            decoding="async"
+            className="h-[104px] w-auto max-w-[min(60vw,350px)] object-contain sm:h-[122px] sm:max-w-[480px] lg:h-[148px] lg:max-w-[700px]"
+          />
         </Link>
 
         <nav className="hidden min-w-0 flex-1 items-center justify-center gap-9 lg:flex xl:gap-11 2xl:gap-12">
