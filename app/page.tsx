@@ -223,6 +223,11 @@ export default async function HomePage() {
   const parsedStats = statsSection?.body?.split("\n").map(line => line.split("|")).filter(parts => parts.length === 2) || [];
   const stats = parsedStats.length > 0 ? parsedStats : [["12.450+", "Ulaşılan aile"], ["7/24", "Online bağış"], ["%100", "Kayıtlı süreç"], ["Güvenli", "Başvuru takibi"]];
   const shouldScrollProjects = featuredCampaigns.length > 5;
+  const shouldScrollVideos = videoMediaItems.length > 5;
+  const shouldScrollGallery = galleryMediaItems.length > 5;
+  const shouldScrollBlogs = blogs.length > 5;
+  const shouldScrollStories = stories.length > 5;
+  const shouldScrollCustoms = customs.length > 5;
 
   const donationShortcuts = shortcutSections.map((item) => [
     sectionText((item.title || "").replace(/Kısayolu|Kisayolu/gi, "").trim(), item.body || "Bağış"),
@@ -279,6 +284,42 @@ export default async function HomePage() {
       </ExpandableCard>
     );
   };
+  const renderVideoCard = (item: { id: string; section: any; slide?: SectionSlide }, scrolling: boolean) => (
+    <article key={item.id} className={`relative aspect-video ${scrolling ? `shrink-0 snap-start ${cardWidthClass(item.section)}` : "w-full"} overflow-hidden bg-hayat-dark shadow-2xl`} style={cardStyle(item.section, { padding: "0px" })}>
+      <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-contain" videoClassName="h-full w-full bg-black object-contain" />
+    </article>
+  );
+  const renderGalleryCard = (item: { id: string; section: any; slide?: SectionSlide }, scrolling: boolean) => (
+    <article key={item.id} className={`group relative h-[260px] ${scrolling ? "w-[min(82vw,420px)] shrink-0 snap-start lg:w-[440px]" : "w-full"} overflow-hidden rounded-[22px] border border-[#dbe6ee] bg-white shadow-[0_18px_46px_rgba(10,58,85,0.1)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(10,58,85,0.16)] sm:h-[320px]`} style={cardStyle(item.section, { padding: "0px" })}>
+      <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-cover transition duration-700 group-hover:scale-105" videoClassName="h-full w-full bg-black object-cover" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0a3a55]/85 via-[#0a3a55]/20 to-transparent p-5">
+        <span className="inline-flex max-w-full rounded-full bg-white/92 px-3 py-1.5 text-[11px] font-black text-hayat-blue shadow-sm">
+          {item.slide?.alt || item.section.title}
+        </span>
+      </div>
+    </article>
+  );
+  const renderContentCard = (item: any, label: string, scrolling: boolean) => (
+    <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={firstSlide(item)?.src} imageAlt={firstSlide(item)?.alt} label={label} className={`group ${scrolling ? `${cardWidthClass(item)} shrink-0 snap-start` : "w-full"} cursor-zoom-in overflow-hidden border border-[#e9eef2] bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover`} style={cardStyle(item, { padding: "0px" })}>
+      {firstSlide(item, undefined) && (
+        <div className="h-64 overflow-hidden bg-hayat-soft">
+          <HeroImageSlider images={sectionSlides(item, undefined, item.title)} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} fitToParent />
+        </div>
+      )}
+      <div className="p-7">
+        <h3 className="mb-4 text-2xl font-black leading-tight text-[#1f3444]" style={headingStyle(item, "#1f3444", 24)}>{item.title}</h3>
+        <div className="mt-2 min-h-[80px]">
+          <ExpandableText title={item.title} text={item.body} className="text-sm font-semibold leading-8 text-[#607081]" style={bodyStyle(item, "#607081", 14)} />
+        </div>
+        {(item.buttonLabel || item.secondaryButtonLabel) && (
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {item.buttonLabel && <Link href={item.href || "/"} className="inline-flex h-12 items-center justify-center rounded-md bg-hayat-blue text-xs font-black uppercase tracking-widest text-white transition hover:bg-hayat-blueDark">{item.buttonLabel}</Link>}
+            {item.secondaryButtonLabel && <Link href={item.secondaryHref || "/"} className="inline-flex h-12 items-center justify-center rounded-md border-2 border-[#dfe7ed] text-xs font-black uppercase tracking-widest text-[#1f3444] transition hover:border-hayat-green hover:text-hayat-green">{item.secondaryButtonLabel}</Link>}
+          </div>
+        )}
+      </div>
+    </ExpandableCard>
+  );
 
   return (
     <div className="min-h-screen overflow-x-clip bg-hayat-soft font-montserrat text-hayat-ink selection:bg-hayat-blue selection:text-white">
@@ -427,15 +468,15 @@ export default async function HomePage() {
                   {videoLead?.buttonLabel || "Tüm Videolar"} <ArrowRight size={16} />
                 </Link>
               </div>
-              <AutoScrollRow animate={videoMediaItems.length > 1}>
-                {videoMediaItems.map((item) => {
-                  return (
-                    <article key={item.id} className={`relative aspect-video shrink-0 snap-start ${cardWidthClass(item.section)} overflow-hidden bg-hayat-dark shadow-2xl`} style={cardStyle(item.section, { padding: "0px" })}>
-                      <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-contain" videoClassName="h-full w-full bg-black object-contain" />
-                    </article>
-                  );
-                })}
-              </AutoScrollRow>
+              {shouldScrollVideos ? (
+                <AutoScrollRow animate>
+                  {videoMediaItems.map((item) => renderVideoCard(item, true))}
+                </AutoScrollRow>
+              ) : (
+                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+                  {videoMediaItems.map((item) => renderVideoCard(item, false))}
+                </div>
+              )}
             </div>
           </section>
         )}
@@ -456,20 +497,15 @@ export default async function HomePage() {
                   Tüm Resimler <ArrowRight size={16} />
                 </Link>
               </div>
-              <AutoScrollRow animate={galleryMediaItems.length > 3} setClassName="gap-5">
-                {galleryMediaItems.map((item) => {
-                  return (
-                    <article key={item.id} className="group relative h-[260px] w-[min(82vw,420px)] shrink-0 snap-start overflow-hidden rounded-[22px] border border-[#dbe6ee] bg-white shadow-[0_18px_46px_rgba(10,58,85,0.1)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(10,58,85,0.16)] sm:h-[320px] lg:w-[440px]" style={cardStyle(item.section, { padding: "0px" })}>
-                      <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-cover transition duration-700 group-hover:scale-105" videoClassName="h-full w-full bg-black object-cover" />
-                      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0a3a55]/85 via-[#0a3a55]/20 to-transparent p-5">
-                        <span className="inline-flex max-w-full rounded-full bg-white/92 px-3 py-1.5 text-[11px] font-black text-hayat-blue shadow-sm">
-                          {item.slide?.alt || item.section.title}
-                        </span>
-                      </div>
-                    </article>
-                  );
-                })}
-              </AutoScrollRow>
+              {shouldScrollGallery ? (
+                <AutoScrollRow animate setClassName="gap-5">
+                  {galleryMediaItems.map((item) => renderGalleryCard(item, true))}
+                </AutoScrollRow>
+              ) : (
+                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+                  {galleryMediaItems.map((item) => renderGalleryCard(item, false))}
+                </div>
+              )}
             </div>
           </section>
         )}
@@ -486,29 +522,15 @@ export default async function HomePage() {
                   <Link href={blogLead.href || "/blog"} className="inline-flex w-fit items-center gap-2 rounded-md border-2 border-[#dfe7ed] px-6 py-3 text-xs font-black uppercase tracking-widest text-[#1f3444] transition hover:border-hayat-green hover:text-hayat-green">{blogLead.buttonLabel} <ArrowRight size={16} /></Link>
                 )}
               </div>
-              <AutoScrollRow animate={blogs.length > 1} setClassName="gap-7">
-                {blogs.map((item) => (
-                  <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={firstSlide(item)?.src} imageAlt={firstSlide(item)?.alt} label="Blog" className={`group ${cardWidthClass(item)} shrink-0 snap-start cursor-zoom-in overflow-hidden border border-[#e9eef2] bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover`} style={cardStyle(item, { padding: "0px" })}>
-                    {firstSlide(item, undefined) && (
-                      <div className="h-64 overflow-hidden bg-hayat-soft">
-                        <HeroImageSlider images={sectionSlides(item, undefined, item.title)} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} fitToParent />
-                      </div>
-                    )}
-                    <div className="p-7">
-                      <h3 className="mb-4 text-2xl font-black leading-tight text-[#1f3444]" style={headingStyle(item, "#1f3444", 24)}>{item.title}</h3>
-                      <div className="mt-2 min-h-[80px]">
-                        <ExpandableText title={item.title} text={item.body} className="text-sm font-semibold leading-8 text-[#607081]" style={bodyStyle(item, "#607081", 14)} />
-                      </div>
-                      {(item.buttonLabel || item.secondaryButtonLabel) && (
-                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                          {item.buttonLabel && <Link href={item.href || "/"} className="inline-flex h-12 items-center justify-center rounded-md bg-hayat-blue text-xs font-black uppercase tracking-widest text-white transition hover:bg-hayat-blueDark">{item.buttonLabel}</Link>}
-                          {item.secondaryButtonLabel && <Link href={item.secondaryHref || "/"} className="inline-flex h-12 items-center justify-center rounded-md border-2 border-[#dfe7ed] text-xs font-black uppercase tracking-widest text-[#1f3444] transition hover:border-hayat-green hover:text-hayat-green">{item.secondaryButtonLabel}</Link>}
-                        </div>
-                      )}
-                    </div>
-                  </ExpandableCard>
-                ))}
-              </AutoScrollRow>
+              {shouldScrollBlogs ? (
+                <AutoScrollRow animate setClassName="gap-7">
+                  {blogs.map((item) => renderContentCard(item, "Blog", true))}
+                </AutoScrollRow>
+              ) : (
+                <div className="grid gap-7 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+                  {blogs.map((item) => renderContentCard(item, "Blog", false))}
+                </div>
+              )}
             </div>
           </section>
         )}
@@ -525,29 +547,15 @@ export default async function HomePage() {
                   <Link href={storyLead.href || "/hikayeler"} className="inline-flex w-fit items-center gap-2 rounded-md border-2 border-[#dfe7ed] px-6 py-3 text-xs font-black uppercase tracking-widest text-[#1f3444] transition hover:border-hayat-green hover:text-hayat-green">{storyLead.buttonLabel} <ArrowRight size={16} /></Link>
                 )}
               </div>
-              <AutoScrollRow animate={stories.length > 1} setClassName="gap-7">
-                {stories.map((item) => (
-                  <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={firstSlide(item)?.src} imageAlt={firstSlide(item)?.alt} label="Hikaye" className={`group ${cardWidthClass(item)} shrink-0 snap-start cursor-zoom-in overflow-hidden border border-[#e9eef2] bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover`} style={cardStyle(item, { padding: "0px" })}>
-                    {firstSlide(item, undefined) && (
-                      <div className="h-64 overflow-hidden bg-hayat-soft">
-                        <HeroImageSlider images={sectionSlides(item, undefined, item.title)} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} fitToParent />
-                      </div>
-                    )}
-                    <div className="p-7">
-                      <h3 className="mb-4 text-2xl font-black leading-tight text-[#1f3444]" style={headingStyle(item, "#1f3444", 24)}>{item.title}</h3>
-                      <div className="mt-2 min-h-[80px]">
-                        <ExpandableText title={item.title} text={item.body} className="text-sm font-semibold leading-8 text-[#607081]" style={bodyStyle(item, "#607081", 14)} />
-                      </div>
-                      {(item.buttonLabel || item.secondaryButtonLabel) && (
-                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                          {item.buttonLabel && <Link href={item.href || "/"} className="inline-flex h-12 items-center justify-center rounded-md bg-hayat-blue text-xs font-black uppercase tracking-widest text-white transition hover:bg-hayat-blueDark">{item.buttonLabel}</Link>}
-                          {item.secondaryButtonLabel && <Link href={item.secondaryHref || "/"} className="inline-flex h-12 items-center justify-center rounded-md border-2 border-[#dfe7ed] text-xs font-black uppercase tracking-widest text-[#1f3444] transition hover:border-hayat-green hover:text-hayat-green">{item.secondaryButtonLabel}</Link>}
-                        </div>
-                      )}
-                    </div>
-                  </ExpandableCard>
-                ))}
-              </AutoScrollRow>
+              {shouldScrollStories ? (
+                <AutoScrollRow animate setClassName="gap-7">
+                  {stories.map((item) => renderContentCard(item, "Hikaye", true))}
+                </AutoScrollRow>
+              ) : (
+                <div className="grid gap-7 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+                  {stories.map((item) => renderContentCard(item, "Hikaye", false))}
+                </div>
+              )}
             </div>
           </section>
         )}
@@ -564,29 +572,15 @@ export default async function HomePage() {
                   <Link href={customLead.href || "/"} className="inline-flex w-fit items-center gap-2 rounded-md border-2 border-[#dfe7ed] px-6 py-3 text-xs font-black uppercase tracking-widest text-[#1f3444] transition hover:border-hayat-green hover:text-hayat-green">{customLead.buttonLabel} <ArrowRight size={16} /></Link>
                 )}
               </div>
-              <AutoScrollRow animate={customs.length > 1} setClassName="gap-7">
-                {customs.map((item) => (
-                  <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={firstSlide(item)?.src} imageAlt={firstSlide(item)?.alt} label={item.badge || "Özel"} className={`group ${cardWidthClass(item)} shrink-0 snap-start cursor-zoom-in overflow-hidden border border-[#e9eef2] bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover`} style={cardStyle(item, { padding: "0px" })}>
-                    {firstSlide(item, undefined) && (
-                      <div className="h-64 overflow-hidden bg-hayat-soft">
-                        <HeroImageSlider images={sectionSlides(item, undefined, item.title)} className="relative h-full w-full overflow-hidden bg-hayat-soft" showOverlay={false} fitToParent />
-                      </div>
-                    )}
-                    <div className="p-7">
-                      <h3 className="mb-4 text-2xl font-black leading-tight text-[#1f3444]" style={headingStyle(item, "#1f3444", 24)}>{item.title}</h3>
-                      <div className="mt-2 min-h-[80px]">
-                        <ExpandableText title={item.title} text={item.body} className="text-sm font-semibold leading-8 text-[#607081]" style={bodyStyle(item, "#607081", 14)} />
-                      </div>
-                      {(item.buttonLabel || item.secondaryButtonLabel) && (
-                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                          {item.buttonLabel && <Link href={item.href || "/"} className="inline-flex h-12 items-center justify-center rounded-md bg-hayat-blue text-xs font-black uppercase tracking-widest text-white transition hover:bg-hayat-blueDark">{item.buttonLabel}</Link>}
-                          {item.secondaryButtonLabel && <Link href={item.secondaryHref || "/"} className="inline-flex h-12 items-center justify-center rounded-md border-2 border-[#dfe7ed] text-xs font-black uppercase tracking-widest text-[#1f3444] transition hover:border-hayat-green hover:text-hayat-green">{item.secondaryButtonLabel}</Link>}
-                        </div>
-                      )}
-                    </div>
-                  </ExpandableCard>
-                ))}
-              </AutoScrollRow>
+              {shouldScrollCustoms ? (
+                <AutoScrollRow animate setClassName="gap-7">
+                  {customs.map((item) => renderContentCard(item, item.badge || "Özel", true))}
+                </AutoScrollRow>
+              ) : (
+                <div className="grid gap-7 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+                  {customs.map((item) => renderContentCard(item, item.badge || "Özel", false))}
+                </div>
+              )}
             </div>
           </section>
         )}
