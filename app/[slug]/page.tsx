@@ -47,7 +47,7 @@ function CurrencyIcon({ label }: { label: string }) {
   const key = label.toLocaleLowerCase("tr-TR");
   if (key.includes("dolar") || key.includes("usd")) return <DollarSign size={28} strokeWidth={2.8} />;
   if (key.includes("euro") || key.includes("eur")) return <Euro size={28} strokeWidth={2.8} />;
-  return <span className="text-[30px] font-black leading-none">₺</span>;
+  return <span className="text-[24px] font-black leading-none sm:text-[30px]">₺</span>;
 }
 
 type BankTheme = {
@@ -201,59 +201,64 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
       <>
         <Header />
         <main className="bg-white">
-          <section className="bg-hayat-soft px-3 py-8 sm:px-4 lg:px-4">
+          <section className="bg-hayat-soft px-4 py-5 sm:px-4 sm:py-8 lg:px-4">
             <div className="mx-auto max-w-[1840px]">
-              <h1 className="text-[34px] font-black leading-tight text-hayat-dark sm:text-[44px] md:text-[52px]">Hesap Numaralarımız</h1>
+              <h1 className="text-[30px] font-black leading-tight text-hayat-dark sm:text-[44px] md:text-[52px]">Hesap Numaralarımız</h1>
             </div>
           </section>
 
-          <section className="bg-[#f5f9fc] px-3 py-8 sm:px-4 lg:px-4">
-            <div className="mx-auto grid max-w-[1840px] gap-4 md:grid-cols-2 2xl:grid-cols-4">
+          <section className="bg-[#f5f9fc] px-4 py-5 sm:px-4 sm:py-8 lg:px-4">
+            <div className="mx-auto grid max-w-[1840px] grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {bankAccounts.map((account, accountIndex) => {
                 const logoUrl = normalizeMediaUrl(account.logoUrl) || account.logoUrl;
                 const ibans = visibleIbans(account);
                 const theme = bankTheme(account.bank);
 
                 return (
-                  <article key={`${account.bank}-${accountIndex}`} className="rounded-[22px] border border-[color:var(--bank-primary)]/25 p-5 shadow-[0_18px_48px_rgba(10,58,85,0.1)] ring-1 ring-white" style={bankCardStyle(theme)}>
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                      <div className="flex min-w-0 items-center gap-4">
+                  <article key={`${account.bank}-${accountIndex}`} className="rounded-[20px] border border-[color:var(--bank-primary)]/25 p-4 shadow-[0_14px_34px_rgba(10,58,85,0.08)] ring-1 ring-white sm:p-5 sm:shadow-[0_18px_48px_rgba(10,58,85,0.1)]" style={bankCardStyle(theme)}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                         {logoUrl && (
-                          <img src={logoUrl} alt={account.bank || "Banka logosu"} loading="lazy" decoding="async" className="h-14 w-14 shrink-0 rounded-[14px] border border-[color:var(--bank-primary)]/25 bg-white object-contain p-2 shadow-[0_10px_24px_rgba(10,58,85,0.08)]" />
+                          <img src={logoUrl} alt={account.bank || "Banka logosu"} loading="lazy" decoding="async" className="h-12 w-12 shrink-0 rounded-[14px] border border-[color:var(--bank-primary)]/25 bg-white object-contain p-2 shadow-[0_8px_18px_rgba(10,58,85,0.08)] sm:h-14 sm:w-14 sm:shadow-[0_10px_24px_rgba(10,58,85,0.08)]" />
                         )}
                         <div className="min-w-0 flex-1">
-                          <h2 className="text-xl font-black leading-tight text-[color:var(--bank-text)] sm:text-2xl">{account.bank || "Banka Bilgisi"}</h2>
+                          <h2 className="text-lg font-black leading-tight text-[color:var(--bank-text)] sm:text-2xl">{account.bank || "Banka Bilgisi"}</h2>
                           {account.branch && <p className="mt-1 text-sm font-semibold text-[#334b5f]">{account.branch}</p>}
                         </div>
                       </div>
                       {account.type && (
-                        <span className="w-fit shrink-0 rounded-full bg-[color:var(--bank-soft)] px-3 py-1.5 text-xs font-black text-[color:var(--bank-primary)] ring-1 ring-[color:var(--bank-primary)]/15">
+                        <span className="hidden w-fit shrink-0 rounded-full bg-[color:var(--bank-soft)] px-3 py-1.5 text-xs font-black text-[color:var(--bank-primary)] ring-1 ring-[color:var(--bank-primary)]/15 sm:inline-flex">
                           {account.type}
                         </span>
                       )}
                     </div>
+                    {account.type && (
+                      <span className="mt-3 inline-flex w-fit rounded-full bg-[color:var(--bank-soft)] px-3 py-1.5 text-[11px] font-black text-[color:var(--bank-primary)] ring-1 ring-[color:var(--bank-primary)]/15 sm:hidden">
+                        {account.type}
+                      </span>
+                    )}
 
                     {account.description && (
-                      <p className="mt-4 rounded-[14px] bg-[color:var(--bank-primary)] px-4 py-3 text-center text-base font-black uppercase leading-6 tracking-wide text-white shadow-[0_14px_28px_rgba(10,58,85,0.16)]">
+                      <p className="mt-3 rounded-[14px] bg-[color:var(--bank-primary)] px-3 py-2.5 text-center text-sm font-black uppercase leading-5 tracking-wide text-white shadow-[0_10px_20px_rgba(10,58,85,0.12)] sm:mt-4 sm:px-4 sm:py-3 sm:text-base sm:leading-6 sm:shadow-[0_14px_28px_rgba(10,58,85,0.16)]">
                         {account.description}
                       </p>
                     )}
 
                     <div className="mt-3 space-y-2">
                       {ibans.map((iban, ibanIndex) => (
-                        <div key={`${account.bank}-${iban.label}-${ibanIndex}`} className="flex min-w-0 flex-col rounded-[16px] border px-3.5 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_10px_24px_rgba(10,58,85,0.05)]" style={bankRowStyle(theme)}>
-                          <div className="flex items-center gap-3">
-                            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[color:var(--bank-primary)] text-white shadow-[0_0_0_6px_var(--bank-soft)]">
+                        <div key={`${account.bank}-${iban.label}-${ibanIndex}`} className="flex min-w-0 flex-col rounded-[14px] border px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_8px_18px_rgba(10,58,85,0.04)] sm:rounded-[16px] sm:px-3.5 sm:py-2.5 sm:shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_10px_24px_rgba(10,58,85,0.05)]" style={bankRowStyle(theme)}>
+                          <div className="flex items-center gap-2.5 sm:gap-3">
+                            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[color:var(--bank-primary)] text-white shadow-[0_0_0_4px_var(--bank-soft)] [&_svg]:h-5 [&_svg]:w-5 sm:h-11 sm:w-11 sm:shadow-[0_0_0_6px_var(--bank-soft)] sm:[&_svg]:h-7 sm:[&_svg]:w-7">
                               <CurrencyIcon label={iban.label} />
                             </span>
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm font-black tracking-wide text-[color:var(--bank-text)]">{ibanCurrencyLabel(iban.label, ibans.length === 1)}</p>
-                              <span className="mt-2 block h-px w-full bg-[color:var(--bank-primary)]/20" />
+                              <p className="text-xs font-black tracking-wide text-[color:var(--bank-text)] sm:text-sm">{ibanCurrencyLabel(iban.label, ibans.length === 1)}</p>
+                              <span className="mt-1.5 block h-px w-full bg-[color:var(--bank-primary)]/20 sm:mt-2" />
                             </div>
                           </div>
-                          <div className="mt-2.5 flex min-w-0 items-center gap-2">
-                            <p className="min-w-0 flex-1 whitespace-nowrap font-mono text-[14px] font-black leading-6 tracking-wide text-[#06122e]">{iban.iban}</p>
-                            <CopyIbanButton value={iban.iban} label="Kopyala" className="h-9 min-w-[86px] justify-center rounded-[10px] bg-[color:var(--bank-primary)] px-3 py-0 text-xs font-black shadow-[0_10px_18px_rgba(10,58,85,0.16)] hover:bg-[color:var(--bank-secondary)]" />
+                          <div className="mt-2 flex min-w-0 items-center gap-2 sm:mt-2.5">
+                            <p className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-[12px] font-black leading-6 tracking-wide text-[#06122e] [scrollbar-width:none] sm:text-[14px] [&::-webkit-scrollbar]:hidden">{iban.iban}</p>
+                            <CopyIbanButton value={iban.iban} label="Kopyala" mobileIconOnly className="h-9 w-10 min-w-10 justify-center rounded-[10px] bg-[color:var(--bank-primary)] px-0 py-0 text-xs font-black shadow-[0_8px_14px_rgba(10,58,85,0.14)] hover:bg-[color:var(--bank-secondary)] sm:w-auto sm:min-w-[86px] sm:px-3 sm:shadow-[0_10px_18px_rgba(10,58,85,0.16)]" />
                           </div>
                         </div>
                       ))}
