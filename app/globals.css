@@ -623,6 +623,30 @@ footer h3 {
   font-size: 0.92rem;
 }
 
+@media (min-width: 1024px) {
+  .donation-type-grid {
+    grid-template-columns: repeat(auto-fit, minmax(106px, 1fr));
+  }
+
+  .donation-type-button {
+    min-height: 3rem;
+    padding: 0 0.65rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .donation-type-grid {
+    grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  }
+
+  .donation-type-button {
+    min-height: 3.1rem;
+    padding: 0 0.8rem;
+    font-size: 0.9rem;
+  }
+}
+
 .quick-donation-amounts {
   display: grid;
   grid-template-columns: repeat(5, minmax(120px, 1fr));

@@ -76,7 +76,7 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
   }
 
   return (
-    <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_420px] xl:gap-9">
+    <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_380px] xl:gap-8">
       <form id="donation-form" onSubmit={submit} className="overflow-hidden rounded-[28px] border border-[#d9e5ec] bg-white shadow-[0_24px_70px_rgba(10,58,85,0.1)]">
         <input type="hidden" name="type" value={selectedType} />
         <input type="hidden" name="amount" value={amount} />
@@ -112,7 +112,7 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
 
           <section>
             <StepTitle number={2} title="Tutar" icon={Banknote} />
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {presetAmounts.map((value) => (
                 <button
                   key={value}
