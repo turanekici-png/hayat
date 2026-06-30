@@ -20,11 +20,11 @@ export function CopyIbanButton({ value, className = "", label = "Kopyala", iconO
     <button
       type="button"
       onClick={copy}
-      aria-label={copied ? "kopyalandı" : label}
+      aria-label={copied ? "Kopyalandı" : "Kopyala"}
       title={copied ? "Kopyalandı!" : label}
-      className={`inline-flex justify-start items-center bg-hayat-blue px-8 py-2 text-white transition hover:bg-hayat-green ${className}`} // Buton genişliği içeriğe göre ayarlanacak
+      className={`inline-flex items-center bg-hayat-blue px-8 py-2 text-white transition hover:bg-hayat-green ${className}`} // Buton içeriğe göre genişleyecek, padding azaltıldı
     >
-      <span>{copied ? "Kopyalandı!" : label}</span>
+      <span>{copied ? "Kopyalandı!" : "Kopyala"}</span>
     </button>
   );
 }
