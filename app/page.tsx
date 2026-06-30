@@ -347,45 +347,54 @@ export default async function HomePage() {
 
         {/* 5. CAMPAIGNS */}
         {featuredCampaigns.length > 0 && (
-          <section id="projeler" className="px-3 sm:px-4 lg:px-4" style={{ backgroundColor: campaignLead?.backgroundColor || "#ffffff", ...sectionStyle(campaignLead, 96) }}>
+          <section id="projeler" className="bg-white px-3 sm:px-4 lg:px-4" style={{ backgroundColor: campaignLead?.backgroundColor || "#ffffff", ...sectionStyle(campaignLead, 90) }}>
             <div className={`mx-auto ${campaignLead?.contentWidth === "full" ? "w-full max-w-none" : "max-w-[1840px]"}`}>
-              <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+              <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div>
-                  <h2 className="mt-1 text-3xl font-black tracking-tight text-[#1f3444] sm:text-4xl md:text-6xl" style={campaignLead ? headingStyle(campaignLead, "#1f3444", 56) : undefined}>{campaignsTitle}</h2>
+                  <p className="text-xs font-black uppercase tracking-[0.24em] text-hayat-green">Devam Eden Destekler</p>
+                  <h2 className="mt-2 text-3xl font-black tracking-tight text-[#1f3444] sm:text-4xl md:text-6xl" style={campaignLead ? headingStyle(campaignLead, "#1f3444", 56) : undefined}>{campaignsTitle}</h2>
+                  <p className="mt-3 max-w-2xl text-base font-semibold leading-8 text-[#607081]">
+                    İhtiyaç sahiplerine dokunan projelerimizi inceleyin, yürüyen destek çalışmalarına güvenle katkı sunun.
+                  </p>
                 </div>
-                <Link href="/projeler" className="inline-flex w-fit items-center gap-2 rounded-md border-2 border-[#dfe7ed] bg-white px-6 py-3 text-xs font-black uppercase tracking-widest text-[#1f3444] transition hover:border-hayat-green hover:text-hayat-green">
+                <Link href="/projeler" className="inline-flex h-12 w-fit items-center gap-2 rounded-[14px] border border-[#d9e4ec] bg-white px-5 text-xs font-black uppercase tracking-widest text-[#1f3444] shadow-stk transition hover:-translate-y-0.5 hover:border-hayat-green hover:text-hayat-green">
                   Tüm Projeler <ArrowRight size={16} />
                 </Link>
               </div>
-              <AutoScrollRow animate={featuredCampaigns.length > 5}>
+              <AutoScrollRow animate={featuredCampaigns.length > 5} setClassName="gap-5">
                 {featuredCampaigns.map((item) => {
                   const image = firstSlide(item);
                   const href = item.href || `/projeler/${item.id}`;
                   return (
-                  <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label="Proje" className={`group shrink-0 snap-start ${cardWidthClass(item)} cursor-zoom-in overflow-hidden rounded-[20px] border border-[#ded8ca] bg-white text-left shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover`} style={cardStyle(item, { padding: "0px" })}>
-                    <div className="relative aspect-w-16 aspect-h-9 overflow-hidden bg-[repeating-linear-gradient(135deg,#e8f4fb_0,#e8f4fb_16px,#deedf5_16px,#deedf5_32px)]">
+                  <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label="Proje" className="group w-[min(86vw,430px)] shrink-0 snap-start cursor-zoom-in overflow-hidden rounded-[24px] border border-[#dbe6ee] bg-white text-left shadow-[0_18px_46px_rgba(10,58,85,0.1)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(10,58,85,0.16)]" style={cardStyle(item, { padding: "0px" })}>
+                    <div className="relative h-[290px] overflow-hidden bg-[linear-gradient(135deg,#e8f4fb,#f5fafc)]">
                       {image ? (
-                        <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-cover" />
+                        <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-cover transition duration-700 group-hover:scale-105" />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center text-hayat-blue/50">
                           <ImageIcon size={44} />
                         </div>
                       )}
-                      <span className="absolute bottom-4 left-4 max-w-[calc(100%-2rem)] truncate rounded-md bg-white px-3 py-1.5 text-[10px] font-black text-hayat-blue shadow-sm">
-                        foto: {image?.alt || item.title}
-                      </span>
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0a3a55]/90 via-[#0a3a55]/30 to-transparent p-5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="rounded-full bg-white px-3 py-1.5 text-[11px] font-black text-hayat-blue shadow-sm">
+                            {item.badge || "Proje"}
+                          </span>
+                          {item.subtitle && (
+                            <span className="rounded-full bg-hayat-green px-3 py-1.5 text-[11px] font-black text-white shadow-sm">
+                              {item.subtitle}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex min-h-[205px] flex-col p-5 sm:p-6">
-                      <div className="w-fit rounded-full bg-[#dff1fa] px-3 py-1.5 text-xs font-black text-hayat-blue">
-                        {item.badge || "Proje"}
+                    <div className="flex min-h-[235px] flex-col p-5 sm:p-6">
+                      <h3 className="text-2xl font-black leading-tight text-hayat-dark" style={headingStyle(item, "#0a3a55", 26)}>{item.title}</h3>
+                      <div className="mt-4 flex-1">
+                        <ExpandableText title={item.title} text={item.body || ""} className="line-clamp-3 text-[15px] font-semibold leading-7 text-[#5d6b70]" style={bodyStyle(item, "#5d6b70", 15)} />
                       </div>
-                      <h3 className="mt-3 text-xl font-black leading-tight text-hayat-dark" style={headingStyle(item, "#0a3a55", 22)}>{item.title}</h3>
-                      {item.subtitle && <p className="mt-2 text-sm font-bold text-hayat-blue">{item.subtitle}</p>}
-                      <div className="mt-3 flex-1">
-                        <ExpandableText title={item.title} text={item.body || ""} className="line-clamp-3 text-[15px] font-medium leading-7 text-[#5d6b70]" style={bodyStyle(item, "#5d6b70", 15)} />
-                      </div>
-                      <Link href={href} className="mt-5 inline-flex w-fit items-center gap-1 text-sm font-black text-hayat-blue transition hover:text-hayat-green">
-                        Projeyi İncele <ArrowRight size={15} />
+                      <Link href={href} className="mt-5 inline-flex h-12 w-fit items-center justify-center gap-2 rounded-[14px] bg-hayat-blue px-5 text-sm font-black text-white shadow-[0_14px_26px_rgba(25,151,207,0.2)] transition hover:-translate-y-0.5 hover:bg-hayat-green">
+                        Projeyi İncele <ArrowRight size={16} />
                       </Link>
                     </div>
                   </ExpandableCard>

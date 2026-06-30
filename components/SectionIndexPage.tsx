@@ -57,9 +57,7 @@ export async function SectionIndexPage({
   type,
   groupLabelType,
   filter,
-  eyebrow,
   title,
-  description,
   itemLabel,
   emptyTitle,
   emptyBody,
@@ -75,47 +73,44 @@ export async function SectionIndexPage({
   return (
     <>
       <Header />
-      <main className="bg-[#f7f5ef]">
-        <section className="border-b border-[#ded8ca] bg-[#eee9dd] px-3 py-16 sm:px-4 sm:py-20 lg:px-4">
+      <main className="bg-[#f4f8fb]">
+        <section className="border-b border-[#dce8ef] bg-white px-3 py-9 sm:px-4 sm:py-11 lg:px-4">
           <div className="mx-auto max-w-[1840px]">
-            <p className="text-[12px] font-black uppercase tracking-[0.16em] text-hayat-green">{eyebrow}</p>
-            <h1 className="mt-5 max-w-[780px] text-[42px] font-black leading-[1.08] text-hayat-dark sm:text-[56px] md:text-[64px]">{pageTitle}</h1>
-            <p className="mt-5 max-w-[660px] text-[18px] font-medium leading-8 text-[#65737d] md:text-[20px] md:leading-9">{description}</p>
+            <h1 className="text-[38px] font-black leading-[1.08] text-hayat-dark sm:text-[50px] md:text-[58px]">{pageTitle}</h1>
           </div>
         </section>
 
-        <section className="px-3 py-12 sm:px-4 lg:px-4">
-          <div className="mx-auto grid max-w-[1840px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        <section className="px-3 py-10 sm:px-4 sm:py-12 lg:px-4">
+          <div className="mx-auto grid max-w-[1840px] grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {items.map((item) => {
               const image = sectionImages(item)[0];
               const href = detailHref(item);
 
               return (
-                <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label={itemLabel} className="h-full cursor-zoom-in overflow-hidden rounded-[20px] border border-[#ded8ca] bg-white text-left shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover">
-                  <div className="relative aspect-w-16 aspect-h-9 overflow-hidden bg-[repeating-linear-gradient(135deg,#e8f4fb_0,#e8f4fb_16px,#deedf5_16px,#deedf5_32px)]">
+                <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label={itemLabel} className="group h-full cursor-zoom-in overflow-hidden rounded-[24px] border border-[#d7e4eb] bg-white text-left shadow-[0_18px_50px_rgba(10,58,85,0.08)] transition duration-300 hover:-translate-y-1 hover:border-hayat-blue/30 hover:shadow-[0_24px_70px_rgba(10,58,85,0.14)]">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-[linear-gradient(135deg,#eaf6fb,#f4faef)]">
                     {image ? (
-                      <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-cover" />
+                      <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-cover transition duration-500 group-hover:scale-[1.03]" />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-hayat-blue/50">
                         <ImageIcon size={44} />
                       </div>
                     )}
-                    <span className="absolute bottom-4 left-4 max-w-[calc(100%-2rem)] truncate rounded-md bg-white px-3 py-1.5 text-[10px] font-black text-hayat-blue shadow-sm">
-                      foto: {image?.alt || item.title}
+                    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-hayat-dark/65 to-transparent" />
+                    <span className="absolute bottom-4 left-4 max-w-[calc(100%-2rem)] truncate rounded-full bg-white px-4 py-2 text-[11px] font-black uppercase tracking-[0.08em] text-hayat-blue shadow-[0_10px_24px_rgba(10,58,85,0.18)]">
+                      {item.badge || itemLabel}
                     </span>
                   </div>
 
-                  <div className="flex min-h-[205px] flex-col p-5 sm:p-6">
-                    <div className="w-fit rounded-full bg-[#dff1fa] px-3 py-1.5 text-xs font-black text-hayat-blue">
-                      {item.badge || itemLabel}
-                    </div>
-                    <h2 className="mt-3 text-xl font-black leading-tight text-hayat-dark">{item.title}</h2>
-                    {item.subtitle && <p className="mt-2 text-sm font-bold text-hayat-blue">{item.subtitle}</p>}
-                    <div className="mt-3 flex-1">
-                      <ExpandableText title={item.title} text={item.body || ""} className="line-clamp-3 text-[15px] font-medium leading-7 text-[#5d6b70]" />
+                  <div className="flex min-h-[245px] flex-col p-6">
+                    <div className="mb-4 h-1 w-14 rounded-full bg-hayat-green" />
+                    <h2 className="text-[24px] font-black leading-tight text-hayat-dark">{item.title}</h2>
+                    {item.subtitle && <p className="mt-3 text-sm font-black uppercase tracking-[0.08em] text-hayat-blue">{item.subtitle}</p>}
+                    <div className="mt-4 flex-1">
+                      <ExpandableText title={item.title} text={item.body || ""} className="line-clamp-3 text-[15px] font-semibold leading-7 text-[#5d6b70]" />
                     </div>
                     {href && (
-                      <Link href={href} className="mt-5 inline-flex w-fit items-center gap-1 text-sm font-black text-hayat-blue transition hover:text-hayat-green">
+                      <Link href={href} className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-[#e8f5fb] px-4 py-2.5 text-sm font-black text-hayat-blue transition hover:bg-hayat-blue hover:text-white">
                         {detailLabel(item, itemLabel)} <ArrowRight size={15} />
                       </Link>
                     )}
