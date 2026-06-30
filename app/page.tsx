@@ -240,7 +240,7 @@ export default async function HomePage() {
       subtitle={quickDonation?.subtitle || "Bağış türünü ve tutarını seç, anında destek ol"}
       buttonLabel={quickDonation?.buttonLabel || "Şimdi Destek Ol"}
       sidePanel={sidePanel}
-      className={`mx-auto ${quickDonation?.contentWidth === "full" && !sidePanel ? "w-full max-w-none" : sidePanel ? "w-full h-[calc(560px+4cm)] sm:h-[calc(600px+4cm)] lg:h-[calc(520px+4cm)]" : "max-w-[1840px]"}`}
+      className={`mx-auto ${quickDonation?.contentWidth === "full" && !sidePanel ? "w-full max-w-none" : sidePanel ? "w-full lg:h-[calc(520px+4cm)]" : "max-w-[1840px]"}`}
       style={{ ...cardStyle(quickDonation, { padding: 24 }), backgroundColor: "#6fae2e", borderColor: "rgba(79, 138, 30, 0.35)", borderRadius: 20 }}
     />
   );
@@ -251,7 +251,7 @@ export default async function HomePage() {
 
     return (
       <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label="Proje" className={`group ${widthClass} cursor-zoom-in overflow-hidden rounded-[24px] border border-[#dbe6ee] bg-white text-left shadow-[0_18px_46px_rgba(10,58,85,0.1)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(10,58,85,0.16)]`} style={cardStyle(item, { padding: "0px" })}>
-        <div className="relative h-[290px] overflow-hidden bg-[linear-gradient(135deg,#e8f4fb,#f5fafc)]">
+        <div className="relative h-[220px] overflow-hidden bg-[linear-gradient(135deg,#e8f4fb,#f5fafc)] sm:h-[290px]">
           {image ? (
             <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-cover transition duration-700 group-hover:scale-105" />
           ) : (
@@ -272,7 +272,7 @@ export default async function HomePage() {
             </div>
           </div>
         </div>
-        <div className="flex min-h-[235px] flex-col p-5 sm:p-6">
+        <div className="flex min-h-[205px] flex-col p-5 sm:min-h-[235px] sm:p-6">
           <h3 className="text-2xl font-black leading-tight text-hayat-dark" style={headingStyle(item, "#0a3a55", 26)}>{item.title}</h3>
           <div className="mt-4 flex-1">
             <ExpandableText title={item.title} text={item.body || ""} className="line-clamp-3 text-[15px] font-semibold leading-7 text-[#5d6b70]" style={bodyStyle(item, "#5d6b70", 15)} />
@@ -392,7 +392,7 @@ export default async function HomePage() {
               </div>
               <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_440px] 2xl:grid-cols-[minmax(0,1fr)_480px]">
                 <ActivityShowcaseSlider items={activityShowcaseItems} splitMedia compactMedia reducedMedia blurMediaFill />
-                <aside className="flex h-[522px] min-h-0 flex-col overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[562px] lg:h-[482px]">
+                <aside className="flex h-[430px] min-h-0 flex-col overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[500px] lg:h-[482px]">
                 <div className="flex items-center justify-between border-b border-[#e9eef2] bg-hayat-green px-5 py-4 text-white">
                   <div>
                     <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em] text-white/80">

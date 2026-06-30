@@ -110,12 +110,12 @@ export function ActivityShowcaseSlider({
 
   if (splitMedia) {
     const splitHeightClass = extendedMedia
-      ? "h-[calc(560px+4cm)] grid-rows-[minmax(0,1fr)_220px] sm:h-[calc(600px+4cm)] sm:grid-rows-[minmax(0,1fr)_280px] lg:h-[calc(520px+4cm)]"
+      ? "h-[580px] grid-rows-[minmax(0,1fr)_190px] sm:h-[660px] sm:grid-rows-[minmax(0,1fr)_250px] lg:h-[calc(520px+4cm)] lg:grid-rows-none"
       : reducedMedia
-      ? "h-[522px] grid-rows-[minmax(0,1fr)_200px] sm:h-[562px] sm:grid-rows-[minmax(0,1fr)_250px] lg:h-[482px]"
+      ? "h-[460px] grid-rows-[minmax(0,1fr)_170px] sm:h-[520px] sm:grid-rows-[minmax(0,1fr)_220px] lg:h-[482px] lg:grid-rows-none"
       : compactMedia
-      ? "h-[560px] grid-rows-[minmax(0,1fr)_220px] sm:h-[600px] sm:grid-rows-[minmax(0,1fr)_280px] lg:h-[520px]"
-      : "h-[620px] grid-rows-[minmax(0,1fr)_260px] sm:h-[700px] sm:grid-rows-[minmax(0,1fr)_330px] lg:h-[680px]";
+      ? "h-[500px] grid-rows-[minmax(0,1fr)_190px] sm:h-[560px] sm:grid-rows-[minmax(0,1fr)_240px] lg:h-[520px] lg:grid-rows-none"
+      : "h-[560px] grid-rows-[minmax(0,1fr)_220px] sm:h-[640px] sm:grid-rows-[minmax(0,1fr)_290px] lg:h-[680px] lg:grid-rows-none";
     const splitColumnsClass = equalColumns
       ? "lg:grid-cols-2"
       : mediaWide
@@ -126,28 +126,28 @@ export function ActivityShowcaseSlider({
 
     return (
       <div className={`relative grid ${splitHeightClass} overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk lg:grid-rows-none ${splitColumnsClass}`}>
-        <div className={`z-10 flex min-h-0 items-center overflow-hidden bg-white px-6 py-9 sm:px-10 lg:px-10 ${mediaFirst ? "lg:order-2" : ""}`}>
+        <div className={`z-10 flex min-h-0 items-center overflow-hidden bg-white px-5 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-9 ${mediaFirst ? "lg:order-2" : ""}`}>
           <div className="max-w-[430px]">
             {(current.badge || current.subtitle) && (
-              <div className="mb-4 inline-flex w-fit items-center rounded-md border border-hayat-border bg-hayat-soft px-3 py-2 text-[10px] font-black uppercase text-hayat-green shadow-stk sm:px-4 sm:py-2.5 sm:text-[11px]">
+              <div className="mb-3 inline-flex w-fit items-center rounded-md border border-hayat-border bg-hayat-soft px-3 py-1.5 text-[10px] font-black uppercase text-hayat-green shadow-stk sm:mb-4 sm:px-4 sm:py-2.5 sm:text-[11px]">
                 <span style={subtitleStyle(current)}>{current.badge || current.subtitle}</span>
               </div>
             )}
             <h3
-              className="text-3xl font-black leading-[1.08] text-hayat-dark sm:text-4xl md:text-5xl"
+              className="text-[1.65rem] font-black leading-[1.08] text-hayat-dark sm:text-4xl md:text-5xl"
               style={titleStyle(current, "#0a3a55", 42)}
             >
               {current.title}
             </h3>
             {showBody && body && (
-              <p className="mt-4 line-clamp-6 whitespace-pre-line text-sm font-semibold leading-7 text-[#5d6b70] sm:mt-6 md:text-base md:leading-8" style={bodyStyle(current, "#5d6b70", 16)}>
+              <p className="mt-3 line-clamp-4 whitespace-pre-line text-sm font-semibold leading-6 text-[#5d6b70] sm:mt-5 sm:line-clamp-5 md:text-base md:leading-8 lg:line-clamp-6" style={bodyStyle(current, "#5d6b70", 16)}>
                 {body}
               </p>
             )}
             {(showDefaultButton || current.buttonLabel || current.href) && (
               <Link
                 href={current.href || defaultHref}
-                className="mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-md bg-hayat-green px-5 text-xs font-black text-white shadow-green transition hover:bg-hayat-blue sm:mt-8 sm:h-14 sm:px-8 sm:text-sm"
+                className="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-md bg-hayat-green px-5 text-xs font-black text-white shadow-green transition hover:bg-hayat-blue sm:mt-7 sm:h-14 sm:px-8 sm:text-sm"
               >
                 {current.buttonLabel || defaultButtonLabel} <ArrowRight size={16} />
               </Link>
