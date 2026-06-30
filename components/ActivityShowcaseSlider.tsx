@@ -68,6 +68,7 @@ export function ActivityShowcaseSlider({
   mediaWide = false,
   mediaExtraWidth = false,
   showFullMedia = false,
+  blurMediaFill = false,
   compactMedia = false,
   extendedMedia = false,
   equalColumns = false,
@@ -83,6 +84,7 @@ export function ActivityShowcaseSlider({
   mediaWide?: boolean;
   mediaExtraWidth?: boolean;
   showFullMedia?: boolean;
+  blurMediaFill?: boolean;
   compactMedia?: boolean;
   extendedMedia?: boolean;
   equalColumns?: boolean;
@@ -151,15 +153,31 @@ export function ActivityShowcaseSlider({
 
         <div className={`relative min-h-0 overflow-hidden bg-hayat-soft ${mediaFirst ? "lg:order-1" : ""}`}>
           {activeImage ? (
-            <img
-              key={`${current.id}-${activeImage.src}`}
-              src={activeImage.src}
-              alt={activeImage.alt}
-              loading={active === 0 ? "eager" : "lazy"}
-              decoding="async"
-              fetchPriority={active === 0 ? "high" : "auto"}
-              className={`block h-full w-full bg-white object-center ${mediaWide && !showFullMedia ? "object-cover" : "object-contain"}`}
-            />
+            <>
+              {blurMediaFill && (
+                <>
+                  <img
+                    key={`${current.id}-${activeImage.src}-blur`}
+                    src={activeImage.src}
+                    alt=""
+                    aria-hidden="true"
+                    loading={active === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full scale-110 object-cover object-center opacity-55 blur-2xl"
+                  />
+                  <div className="absolute inset-0 bg-white/28" />
+                </>
+              )}
+              <img
+                key={`${current.id}-${activeImage.src}`}
+                src={activeImage.src}
+                alt={activeImage.alt}
+                loading={active === 0 ? "eager" : "lazy"}
+                decoding="async"
+                fetchPriority={active === 0 ? "high" : "auto"}
+                className={`relative z-10 block h-full w-full object-center ${mediaWide && !showFullMedia && !blurMediaFill ? "object-cover" : "object-contain"}`}
+              />
+            </>
           ) : (
             <div className="h-full w-full bg-[#eef5f8]" />
           )}
