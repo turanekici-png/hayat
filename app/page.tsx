@@ -235,7 +235,7 @@ export default async function HomePage() {
       buttonLabel={quickDonation?.buttonLabel || "Şimdi Destek Ol"}
       sidePanel={sidePanel}
       className={`mx-auto ${quickDonation?.contentWidth === "full" && !sidePanel ? "w-full max-w-none" : sidePanel ? "w-full h-[calc(560px+4cm)] sm:h-[calc(600px+4cm)] lg:h-[calc(520px+4cm)]" : "max-w-[1840px]"}`}
-      style={{ ...cardStyle(quickDonation, { padding: 24 }), backgroundColor: "#ffffff", borderColor: "#e2ddd0", borderRadius: 20 }}
+      style={{ ...cardStyle(quickDonation, { padding: 24 }), backgroundColor: "#6fae2e", borderColor: "rgba(79, 138, 30, 0.35)", borderRadius: 20 }}
     />
   );
 

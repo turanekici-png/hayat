@@ -23,13 +23,12 @@ export default async function BagisPage({ searchParams }: { searchParams: BagisS
     <>
       <Header />
       <main className="bg-hayat-soft">
-        <section className="mx-auto grid max-w-[1840px] gap-10 px-3 py-16 sm:px-4 md:grid-cols-[1fr_.9fr] lg:px-4">
-          <div>
-            <p className="font-bold text-hayat-green">ONLINE BAĞIŞ</p>
-            <h1 className="mt-3 text-5xl font-black text-hayat-dark">Bağışınızı güvenli şekilde iletin</h1>
-            <p className="mt-5 text-lg leading-8 text-[#5d6b70]">Tutarınızı, bağış türünüzü ve açıklamanızı yazıp ödeme adımına geçebilirsiniz.</p>
+        <section className="border-b border-hayat-border bg-[#eee8d9]">
+          <div className="mx-auto max-w-[1320px] px-4 py-10 sm:px-6 lg:px-8">
+            <p className="text-sm font-black uppercase tracking-widest text-hayat-green">Online Bağış</p>
+            <h1 className="mt-2 text-4xl font-black leading-tight text-hayat-dark sm:text-5xl">Bir hayata dokun</h1>
             {paymentStatus === "basarisiz" && (
-              <div className="mt-6 flex gap-3 rounded-3xl border border-red-100 bg-red-50 p-5 text-red-700">
+              <div className="mt-6 flex max-w-3xl gap-3 rounded-[18px] border border-red-100 bg-red-50 p-5 text-red-700">
                 <AlertCircle className="mt-1 shrink-0" />
                 <div>
                   <p className="font-black">Ödeme tamamlanamadı.</p>
@@ -37,10 +36,9 @@ export default async function BagisPage({ searchParams }: { searchParams: BagisS
                 </div>
               </div>
             )}
-            <div className="mt-8 rounded-[20px] border border-hayat-border bg-white p-6 shadow-stk">
-              <b>Not:</b> Canlı POS aktif olduğunda ödeme bankanın 3D güvenlik ekranında doğrulanır.
-            </div>
           </div>
+        </section>
+        <section className="mx-auto max-w-[1320px] px-4 py-10 sm:px-6 lg:px-8">
           <DonationForm donationTypes={donationTypes} />
         </section>
       </main>
