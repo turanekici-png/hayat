@@ -256,9 +256,9 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
                               <span className="mt-1.5 block h-px w-full bg-[color:var(--bank-primary)]/20 sm:mt-2" />
                             </div>
                           </div>
-                          <div className="mt-2 flex min-w-0 items-center gap-2 sm:mt-2.5">
-                            <p className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-[12px] font-black leading-6 tracking-wide text-[#06122e] [scrollbar-width:none] sm:text-[14px] [&::-webkit-scrollbar]:hidden">{iban.iban}</p>
-                            <CopyIbanButton value={iban.iban} label="Kopyala" mobileIconOnly className="h-9 w-10 min-w-10 justify-center rounded-[10px] bg-[color:var(--bank-primary)] px-0 py-0 text-xs font-black shadow-[0_8px_14px_rgba(10,58,85,0.14)] hover:bg-[color:var(--bank-secondary)] sm:w-auto sm:min-w-[86px] sm:px-3 sm:shadow-[0_10px_18px_rgba(10,58,85,0.16)]" />
+                          <div className="mt-2 grid min-w-0 gap-2 sm:mt-2.5 sm:flex sm:items-center">
+                            <p className="min-w-0 overflow-x-auto whitespace-nowrap font-mono text-[12px] font-black leading-6 tracking-wide text-[#06122e] [scrollbar-width:none] sm:flex-1 sm:text-[14px] [&::-webkit-scrollbar]:hidden">{iban.iban}</p>
+                            <CopyIbanButton value={iban.iban} label="Kopyala" className="h-9 w-full min-w-0 justify-center rounded-[10px] bg-[color:var(--bank-primary)] px-3 py-0 text-xs font-black shadow-[0_8px_14px_rgba(10,58,85,0.14)] hover:bg-[color:var(--bank-secondary)] sm:w-auto sm:min-w-[86px] sm:shadow-[0_10px_18px_rgba(10,58,85,0.16)]" />
                           </div>
                         </div>
                       ))}
