@@ -27,3 +27,5 @@ export function CopyIbanButton({ value, className = "", label = "Kopyala", iconO
       <Copy size={16} />
       {!iconOnly && <span>{copied ? "Kopyalandı!" : label}</span>}
     </button>
+  );
+}
