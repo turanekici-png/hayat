@@ -119,9 +119,9 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
                               <span className="mt-2 block h-px w-full bg-[#d6e1ec]" />
                             </div>
                           </div>
-                          <div className="mt-2.5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                            <p className="min-w-0 break-all font-mono text-[15px] font-black leading-6 tracking-wide text-[#06122e]">{iban.iban}</p>
-                            <CopyIbanButton value={iban.iban} label="IBAN Kopyala" className="min-h-10 w-full justify-center rounded-[12px] bg-gradient-to-br from-[#1977dc] to-[#0747ad] px-4 text-xs shadow-[0_10px_18px_rgba(25,119,220,0.16)] hover:from-hayat-green hover:to-hayat-green sm:w-auto sm:min-w-[132px]" />
+                          <div className="mt-2.5 flex min-w-0 items-center gap-2">
+                            <p className="min-w-0 flex-1 whitespace-nowrap font-mono text-[14px] font-black leading-6 tracking-wide text-[#06122e]">{iban.iban}</p>
+                            <CopyIbanButton value={iban.iban} label="IBAN Kopyala" iconOnly className="h-9 w-9 justify-center rounded-[10px] bg-gradient-to-br from-[#1977dc] to-[#0747ad] p-0 shadow-[0_10px_18px_rgba(25,119,220,0.16)] hover:from-hayat-green hover:to-hayat-green [&_svg]:h-4 [&_svg]:w-4" />
                           </div>
                         </div>
                       ))}
