@@ -21,11 +21,9 @@ export function CopyIbanButton({ value, className = "", label = "Kopyala", iconO
       type="button"
       onClick={copy}
       aria-label={copied ? "IBAN kopyalandı" : label}
-      title={copied ? "Kopyalandı" : label}
-      className={`inline-flex shrink-0 items-center gap-2 rounded-[12px] bg-hayat-blue px-4 py-2 text-xs font-black text-white transition hover:bg-hayat-green ${className}`}
+      title={copied ? "Kopyalandı!" : label}
+      className={`inline-flex items-center gap-2 ${className}`}
     >
-      <Copy size={18} />
-      {!iconOnly && (copied ? "Kopyalandı" : label)}
+      <Copy size={16} />
+      {!iconOnly && <span>{copied ? "Kopyalandı!" : label}</span>}
     </button>
-  );
-}
