@@ -20,7 +20,7 @@ export function CopyIbanButton({ value, className = "", label = "Kopyala", iconO
     <button
       type="button"
       onClick={copy}
-      aria-label={copied ? "IBAN kopyalandı" : label}
+      aria-label={copied ? "kopyalandı" : label}
       title={copied ? "Kopyalandı!" : label}
       className={`inline-flex items-center gap-2 bg-hayat-blue px-4 py-2 text-white transition hover:bg-hayat-green ${className}`} // Rengi maviye çevrildi, hover yeşil
     >
