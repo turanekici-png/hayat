@@ -52,7 +52,7 @@ export default async function DonationReceiptPage({ params }: { params: Promise<
               <div className="receipt-print-header bg-[#0a3a55] px-5 py-4 text-white md:px-6">
                 <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-4">
-                    <span className="receipt-logo-frame flex h-20 w-64 shrink-0 items-center overflow-hidden">
+                    <span className="receipt-logo-frame flex h-24 w-80 shrink-0 items-center overflow-hidden">
                       <img src="/media/brand/logolar-vektorel-yatay.png" alt="Hayat Ağacı Derneği logosu" className="h-full w-full object-contain object-left" />
                     </span>
                     <span>
