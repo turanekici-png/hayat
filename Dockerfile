@@ -1,4 +1,6 @@
-FROM node:22-alpine AS deps
+ARG NODE_IMAGE=public.ecr.aws/docker/library/node:22-alpine
+
+FROM ${NODE_IMAGE} AS deps
 
 WORKDIR /app
 
@@ -7,7 +9,7 @@ RUN apk add --no-cache openssl
 COPY package.json package-lock.json ./
 RUN npm ci
 
-FROM node:22-alpine AS builder
+FROM ${NODE_IMAGE} AS builder
 
 WORKDIR /app
 
@@ -23,7 +25,7 @@ COPY . .
 RUN npm run build
 RUN npm prune --omit=dev
 
-FROM node:22-alpine AS runner
+FROM ${NODE_IMAGE} AS runner
 
 WORKDIR /app
 
