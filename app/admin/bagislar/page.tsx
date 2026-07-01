@@ -17,7 +17,6 @@ type DonationFilters = {
 };
 
 type AdminDonationSearchParams = Promise<{
-  secret?: string | string[];
   q?: string | string[];
   status?: string | string[];
   type?: string | string[];
@@ -294,15 +293,6 @@ function DonationAnalytics({ donations }: { donations: DonationRow[] }) {
 
 export default async function AdminDonations({ searchParams }: { searchParams: AdminDonationSearchParams }) {
   const params = await searchParams;
-  const secret = firstParam(params.secret);
-
-  if (secret !== process.env.ADMIN_SECRET) {
-    return (
-      <AdminShell activePath="/admin/bagislar" contentClassName="max-w-7xl">
-        <section className="rounded-[2rem] bg-white p-10 font-bold text-slate-600 shadow-sm">Yetkisiz erişim.</section>
-      </AdminShell>
-    );
-  }
 
   const filters: DonationFilters = {
     query: firstParam(params.q).trim(),
@@ -320,7 +310,6 @@ export default async function AdminDonations({ searchParams }: { searchParams: A
     prisma.donation.groupBy({ by: ["status"], _count: { _all: true }, orderBy: { status: "asc" } })
   ]);
   const exportParams = new URLSearchParams({
-    secret,
     scope: "all",
     q: filters.query,
     status: filters.status,
@@ -339,7 +328,6 @@ export default async function AdminDonations({ searchParams }: { searchParams: A
       <DonationAnalytics donations={donations} />
 
       <form className="mt-8 rounded-3xl bg-white p-5 shadow-sm">
-        <input type="hidden" name="secret" value={secret} />
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1.4fr_180px_180px_150px_150px_130px_130px_auto]">
           <FilterInput label="Arama" name="q" value={filters.query} placeholder="Ad, telefon, makbuz no, ref, açıklama" />
           <label className="text-xs font-black uppercase text-slate-500">
@@ -366,7 +354,7 @@ export default async function AdminDonations({ searchParams }: { searchParams: A
           <FilterInput label="Max Tutar" name="maxAmount" value={filters.maxAmount} type="number" />
           <div className="flex items-end gap-2">
             <button className="h-11 rounded-xl bg-hayat-blue px-5 text-sm font-black text-white">Filtrele</button>
-            <Link href={`/admin/bagislar?secret=${encodeURIComponent(secret)}`} className="grid h-11 place-items-center rounded-xl bg-slate-100 px-4 text-sm font-black text-slate-600">
+            <Link href="/admin/bagislar" className="grid h-11 place-items-center rounded-xl bg-slate-100 px-4 text-sm font-black text-slate-600">
               Temizle
             </Link>
           </div>
@@ -374,7 +362,6 @@ export default async function AdminDonations({ searchParams }: { searchParams: A
       </form>
 
       <form action="/admin/bagislar/export" method="get" className="mt-8 rounded-3xl bg-white shadow-sm">
-        <input type="hidden" name="secret" value={secret} />
         <input type="hidden" name="scope" value="selected" />
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4">
           <p className="text-sm font-bold text-slate-500">Telefon numarası listede ve XLSX aktarımında yer alır.</p>

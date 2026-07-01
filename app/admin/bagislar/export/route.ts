@@ -77,12 +77,7 @@ function statusLabel(status: string) {
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const secret = value(url.searchParams, "secret");
   const scope = value(url.searchParams, "scope") || "all";
-
-  if (secret !== process.env.ADMIN_SECRET) {
-    return NextResponse.json({ error: "Yetkisiz erişim." }, { status: 401 });
-  }
 
   const selectedIds = url.searchParams.getAll("ids").map((id) => id.trim()).filter(Boolean);
   if (scope === "selected" && !selectedIds.length) {
