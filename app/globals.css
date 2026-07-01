@@ -188,45 +188,68 @@ textarea {
 
 @page receipt-a5-landscape {
   size: A5 landscape;
-  margin: 4mm;
+  margin: 0;
 }
 
 @media print {
   html,
   body {
-    width: auto;
-    min-height: 0;
+    width: 210mm !important;
+    height: 120mm !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
     background: #ffffff !important;
   }
 
   body {
-    font-size: 9px;
-    line-height: 1.25;
+    font-size: 8.5px;
+    line-height: 1.2;
   }
 
   .receipt-print-page {
-    width: 100%;
+    display: block !important;
+    width: 210mm !important;
+    height: 120mm !important;
+    min-height: 0 !important;
+    max-height: 120mm !important;
+    margin: 0 !important;
     padding: 0 !important;
+    overflow: hidden !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+    break-before: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .receipt-print-page > div {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
   }
 
   .receipt-print-sheet {
     width: 100%;
     min-height: 0;
-    max-height: 138mm;
+    max-height: 116mm;
+    margin: 2mm !important;
     overflow: hidden !important;
     page-break-inside: avoid;
     break-inside: avoid;
   }
 
   .receipt-print-header {
-    padding: 7px 11px !important;
+    padding: 5px 9px !important;
   }
 
   .receipt-print-body {
     display: grid !important;
     grid-template-columns: 1.05fr 1.15fr 0.9fr !important;
-    gap: 7px !important;
-    padding: 8px !important;
+    gap: 6px !important;
+    padding: 6px !important;
   }
 
   .receipt-print-body > div:nth-child(1),
@@ -262,27 +285,27 @@ textarea {
   }
 
   .receipt-print-body > div:nth-child(1) {
-    gap: 6px !important;
+    gap: 5px !important;
   }
 
   .receipt-print-body > div:nth-child(1) > div,
   .receipt-print-body > div:nth-child(3) {
-    padding: 7px !important;
+    padding: 6px !important;
   }
 
   .receipt-print-body > div:nth-child(4) {
-    gap: 6px !important;
+    gap: 5px !important;
     padding-top: 0 !important;
   }
 
   .receipt-info-row {
-    min-height: 36px;
+    min-height: 32px;
     border-radius: 8px;
-    padding: 6px;
+    padding: 5px;
   }
 
   .receipt-info-row p {
-    line-height: 1.25;
+    line-height: 1.2;
   }
 }
 
