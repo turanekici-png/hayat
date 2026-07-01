@@ -13,6 +13,7 @@ async function getDonations() {
       id: true,
       createdAt: true,
       fullName: true,
+      phone: true,
       amount: true,
       type: true,
       description: true,
@@ -231,6 +232,7 @@ export default async function AdminDonations({ searchParams }: { searchParams: P
             <tr>
               <th className="p-4">Tarih</th>
               <th>Ad Soyad</th>
+              <th>Telefon</th>
               <th>Tutar</th>
               <th>Tür</th>
               <th>Açıklama</th>
@@ -244,6 +246,7 @@ export default async function AdminDonations({ searchParams }: { searchParams: P
               <tr key={donation.id} className="border-b">
                 <td className="p-4">{donation.createdAt.toLocaleString("tr-TR")}</td>
                 <td>{donation.fullName}</td>
+                <td>{donation.phone || "-"}</td>
                 <td>{currency(donation.amount)} TL</td>
                 <td>{donation.type}</td>
                 <td>{donation.description}</td>
@@ -262,7 +265,7 @@ export default async function AdminDonations({ searchParams }: { searchParams: P
             ))}
             {!donations.length && (
               <tr>
-                <td colSpan={8} className="p-8 text-center font-bold text-slate-500">Henüz bağış kaydı yok.</td>
+                <td colSpan={9} className="p-8 text-center font-bold text-slate-500">Henüz bağış kaydı yok.</td>
               </tr>
             )}
           </tbody>

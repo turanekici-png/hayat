@@ -151,7 +151,7 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
             <StepTitle number={3} title="Bağışçı Bilgileri" icon={UserRound} />
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <input required name="fullName" placeholder="Ad Soyad" className="h-[58px] rounded-[16px] border border-[#dcd4c7] bg-[#fbfaf7] px-5 text-sm font-bold outline-hayat-blue placeholder:text-[#7a858a] focus:bg-white" />
-              <input name="phone" placeholder="Telefon" className="h-[58px] rounded-[16px] border border-[#dcd4c7] bg-[#fbfaf7] px-5 text-sm font-bold outline-hayat-blue placeholder:text-[#7a858a] focus:bg-white" />
+              <input required name="phone" placeholder="Telefon" className="h-[58px] rounded-[16px] border border-[#dcd4c7] bg-[#fbfaf7] px-5 text-sm font-bold outline-hayat-blue placeholder:text-[#7a858a] focus:bg-white" />
               <textarea name="description" placeholder="Bağış açıklaması / notunuz" rows={4} className="rounded-[16px] border border-[#dcd4c7] bg-[#fbfaf7] p-5 text-sm font-bold outline-hayat-blue placeholder:text-[#7a858a] focus:bg-white sm:col-span-2" />
             </div>
           </section>

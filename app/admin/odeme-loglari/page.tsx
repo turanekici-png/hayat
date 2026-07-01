@@ -82,6 +82,7 @@ export default async function PaymentLogsPage({ searchParams }: { searchParams: 
           select: {
             fullName: true,
             amount: true,
+            status: true,
             receiptNo: true
           }
         }
@@ -168,7 +169,7 @@ export default async function PaymentLogsPage({ searchParams }: { searchParams: 
 
             <div className="mt-4 grid gap-3 text-sm md:grid-cols-2 xl:grid-cols-4">
               <div className="rounded-xl bg-slate-50 p-3"><b>Bağışçı</b><p className="mt-1">{log.donation?.fullName || "Eşleşmedi"}</p></div>
-              <div className="rounded-xl bg-slate-50 p-3"><b>Tutar / Makbuz</b><p className="mt-1">{log.donation ? `${log.donation.amount} TL · ${log.donation.receiptNo || "—"}` : "—"}</p></div>
+              <div className="rounded-xl bg-slate-50 p-3"><b>Tutar / Makbuz</b><p className="mt-1">{log.donation ? `${log.donation.amount} TL · ${log.donation.status === "PAID" ? log.donation.receiptNo || "—" : "—"}` : "—"}</p></div>
               <div className="rounded-xl bg-slate-50 p-3"><b>İstek / IP</b><p className="mt-1">{log.requestMethod || "—"} · {log.ipAddress || "—"}</p></div>
               <div className="rounded-xl bg-slate-50 p-3"><b>Mesaj</b><p className="mt-1 break-words">{log.message || "—"}</p></div>
             </div>

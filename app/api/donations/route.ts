@@ -4,10 +4,11 @@ import { ensureDefaultDonationTypes } from "@/lib/donation-types";
 import { writePaymentLog } from "@/lib/payment-log";
 import { startPayment } from "@/lib/pos";
 import { prisma } from "@/lib/prisma";
+import { updateDonationWithReceiptOnPaid } from "@/lib/receipt-number";
 
 const schema = z.object({
   fullName: z.string().min(3),
-  phone: z.string().optional(),
+  phone: z.string().min(10, "Telefon numarası zorunludur."),
   email: z.string().email().optional().or(z.literal("")),
   amount: z.coerce.number().positive(),
   type: z.string().min(1),
@@ -43,10 +44,9 @@ export async function POST(req: Request) {
     }
 
     const ipAddress = clientIp(req);
-    const receiptNo = `HB-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
+    const now = new Date();
     const donation = await prisma.donation.create({
       data: {
-        receiptNo,
         fullName: parsed.fullName,
         phone: parsed.phone?.trim() || null,
         email: parsed.email || null,
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
         kvkkConsent: true,
         privacyConsent: true,
         refundConsent: true,
-        consentAt: new Date(),
+        consentAt: now,
         ipAddress
       }
     });
@@ -82,26 +82,27 @@ export async function POST(req: Request) {
         donationId: donation.id,
         amount: String(donation.amount),
         fullName: donation.fullName,
+        phone: donation.phone,
         email: donation.email,
         description: donation.description,
         clientIp: ipAddress,
         callbackBaseUrl: requestBaseUrl(req)
       });
 
-      await prisma.donation.update({
-        where: { id: donation.id },
-        data: {
-          paymentProvider: payment.provider,
-          paymentRef: payment.paymentRef,
-          status: payment.status || (payment.provider === "demo" ? "PAID" : "PENDING")
-        }
+      const finalStatus = payment.status || (payment.provider === "demo" ? "PAID" : "PENDING");
+      const updatedDonation = await updateDonationWithReceiptOnPaid({
+        id: donation.id
+      }, {
+        paymentProvider: payment.provider,
+        paymentRef: payment.paymentRef,
+        status: finalStatus
       });
 
       await writePaymentLog({
         donationId: donation.id,
         provider: payment.provider,
         event: "PAYMENT_REDIRECT_CREATED",
-        status: payment.status || "PENDING",
+        status: finalStatus,
         paymentRef: payment.paymentRef,
         requestMethod: req.method,
         callbackUrl: payment.redirectUrl,
@@ -109,6 +110,7 @@ export async function POST(req: Request) {
         requestData: payment.requestLog || null,
         details: {
           amount: donation.amount,
+          receiptNo: updatedDonation.receiptNo,
           hasPaymentHtml: Boolean(payment.paymentHtml),
           requestBaseUrl: requestBaseUrl(req)
         }
@@ -119,7 +121,10 @@ export async function POST(req: Request) {
         paymentHtml: payment.paymentHtml || null
       });
     } catch (paymentError) {
-      await prisma.donation.update({ where: { id: donation.id }, data: { status: "FAILED" } });
+      await prisma.donation.update({
+        where: { id: donation.id },
+        data: { status: "FAILED", receiptNo: null }
+      });
       await writePaymentLog({
         donationId: donation.id,
         provider: process.env.POS_PROVIDER || "unknown",

@@ -22,7 +22,7 @@ async function markFailed(donationId: string, paymentRef: string) {
   if (donationId && paymentRef) {
     await prisma.donation.updateMany({
       where: { id: donationId, paymentRef },
-      data: { status: "FAILED" }
+      data: { status: "FAILED", receiptNo: null }
     });
     return;
   }
@@ -30,7 +30,7 @@ async function markFailed(donationId: string, paymentRef: string) {
   if (paymentRef) {
     await prisma.donation.updateMany({
       where: { paymentRef },
-      data: { status: "FAILED" }
+      data: { status: "FAILED", receiptNo: null }
     });
   }
 }

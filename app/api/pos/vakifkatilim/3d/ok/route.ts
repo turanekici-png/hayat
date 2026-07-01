@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { paymentRequestIp, safeFormDetails, writePaymentLog } from "@/lib/payment-log";
 import { completeVakifKatilim3dPayment } from "@/lib/pos";
+import { updateDonationWithReceiptOnPaid } from "@/lib/receipt-number";
 
 const SUCCESS_CODES = new Set(["0", "00", "000", "0000"]);
 
@@ -105,10 +106,10 @@ export async function POST(req: Request) {
     if (isCommonPaymentPage) {
       const isPaid = SUCCESS_CODES.has(responseCode);
 
-      await prisma.donation.update({
-        where: { id: donation.id },
-        data: { status: isPaid ? "PAID" : "FAILED" }
-      });
+      await updateDonationWithReceiptOnPaid(
+        { id: donation.id },
+        { status: isPaid ? "PAID" : "FAILED" }
+      );
 
       await writePaymentLog({
         donationId: donation.id,
@@ -138,10 +139,10 @@ export async function POST(req: Request) {
       formData
     });
 
-    await prisma.donation.update({
-      where: { id: donation.id },
-      data: { status: result.status }
-    });
+    await updateDonationWithReceiptOnPaid(
+      { id: donation.id },
+      { status: result.status }
+    );
 
     await writePaymentLog({
       donationId: donation.id,
@@ -163,7 +164,7 @@ export async function POST(req: Request) {
 
     return receiptRedirect(req, donation.id);
   } catch (error) {
-    await prisma.donation.update({ where: { id: donation.id }, data: { status: "FAILED" } });
+    await prisma.donation.update({ where: { id: donation.id }, data: { status: "FAILED", receiptNo: null } });
     const message = error instanceof Error ? error.message : "Ödeme doğrulanamadı.";
     await writePaymentLog({
       donationId: donation.id,
