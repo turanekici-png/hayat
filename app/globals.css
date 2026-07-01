@@ -99,6 +99,87 @@ textarea {
   border-color: #e2ddd0;
 }
 
+.receipt-print-page,
+.receipt-print-sheet,
+.receipt-print-sheet * {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.receipt-info-row {
+  display: flex;
+  min-height: 82px;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border: 1px solid #d9e5ec;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 1rem;
+}
+
+.receipt-info-row svg {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+  color: #6fb744;
+}
+
+.receipt-info-row b {
+  display: block;
+  color: #16272e;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.receipt-info-row p {
+  margin-top: 0.2rem;
+  color: #5d6b70;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
+@media print {
+  html,
+  body {
+    width: 210mm;
+    min-height: 297mm;
+    background: #ffffff !important;
+  }
+
+  body {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .receipt-print-page {
+    width: 100%;
+    padding: 0 !important;
+  }
+
+  .receipt-print-sheet {
+    width: 100%;
+    page-break-inside: avoid;
+  }
+
+  .receipt-print-header {
+    padding: 18px 22px !important;
+  }
+
+  .receipt-print-body {
+    padding: 22px !important;
+  }
+
+  .receipt-info-row {
+    min-height: 68px;
+    padding: 12px;
+  }
+}
+
 .rounded-lg {
   border-radius: 20px;
 }

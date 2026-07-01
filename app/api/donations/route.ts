@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 
 const schema = z.object({
   fullName: z.string().min(3),
+  phone: z.string().optional(),
   email: z.string().email().optional().or(z.literal("")),
   amount: z.coerce.number().positive(),
   type: z.string().min(1),
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
       data: {
         receiptNo,
         fullName: parsed.fullName,
-        phone: null,
+        phone: parsed.phone?.trim() || null,
         email: parsed.email || null,
         amount: parsed.amount,
         type: parsed.type,
