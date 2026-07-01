@@ -114,6 +114,15 @@ textarea {
   background: transparent;
 }
 
+.receipt-logo-frame img {
+  width: calc(100% + 94px);
+  max-width: none;
+  height: calc(100% + 94px);
+  flex: none;
+  object-fit: contain;
+  object-position: left center;
+}
+
 .receipt-info-row {
   display: flex;
   min-height: 82px;
@@ -265,8 +274,10 @@ textarea {
   }
 
   .receipt-logo-frame img {
-    width: 100% !important;
-    height: 100% !important;
+    width: calc(100% + 25mm) !important;
+    max-width: none !important;
+    height: calc(100% + 25mm) !important;
+    flex: none !important;
     object-fit: contain !important;
     object-position: left center !important;
   }
