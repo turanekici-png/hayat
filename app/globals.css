@@ -115,13 +115,13 @@ textarea {
 }
 
 .receipt-logo-frame img {
-  width: calc(100% + 94px);
+  width: calc(100% + 52px);
   max-width: none;
-  height: calc(100% + 94px);
+  height: calc(100% + 52px);
   flex: none;
   object-fit: contain;
   object-position: left center;
-  transform: translateX(-28px);
+  transform: translateX(0);
 }
 
 .receipt-info-row {
@@ -275,13 +275,13 @@ textarea {
   }
 
   .receipt-logo-frame img {
-    width: calc(100% + 25mm) !important;
+    width: calc(100% + 14mm) !important;
     max-width: none !important;
-    height: calc(100% + 25mm) !important;
+    height: calc(100% + 14mm) !important;
     flex: none !important;
     object-fit: contain !important;
     object-position: left center !important;
-    transform: translateX(-8mm) !important;
+    transform: translateX(0) !important;
   }
 
   .receipt-print-body {
