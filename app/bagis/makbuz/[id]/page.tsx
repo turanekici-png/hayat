@@ -52,8 +52,8 @@ export default async function DonationReceiptPage({ params }: { params: Promise<
               <div className="receipt-print-header bg-[#0a3a55] px-5 py-4 text-white md:px-6">
                 <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-4">
-                    <span className="grid h-16 w-16 shrink-0 place-items-center rounded-[18px] bg-white p-2 shadow-[0_12px_30px_rgba(0,0,0,0.16)]">
-                      <img src="/media/brand/logolar-vektorel-yatay.png" alt="Hayat Ağacı Derneği logosu" className="h-full w-full object-contain" />
+                    <span className="receipt-logo-frame flex h-20 w-64 shrink-0 items-center overflow-hidden">
+                      <img src="/media/brand/logolar-vektorel-yatay.png" alt="Hayat Ağacı Derneği logosu" className="h-full w-full object-contain object-left" />
                     </span>
                     <span>
                       <span className="block text-xs font-black uppercase text-[#a9dd7b]">Hayat Ağacı Derneği</span>

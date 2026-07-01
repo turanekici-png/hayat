@@ -110,6 +110,10 @@ textarea {
   page: receipt-a5-landscape;
 }
 
+.receipt-logo-frame {
+  background: transparent;
+}
+
 .receipt-info-row {
   display: flex;
   min-height: 82px;
@@ -192,14 +196,20 @@ textarea {
 }
 
 @media print {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   html,
   body {
     width: 210mm !important;
-    height: 120mm !important;
+    height: auto !important;
     min-height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     background: #ffffff !important;
   }
 
@@ -211,12 +221,12 @@ textarea {
   .receipt-print-page {
     display: block !important;
     width: 210mm !important;
-    height: 120mm !important;
+    height: auto !important;
     min-height: 0 !important;
-    max-height: 120mm !important;
+    max-height: none !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     page-break-before: avoid !important;
     page-break-after: avoid !important;
     break-before: avoid !important;
@@ -232,9 +242,9 @@ textarea {
   }
 
   .receipt-print-sheet {
-    width: 100%;
+    width: calc(210mm - 4mm);
     min-height: 0;
-    max-height: 116mm;
+    max-height: 144mm;
     margin: 2mm !important;
     overflow: hidden !important;
     page-break-inside: avoid;
@@ -243,6 +253,22 @@ textarea {
 
   .receipt-print-header {
     padding: 5px 9px !important;
+  }
+
+  .receipt-logo-frame {
+    width: 55mm !important;
+    height: 16mm !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .receipt-logo-frame img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: left center !important;
   }
 
   .receipt-print-body {
