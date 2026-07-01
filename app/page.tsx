@@ -62,6 +62,27 @@ function isVideoSrc(src?: string | null) {
   return Boolean(src && (/(\.mp4|\.webm|\.ogg|\.mov)(\?.*)?$/i.test(src) || /(?:youtube\.com|youtu\.be|vimeo\.com)/i.test(src)));
 }
 
+function cleanMediaTitle(value: string | null | undefined, fallback: string) {
+  const raw = (value || "").trim();
+  if (!raw) return fallback;
+
+  const hadExtension = /\.[a-z0-9]{2,5}(\?.*)?$/i.test(raw);
+  const withoutExtension = raw.replace(/\.[a-z0-9]{2,5}(\?.*)?$/i, "").trim();
+  const normalized = withoutExtension.toLocaleLowerCase("tr-TR");
+  const genericNames = ["video", "resim", "image", "img", "foto", "photo", "galeri", "gallery"];
+  const looksLikeFileName = /^(img|dsc|vid|video|foto|photo|whatsapp|p)[-_ ]?\d*/i.test(normalized) || (hadExtension && !/\s/.test(withoutExtension));
+
+  if (!withoutExtension || genericNames.includes(normalized) || looksLikeFileName) {
+    return fallback;
+  }
+
+  return withoutExtension;
+}
+
+function mediaItemTitle(item: { section: any; slide?: SectionSlide }, fallback: string) {
+  return cleanMediaTitle(item.slide?.alt || item.section?.title, fallback);
+}
+
 function safeAlign(value?: string | null): CSSProperties["textAlign"] {
   return value === "center" || value === "right" || value === "justify" ? value : "left";
 }
@@ -286,7 +307,7 @@ export default async function HomePage() {
   };
   const renderVideoCard = (item: { id: string; section: any; slide?: SectionSlide }, scrolling: boolean) => (
     <article key={item.id} className={`group relative aspect-video ${scrolling ? `shrink-0 snap-start ${cardWidthClass(item.section)}` : "w-full"} overflow-hidden rounded-[26px] border border-white/12 bg-[#06283b] shadow-[0_24px_70px_rgba(0,22,36,0.35)] ring-1 ring-white/10 transition hover:-translate-y-1 hover:border-hayat-green/60 hover:shadow-[0_30px_90px_rgba(0,22,36,0.48)]`} style={cardStyle(item.section, { padding: "0px" })}>
-      <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-contain" videoClassName="h-full w-full bg-black object-contain" />
+      <MediaLightboxTile src={item.slide?.src} alt={mediaItemTitle(item, "Video Blog")} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-contain" videoClassName="h-full w-full bg-black object-contain" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#061f2e]/85 via-transparent to-[#061f2e]/20 opacity-90" />
       <div className="pointer-events-none absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-white/92 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-hayat-blue shadow-[0_12px_28px_rgba(0,0,0,0.18)]">
         <Video size={14} /> Video Blog
@@ -297,20 +318,20 @@ export default async function HomePage() {
         </span>
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 p-5">
-        <p className="line-clamp-2 max-w-[90%] text-lg font-black leading-tight text-white drop-shadow">{item.slide?.alt || item.section.title}</p>
+        <p className="line-clamp-2 max-w-[90%] text-lg font-black leading-tight text-white drop-shadow">{mediaItemTitle(item, "Video Blog")}</p>
       </div>
     </article>
   );
   const renderGalleryCard = (item: { id: string; section: any; slide?: SectionSlide }, scrolling: boolean) => (
     <article key={item.id} className={`group relative h-[270px] ${scrolling ? "w-[min(82vw,430px)] shrink-0 snap-start lg:w-[460px]" : "w-full"} overflow-hidden rounded-[26px] border border-[#dbe6ee] bg-white shadow-[0_20px_54px_rgba(10,58,85,0.12)] ring-1 ring-white transition hover:-translate-y-1 hover:border-hayat-blue/35 hover:shadow-[0_28px_72px_rgba(10,58,85,0.18)] sm:h-[330px]`} style={cardStyle(item.section, { padding: "0px" })}>
-      <MediaLightboxTile src={item.slide?.src} alt={item.slide?.alt || item.section.title} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-cover transition duration-700 group-hover:scale-105" videoClassName="h-full w-full bg-black object-cover" />
+      <MediaLightboxTile src={item.slide?.src} alt={mediaItemTitle(item, "Galeri")} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full bg-white object-cover transition duration-700 group-hover:scale-105" videoClassName="h-full w-full bg-black object-cover" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a3a55]/82 via-[#0a3a55]/12 to-transparent" />
       <div className="pointer-events-none absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-white/92 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-hayat-green shadow-[0_12px_28px_rgba(10,58,85,0.16)]">
         <Camera size={14} /> Sahadan
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 p-5">
         <span className="inline-flex max-w-full rounded-full bg-white px-4 py-2 text-[12px] font-black text-hayat-blue shadow-[0_12px_30px_rgba(10,58,85,0.18)]">
-          {item.slide?.alt || item.section.title}
+          {mediaItemTitle(item, "Galeri")}
         </span>
       </div>
     </article>
@@ -517,8 +538,8 @@ export default async function HomePage() {
                     Sahadan yansıyan çalışmalarımızı, ziyaretlerimizi ve destek süreçlerimizi tek bir görsel akışta keşfedin.
                   </p>
                 </div>
-                <Link href="/tum-resimler" className="inline-flex h-12 w-fit items-center gap-2 rounded-[14px] border border-[#d9e4ec] bg-white px-5 text-xs font-black uppercase tracking-widest text-[#1f3444] shadow-stk transition hover:-translate-y-0.5 hover:border-hayat-green hover:text-hayat-green">
-                  Tüm Resimler <ArrowRight size={16} />
+                <Link href="/galeri" className="inline-flex h-12 w-fit items-center gap-2 rounded-[14px] border border-[#d9e4ec] bg-white px-5 text-xs font-black uppercase tracking-widest text-[#1f3444] shadow-stk transition hover:-translate-y-0.5 hover:border-hayat-green hover:text-hayat-green">
+                  Tüm Galeri <ArrowRight size={16} />
                 </Link>
               </div>
               {shouldScrollGallery ? (
