@@ -79,6 +79,12 @@ svg {
   max-width: 100%;
 }
 
+img,
+video {
+  height: auto;
+  object-position: center;
+}
+
 button,
 a,
 input,
@@ -292,12 +298,15 @@ footer h3 {
 .quick-donation-side .quick-donation-pill {
     min-height: 2.55rem;
     padding: 0 0.7rem;
-    font-size: 0.78rem;
+    font-size: 0.86rem;
+    font-weight: 950;
   }
 
   .quick-donation-side .quick-donation-types {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.55rem;
+    padding-bottom: 0.85rem;
+    margin-bottom: 0.15rem;
   }
 
   .quick-donation-side .quick-donation-amounts {
@@ -574,6 +583,22 @@ footer h3 {
   gap: 0.65rem;
 }
 
+.quick-donation-types {
+  position: relative;
+  padding-bottom: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.quick-donation-types::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(10, 58, 85, 0.16), transparent);
+}
+
 .quick-donation-pill,
 .donation-type-button {
   display: inline-flex;
@@ -588,8 +613,8 @@ footer h3 {
     #f7f5ef;
   padding: 0 0.9rem;
   color: #005d91;
-  font-size: 0.86rem;
-  font-weight: 900;
+  font-size: 0.94rem;
+  font-weight: 950;
   line-height: 1.1;
   text-align: center;
   white-space: nowrap;
@@ -611,6 +636,11 @@ footer h3 {
   background: linear-gradient(135deg, #1593cf 0%, #0878b4 100%);
   color: #ffffff;
   box-shadow: 0 14px 28px rgba(21, 147, 207, 0.22);
+}
+
+.quick-donation-amounts {
+  margin-top: 0.25rem;
+  padding-top: 0.2rem;
 }
 
 .donation-type-grid {
@@ -811,7 +841,8 @@ footer h3 {
   .quick-donation-pill {
     min-height: 2.65rem;
     padding: 0 0.65rem;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 950;
   }
 
   .donation-type-grid {

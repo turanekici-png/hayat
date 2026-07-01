@@ -34,17 +34,29 @@ export function HeroImageSlider({
   return (
     <div className={`relative h-full overflow-hidden rounded-lg border border-white bg-hayat-soft shadow-stk ${fitToParent ? "min-h-0" : "min-h-[360px] lg:min-h-full"} ${className || ""}`}>
       {slides.map((slide, index) => (
-        <img
-          key={`${slide.src}-${index}`}
-          src={slide.src}
-          alt={slide.alt}
-          loading={index === 0 ? "eager" : "lazy"}
-          decoding="async"
-          fetchPriority={index === 0 ? "high" : "auto"}
-          className={`absolute inset-0 h-full w-full bg-white ${fitToParent ? "object-cover" : "object-contain"} transition-all duration-1000 ${
-            index === active ? "scale-100 opacity-100" : "scale-105 opacity-0"
-          }`}
-        />
+        <div key={`${slide.src}-${index}`} className={`absolute inset-0 transition-opacity duration-1000 ${index === active ? "opacity-100" : "opacity-0"}`}>
+          {fitToParent && (
+            <>
+              <img
+                src={slide.src}
+                alt=""
+                aria-hidden="true"
+                loading={index === 0 ? "eager" : "lazy"}
+                decoding="async"
+                className="absolute inset-0 h-full w-full scale-110 bg-white object-cover object-center opacity-45 blur-2xl"
+              />
+              <div className="absolute inset-0 bg-white/35" />
+            </>
+          )}
+          <img
+            src={slide.src}
+            alt={slide.alt}
+            loading={index === 0 ? "eager" : "lazy"}
+            decoding="async"
+            fetchPriority={index === 0 ? "high" : "auto"}
+            className={`relative z-10 h-full w-full bg-white object-contain object-center transition-transform duration-1000 ${index === active ? "scale-100" : "scale-[1.015]"}`}
+          />
+        </div>
       ))}
       {showOverlay && <div className="absolute inset-0 bg-gradient-to-t from-hayat-dark/35 via-transparent to-transparent" />}
       {slides.length > 1 && (
