@@ -121,6 +121,7 @@ textarea {
   flex: none;
   object-fit: contain;
   object-position: left center;
+  transform: translateX(-28px);
 }
 
 .receipt-info-row {
@@ -280,6 +281,7 @@ textarea {
     flex: none !important;
     object-fit: contain !important;
     object-position: left center !important;
+    transform: translateX(-8mm) !important;
   }
 
   .receipt-print-body {
