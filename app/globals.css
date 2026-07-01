@@ -188,20 +188,20 @@ textarea {
 
 @page receipt-a5-landscape {
   size: A5 landscape;
-  margin: 6mm;
+  margin: 4mm;
 }
 
 @media print {
   html,
   body {
-    width: 210mm;
-    min-height: 148mm;
+    width: auto;
+    min-height: 0;
     background: #ffffff !important;
   }
 
   body {
-    font-size: 10px;
-    line-height: 1.35;
+    font-size: 9px;
+    line-height: 1.25;
   }
 
   .receipt-print-page {
@@ -211,19 +211,22 @@ textarea {
 
   .receipt-print-sheet {
     width: 100%;
-    min-height: 136mm;
+    min-height: 0;
+    max-height: 138mm;
+    overflow: hidden !important;
     page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   .receipt-print-header {
-    padding: 10px 14px !important;
+    padding: 7px 11px !important;
   }
 
   .receipt-print-body {
     display: grid !important;
     grid-template-columns: 1.05fr 1.15fr 0.9fr !important;
-    gap: 9px !important;
-    padding: 10px !important;
+    gap: 7px !important;
+    padding: 8px !important;
   }
 
   .receipt-print-body > div:nth-child(1),
@@ -259,27 +262,27 @@ textarea {
   }
 
   .receipt-print-body > div:nth-child(1) {
-    gap: 8px !important;
+    gap: 6px !important;
   }
 
   .receipt-print-body > div:nth-child(1) > div,
   .receipt-print-body > div:nth-child(3) {
-    padding: 9px !important;
+    padding: 7px !important;
   }
 
   .receipt-print-body > div:nth-child(4) {
-    gap: 8px !important;
+    gap: 6px !important;
     padding-top: 0 !important;
   }
 
   .receipt-info-row {
-    min-height: 42px;
-    border-radius: 10px;
-    padding: 7px;
+    min-height: 36px;
+    border-radius: 8px;
+    padding: 6px;
   }
 
   .receipt-info-row p {
-    line-height: 1.35;
+    line-height: 1.25;
   }
 }
 
