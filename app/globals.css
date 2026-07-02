@@ -427,6 +427,10 @@ textarea {
   will-change: transform;
 }
 
+.home-gallery-scroll .auto-scroll-track {
+  animation-duration: 68s;
+}
+
 .auto-scroll-row:hover .auto-scroll-track,
 .auto-scroll-row:focus-within .auto-scroll-track {
   animation-play-state: paused;

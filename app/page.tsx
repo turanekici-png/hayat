@@ -543,7 +543,7 @@ export default async function HomePage() {
                 </Link>
               </div>
               {shouldScrollGallery ? (
-                <AutoScrollRow animate setClassName="gap-5">
+                <AutoScrollRow animate className="home-gallery-scroll" setClassName="gap-5">
                   {galleryMediaItems.map((item) => renderGalleryCard(item, true))}
                 </AutoScrollRow>
               ) : (
