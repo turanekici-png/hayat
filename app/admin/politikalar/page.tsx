@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Building2, Eye, FileText, Save, ShieldCheck } from "lucide-react";
+import { FileText, Save, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { AdminShell } from "../AdminShell";
 import { seedDefaultPolicies, updatePolicyPage } from "../actions";
@@ -7,12 +7,10 @@ import { seedDefaultPolicies, updatePolicyPage } from "../actions";
 const labels: Record<string, string> = {
   KVKK: "KVKK Aydınlatma Metni",
   TERMS_PRIVACY: "Kullanım Koşulları ve Gizlilik Politikası",
-  REFUND: "İade Politikası",
-  COOKIE: "Çerez Politikası"
+  REFUND: "İade Politikası"
 };
 
-const hiddenPolicyTypes = ["CONSENT_KVKK", "CONSENT_TERMS_PRIVACY", "CONSENT_REFUND", "BANK_ACCOUNTS"];
-const hiddenPolicySlugs = ["hesap-numaralarimiz"];
+const visiblePolicyTypes = ["KVKK", "TERMS_PRIVACY", "REFUND"];
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -20,11 +18,11 @@ export const revalidate = 0;
 export default async function PolicyAdminPage() {
   const policies = await prisma.policyPage.findMany({
     where: {
-      type: { notIn: hiddenPolicyTypes },
-      slug: { notIn: hiddenPolicySlugs }
+      type: { in: visiblePolicyTypes }
     },
     orderBy: { createdAt: "asc" }
   });
+  const sortedPolicies = [...policies].sort((a, b) => visiblePolicyTypes.indexOf(a.type) - visiblePolicyTypes.indexOf(b.type));
   return (
     <AdminShell activePath="/admin/politikalar" contentClassName="max-w-6xl">
           <div className="mb-6 rounded-[2rem] bg-hayat-dark p-6 text-white shadow-soft">
@@ -33,17 +31,11 @@ export default async function PolicyAdminPage() {
             <p className="mt-2 text-white/65">Online bağış alanındaki yasal onay linkleri ve footer bağlantıları buradaki metinleri gösterir.</p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link href="/admin" className="rounded-full bg-white/10 px-5 py-3 font-black">Admin Panele Dön</Link>
-              <Link href="/admin/hesaplar" className="inline-flex items-center gap-2 rounded-full bg-hayat-gold px-5 py-3 font-black text-hayat-dark">
-                <Building2 size={17} /> Banka Hesap Bilgilerini Düzenle
-              </Link>
-              <Link href="/hesap-numaralarimiz" className="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-3 font-black">
-                <Eye size={17} /> Hesap Sayfasını Gör
-              </Link>
-              {policies.length === 0 && <form action={seedDefaultPolicies}><button className="rounded-full bg-hayat-gold px-5 py-3 font-black text-hayat-dark">Varsayılan Metinleri Oluştur</button></form>}
+              {policies.length < visiblePolicyTypes.length && <form action={seedDefaultPolicies}><button className="rounded-full bg-hayat-gold px-5 py-3 font-black text-hayat-dark">Varsayılan Metinleri Oluştur</button></form>}
             </div>
           </div>
           <div className="space-y-5">
-            {policies.map((policy) => (
+            {sortedPolicies.map((policy) => (
               <form key={policy.id} action={updatePolicyPage} className="rounded-[2rem] bg-white p-6 shadow-sm">
                 <input type="hidden" name="id" value={policy.id} />
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
