@@ -85,12 +85,6 @@ export default async function BankAccountsAdminPage() {
           </label>
         </div>
 
-        <label className="text-sm font-black text-[#5d6b70]">Sayfa Başlığı</label>
-        <input name="title" defaultValue={page?.title || "Banka havalesi ile bağış"} className="mt-2 w-full rounded-[14px] border border-hayat-border bg-hayat-soft p-4 text-xl font-black text-hayat-dark outline-hayat-blue" />
-
-        <label className="mt-5 block text-sm font-black text-[#5d6b70]">Sayfa Açıklaması</label>
-        <textarea name="note" defaultValue={parsed.note} rows={4} className="mt-2 w-full rounded-[14px] border border-hayat-border bg-hayat-soft p-4 text-base font-semibold leading-7 text-hayat-dark outline-hayat-blue" />
-
         <BankAccountsEditor accounts={editableAccounts} media={safeMedia} />
 
         <button className="mt-6 inline-flex items-center gap-2 rounded-[14px] bg-hayat-green px-6 py-3 font-black text-white shadow-green hover:bg-hayat-blue">
