@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, Banknote, CheckCircle2, CreditCard, HeartHandshake, LockKeyhole, ShieldCheck, UserRound } from "lucide-react";
@@ -20,6 +20,10 @@ function formatAmount(value: string) {
 
 function digitsOnly(value: string) {
   return value.replace(/\D/g, "");
+}
+
+function removeDigits(value: string) {
+  return value.replace(/\d/g, "");
 }
 
 function StepTitle({ number, title, icon: Icon }: { number: number; title: string; icon: typeof HeartHandshake }) {
@@ -49,13 +53,24 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
   const [selectedType, setSelectedType] = useState(defaultType);
   const [selectedAmount, setSelectedAmount] = useState(defaultPreset);
   const [customAmount, setCustomAmount] = useState(defaultCustomAmount);
+  const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [fieldWarnings, setFieldWarnings] = useState<{ fullName?: string; phone?: string }>({});
+  const warningTimers = useRef<{ fullName?: ReturnType<typeof setTimeout>; phone?: ReturnType<typeof setTimeout> }>({});
   const activeType = useMemo(
     () => donationTypes.find((type) => type.code === selectedType) || donationTypes[0],
     [donationTypes, selectedType]
   );
   const amount = customAmount.trim() || String(selectedAmount);
   const displayedAmount = formatAmount(amount);
+
+  function showFieldWarning(field: "fullName" | "phone", text: string) {
+    setFieldWarnings((current) => ({ ...current, [field]: text }));
+    if (warningTimers.current[field]) clearTimeout(warningTimers.current[field]);
+    warningTimers.current[field] = setTimeout(() => {
+      setFieldWarnings((current) => ({ ...current, [field]: undefined }));
+    }, 2200);
+  }
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -64,6 +79,7 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
     const form = new FormData(e.currentTarget);
     form.set("type", selectedType);
     form.set("amount", amount);
+    form.set("fullName", removeDigits(fullName).trim());
     form.set("phone", digitsOnly(phone));
     const res = await fetch("/api/donations", { method: "POST", body: form });
     const data = await res.json();
@@ -156,24 +172,63 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
           <section>
             <StepTitle number={3} title="Bağışçı Bilgileri" icon={UserRound} />
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <input required name="fullName" placeholder="Ad Soyad" className="h-[58px] rounded-[16px] border border-[#dcd4c7] bg-[#fbfaf7] px-5 text-sm font-bold outline-hayat-blue placeholder:text-[#7a858a] focus:bg-white" />
-              <input
-                required
-                name="phone"
-                value={phone}
-                onChange={(event) => setPhone(digitsOnly(event.target.value))}
-                onKeyDown={(event) => {
-                  const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "Tab"];
-                  if (allowedKeys.includes(event.key) || event.ctrlKey || event.metaKey) return;
-                  if (!/^\d$/.test(event.key)) event.preventDefault();
-                }}
-                type="tel"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                autoComplete="tel"
-                placeholder="Telefon"
-                className="h-[58px] rounded-[16px] border border-[#dcd4c7] bg-[#fbfaf7] px-5 text-sm font-bold outline-hayat-blue placeholder:text-[#7a858a] focus:bg-white"
-              />
+              <label className="relative">
+                <input
+                  required
+                  name="fullName"
+                  value={fullName}
+                  onChange={(event) => {
+                    const nextValue = removeDigits(event.target.value);
+                    if (nextValue !== event.target.value) showFieldWarning("fullName", "Ad soyad alanına rakam girilemez.");
+                    setFullName(nextValue);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.ctrlKey || event.metaKey) return;
+                    if (/^\d$/.test(event.key)) {
+                      event.preventDefault();
+                      showFieldWarning("fullName", "Ad soyad alanına rakam girilemez.");
+                    }
+                  }}
+                  placeholder="Ad Soyad"
+                  className="h-[58px] w-full rounded-[16px] border border-[#dcd4c7] bg-[#fbfaf7] px-5 text-sm font-bold outline-hayat-blue placeholder:text-[#7a858a] focus:bg-white"
+                />
+                {fieldWarnings.fullName && (
+                  <span className="pointer-events-none absolute left-4 top-[calc(100%+8px)] z-20 max-w-[260px] rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-black text-amber-800 shadow-[0_12px_30px_rgba(120,75,0,0.14)]">
+                    {fieldWarnings.fullName}
+                  </span>
+                )}
+              </label>
+              <label className="relative">
+                <input
+                  required
+                  name="phone"
+                  value={phone}
+                  onChange={(event) => {
+                    const nextValue = digitsOnly(event.target.value);
+                    if (nextValue !== event.target.value) showFieldWarning("phone", "Telefon alanına sadece rakam girilebilir.");
+                    setPhone(nextValue);
+                  }}
+                  onKeyDown={(event) => {
+                    const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "Tab"];
+                    if (allowedKeys.includes(event.key) || event.ctrlKey || event.metaKey) return;
+                    if (!/^\d$/.test(event.key)) {
+                      event.preventDefault();
+                      showFieldWarning("phone", "Telefon alanına sadece rakam girilebilir.");
+                    }
+                  }}
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  autoComplete="tel"
+                  placeholder="Telefon"
+                  className="h-[58px] w-full rounded-[16px] border border-[#dcd4c7] bg-[#fbfaf7] px-5 text-sm font-bold outline-hayat-blue placeholder:text-[#7a858a] focus:bg-white"
+                />
+                {fieldWarnings.phone && (
+                  <span className="pointer-events-none absolute left-4 top-[calc(100%+8px)] z-20 max-w-[260px] rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-black text-amber-800 shadow-[0_12px_30px_rgba(120,75,0,0.14)]">
+                    {fieldWarnings.phone}
+                  </span>
+                )}
+              </label>
               <textarea name="description" placeholder="Bağış açıklaması / notunuz" rows={4} className="rounded-[16px] border border-[#dcd4c7] bg-[#fbfaf7] p-5 text-sm font-bold outline-hayat-blue placeholder:text-[#7a858a] focus:bg-white sm:col-span-2" />
             </div>
           </section>

@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { updateDonationWithReceiptOnPaid } from "@/lib/receipt-number";
 
 const schema = z.object({
-  fullName: z.string().min(3),
+  fullName: z.string().trim().min(3).regex(/^[^\d]+$/, "Ad soyad alanına rakam girilemez."),
   phone: z.string().trim().regex(/^\d{10,15}$/, "Telefon numarası sadece rakamlardan oluşmalıdır."),
   email: z.string().email().optional().or(z.literal("")),
   amount: z.coerce.number().positive(),
