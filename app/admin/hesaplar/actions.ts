@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { defaultIbanLabels, serializeBankAccountsContent, type BankAccount } from "@/lib/bank-accounts";
@@ -106,6 +106,8 @@ export async function saveBankAccountsPage(formData: FormData) {
     })
   ]);
 
+  revalidateTag("bank-accounts");
+  revalidateTag("policy-pages");
   revalidatePath("/admin/hesaplar");
   revalidatePath("/hesap-numaralarimiz");
   revalidatePath("/");

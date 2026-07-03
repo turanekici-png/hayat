@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { bankAccountFromRecord, defaultBankAccounts, parseBankAccountsContent, type BankAccount } from "@/lib/bank-accounts";
 import { normalizeMediaUrl } from "@/lib/media-url";
 import { DollarSign, Euro } from "lucide-react";
+import { unstable_cache } from "next/cache";
 import type { CSSProperties } from "react";
 
 const fallbackPolicies: Record<string, { title: string; content: string; label?: string }> = {
@@ -182,8 +183,13 @@ function bankRowStyle(theme: BankTheme): CSSProperties {
 }
 
 type BankAccountRecord = Parameters<typeof bankAccountFromRecord>[0];
+type PublicPolicyRecord = {
+  title: string;
+  content: string;
+  isActive: boolean;
+} | null;
 
-async function getActiveBankAccountRows() {
+async function loadActiveBankAccountRows() {
   const bankAccountClient = (prisma as unknown as {
     bankAccount?: {
       findMany: (args: unknown) => Promise<BankAccountRecord[]>;
@@ -194,6 +200,20 @@ async function getActiveBankAccountRows() {
 
   return bankAccountClient.findMany({
     where: { isActive: true },
+    select: {
+      id: true,
+      bank: true,
+      sortOrder: true,
+      logoUrl: true,
+      branch: true,
+      accountName: true,
+      type: true,
+      description: true,
+      tlIban: true,
+      dolarIban: true,
+      euroIban: true,
+      isActive: true
+    },
     orderBy: [
       { sortOrder: "asc" },
       { createdAt: "asc" }
@@ -201,10 +221,29 @@ async function getActiveBankAccountRows() {
   }).catch(() => []);
 }
 
+const getActiveBankAccountRows = unstable_cache(loadActiveBankAccountRows, ["active-bank-accounts"], {
+  revalidate: 300,
+  tags: ["bank-accounts"]
+});
+
+const getPublicPolicyPage = unstable_cache(async (slug: string): Promise<PublicPolicyRecord> => {
+  return prisma.policyPage.findUnique({
+    where: { slug },
+    select: {
+      title: true,
+      content: true,
+      isActive: true
+    }
+  }).catch(() => null);
+}, ["public-policy-page"], {
+  revalidate: 300,
+  tags: ["policy-pages"]
+});
+
 export default async function PolicyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const isBankPage = slug === "hesap-numaralarimiz";
-  const dbPolicy = await prisma.policyPage.findUnique({ where: { slug } }).catch(() => null);
+  const dbPolicy = await getPublicPolicyPage(slug);
   const fallback = fallbackPolicies[slug];
   if (!dbPolicy && !fallback) notFound();
   if (dbPolicy && !dbPolicy.isActive && !isBankPage) notFound();
