@@ -8,7 +8,6 @@ import { redirect } from "next/navigation";
 import { unlink } from "fs/promises";
 import { sendSms } from "@/lib/sms";
 import { publicPath } from "@/lib/public-files";
-import { policyConsentDefaults } from "@/lib/policy-consents";
 import path from "path";
 import { createHash } from "crypto";
 
@@ -731,29 +730,6 @@ export async function updatePolicyPage(formData: FormData) {
   const policy = await prisma.policyPage.update({ where: { id }, data: { title, content, isActive } });
   revalidatePath("/admin/politikalar");
   revalidatePath(`/${policy.slug}`);
-}
-
-export async function updatePolicyConsentTexts(formData: FormData) {
-  for (const item of policyConsentDefaults) {
-    const content = textValue(formData, item.type) || item.text;
-    await prisma.policyPage.upsert({
-      where: { type: item.type },
-      create: {
-        type: item.type,
-        slug: item.href.replace(/^\//, "") + "-onay-metni",
-        title: item.title,
-        content,
-        isActive: true
-      },
-      update: {
-        title: item.title,
-        content,
-        isActive: true
-      }
-    });
-  }
-  revalidatePath("/admin/politikalar");
-  revalidatePath("/bagis");
 }
 
 export async function seedDefaultAnnouncements() {

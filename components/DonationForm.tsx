@@ -4,39 +4,11 @@ import { Suspense, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, Banknote, CheckCircle2, CreditCard, HeartHandshake, LockKeyhole, ShieldCheck, UserRound } from "lucide-react";
-import type { PolicyConsentItem } from "@/lib/policy-consents";
 
 type DonationTypeOption = {
   code: string;
   label: string;
 };
-
-const fallbackPolicyConsents: PolicyConsentItem[] = [
-  {
-    type: "CONSENT_KVKK",
-    fieldName: "kvkkConsent",
-    title: "KVKK onay metni",
-    href: "/kvkk",
-    linkLabel: "KVKK Aydınlatma Metni",
-    text: "KVKK Aydınlatma Metnini okudum ve kabul ediyorum."
-  },
-  {
-    type: "CONSENT_TERMS_PRIVACY",
-    fieldName: "privacyConsent",
-    title: "Kullanım koşulları ve gizlilik onay metni",
-    href: "/kullanim-kosullari-ve-gizlilik-politikasi",
-    linkLabel: "Kullanım Koşulları ve Gizlilik Politikası",
-    text: "Kullanım Koşulları ve Gizlilik Politikasını kabul ediyorum."
-  },
-  {
-    type: "CONSENT_REFUND",
-    fieldName: "refundConsent",
-    title: "İade politikası onay metni",
-    href: "/iade-politikasi",
-    linkLabel: "İade Politikası",
-    text: "İade Politikası hakkında bilgilendirildim."
-  }
-];
 
 const presetAmounts = [100, 250, 500, 1000];
 
@@ -54,30 +26,6 @@ function removeDigits(value: string) {
   return value.replace(/\d/g, "");
 }
 
-function linkedConsentText(item: PolicyConsentItem) {
-  const index = item.text.indexOf(item.linkLabel);
-  if (index < 0) {
-    return (
-      <>
-        {item.text}{" "}
-        <Link className="font-black text-hayat-blue underline" href={item.href} target="_blank">
-          {item.linkLabel}
-        </Link>
-      </>
-    );
-  }
-
-  return (
-    <>
-      {item.text.slice(0, index)}
-      <Link className="font-black text-hayat-blue underline" href={item.href} target="_blank">
-        {item.linkLabel}
-      </Link>
-      {item.text.slice(index + item.linkLabel.length)}
-    </>
-  );
-}
-
 function StepTitle({ number, title, icon: Icon }: { number: number; title: string; icon: typeof HeartHandshake }) {
   return (
     <div className="flex items-center gap-3">
@@ -92,13 +40,7 @@ function StepTitle({ number, title, icon: Icon }: { number: number; title: strin
   );
 }
 
-function DonationFormInner({
-  donationTypes,
-  policyConsents
-}: {
-  donationTypes: DonationTypeOption[];
-  policyConsents: PolicyConsentItem[];
-}) {
+function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOption[] }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const searchParams = useSearchParams();
@@ -292,12 +234,18 @@ function DonationFormInner({
           </section>
 
           <section className="rounded-[20px] border border-[#dce9d2] bg-[#f5fbef] p-5 text-xs font-semibold leading-6 text-[#4f6170]">
-            {policyConsents.map((item, index) => (
-              <label key={item.type} className={`${index > 0 ? "mt-2 " : ""}flex gap-3`}>
-                <input required name={item.fieldName} type="checkbox" value="true" className="mt-1 accent-hayat-green" />
-                <span>{linkedConsentText(item)}</span>
-              </label>
-            ))}
+            <label className="flex gap-3">
+              <input required name="kvkkConsent" type="checkbox" value="true" className="mt-1 accent-hayat-green" />
+              <span><Link className="font-black text-hayat-blue underline" href="/kvkk" target="_blank">KVKK Aydınlatma Metni</Link>ni okudum ve kabul ediyorum.</span>
+            </label>
+            <label className="mt-2 flex gap-3">
+              <input required name="privacyConsent" type="checkbox" value="true" className="mt-1 accent-hayat-green" />
+              <span><Link className="font-black text-hayat-blue underline" href="/kullanim-kosullari-ve-gizlilik-politikasi" target="_blank">Kullanım Koşulları ve Gizlilik Politikası</Link>nı kabul ediyorum.</span>
+            </label>
+            <label className="mt-2 flex gap-3">
+              <input required name="refundConsent" type="checkbox" value="true" className="mt-1 accent-hayat-green" />
+              <span><Link className="font-black text-hayat-blue underline" href="/iade-politikasi" target="_blank">İade Politikası</Link> hakkında bilgilendirildim.</span>
+            </label>
           </section>
 
           {message && <p className="rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700">{message}</p>}
@@ -351,20 +299,14 @@ function DonationFormInner({
   );
 }
 
-export function DonationForm({
-  donationTypes,
-  policyConsents = fallbackPolicyConsents
-}: {
-  donationTypes: DonationTypeOption[];
-  policyConsents?: PolicyConsentItem[];
-}) {
+export function DonationForm({ donationTypes }: { donationTypes: DonationTypeOption[] }) {
   return (
     <Suspense fallback={
       <div className="rounded-[20px] border border-hayat-border bg-white p-6 text-center font-bold text-[#5d6b70] shadow-stk md:p-8">
         Bağış formu yükleniyor...
       </div>
     }>
-      <DonationFormInner donationTypes={donationTypes} policyConsents={policyConsents.length ? policyConsents : fallbackPolicyConsents} />
+      <DonationFormInner donationTypes={donationTypes} />
     </Suspense>
   );
 }

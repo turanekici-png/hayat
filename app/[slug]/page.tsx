@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CopyIbanButton } from "@/components/CopyIbanButton";
+import { PolicyAcceptButton } from "@/components/PolicyAcceptButton";
 import { prisma } from "@/lib/prisma";
 import { defaultBankAccounts, parseBankAccountsContent, type BankAccount } from "@/lib/bank-accounts";
 import { normalizeMediaUrl } from "@/lib/media-url";
@@ -284,6 +285,11 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
           {displayContent && (
             <div className="mt-8 rounded-[20px] border border-hayat-border bg-white p-6 text-base font-semibold leading-8 text-[#5d6b70] shadow-stk sm:p-8">
               <p className="whitespace-pre-line">{displayContent}</p>
+              {["kvkk", "kullanim-kosullari-ve-gizlilik-politikasi", "iade-politikasi"].includes(slug) && (
+                <div className="mt-8 border-t border-[#d9e5ec] pt-6">
+                  <PolicyAcceptButton />
+                </div>
+              )}
             </div>
           )}
         </article>
