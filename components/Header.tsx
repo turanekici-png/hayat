@@ -24,7 +24,7 @@ export function Header() {
   const pathname = usePathname() || "/";
 
   return (
-    <header className="sticky top-0 z-[100] w-full border-t-2 border-hayat-dark border-b border-hayat-border bg-[#f7f5ef]/98">
+    <header className="sticky top-0 z-[100] w-full border-y border-[#d7e5ec]/75 bg-[#f7f5ef]/82 shadow-[0_10px_30px_rgba(10,58,85,0.06)] backdrop-blur-xl supports-[backdrop-filter]:bg-[#f7f5ef]/72">
       <div className="mx-auto flex h-[86px] max-w-[1840px] items-center justify-between gap-2 px-3 sm:h-[100px] sm:px-4 lg:h-[116px] lg:gap-5 lg:px-4">
         <Link href="/" className="block min-w-0 shrink" aria-label="Hayat Ağacı Derneği ana sayfa">
           <img
