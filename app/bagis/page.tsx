@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { DonationForm } from "@/components/DonationForm";
 import { getActiveDonationTypes } from "@/lib/donation-types";
+import { getPolicyConsentItems } from "@/lib/policy-consents";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -14,7 +15,10 @@ function firstParam(value?: string | string[]) {
 }
 
 export default async function BagisPage({ searchParams }: { searchParams: BagisSearchParams }) {
-  const donationTypes = await getActiveDonationTypes();
+  const [donationTypes, policyConsents] = await Promise.all([
+    getActiveDonationTypes(),
+    getPolicyConsentItems()
+  ]);
   const params = await searchParams;
   const paymentStatus = firstParam(params.odeme);
   const paymentMessage = firstParam(params.mesaj);
@@ -39,7 +43,7 @@ export default async function BagisPage({ searchParams }: { searchParams: BagisS
           </div>
         </section>
         <section className="mx-auto max-w-[1320px] px-4 py-10 sm:px-6 lg:px-8">
-          <DonationForm donationTypes={donationTypes} />
+          <DonationForm donationTypes={donationTypes} policyConsents={policyConsents} />
         </section>
       </main>
       <Footer />
