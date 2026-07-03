@@ -181,27 +181,39 @@ function bankRowStyle(theme: BankTheme): CSSProperties {
   };
 }
 
+type BankAccountRecord = Parameters<typeof bankAccountFromRecord>[0];
+
+async function getActiveBankAccountRows() {
+  const bankAccountClient = (prisma as unknown as {
+    bankAccount?: {
+      findMany: (args: unknown) => Promise<BankAccountRecord[]>;
+    };
+  }).bankAccount;
+
+  if (!bankAccountClient) return [];
+
+  return bankAccountClient.findMany({
+    where: { isActive: true },
+    orderBy: [
+      { sortOrder: "asc" },
+      { createdAt: "asc" }
+    ]
+  }).catch(() => []);
+}
+
 export default async function PolicyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const isBankPage = slug === "hesap-numaralarimiz";
   const dbPolicy = await prisma.policyPage.findUnique({ where: { slug } }).catch(() => null);
   const fallback = fallbackPolicies[slug];
   if (!dbPolicy && !fallback) notFound();
-  if (dbPolicy && !dbPolicy.isActive) notFound();
+  if (dbPolicy && !dbPolicy.isActive && !isBankPage) notFound();
 
   const title = dbPolicy?.title || fallback?.title || "Hayat Ağacı Derneği";
   const content = dbPolicy?.content || fallback?.content || "";
   const label = fallback?.label || "Hayat Ağacı Derneği";
-  const isBankPage = slug === "hesap-numaralarimiz";
   const bankContent = isBankPage ? parseBankAccountsContent(content) : null;
-  const bankRows = isBankPage
-    ? await prisma.bankAccount.findMany({
-      where: { isActive: true },
-      orderBy: [
-        { sortOrder: "asc" },
-        { createdAt: "asc" }
-      ]
-    }).catch(() => [])
-    : [];
+  const bankRows = isBankPage ? await getActiveBankAccountRows() : [];
   const bankAccounts = (bankRows.length ? bankRows.map(bankAccountFromRecord) : bankContent?.accounts.length ? bankContent.accounts : defaultBankAccounts)
     .filter((account) => visibleIbans(account).length > 0);
   const displayContent = isBankPage ? bankContent?.note : content;

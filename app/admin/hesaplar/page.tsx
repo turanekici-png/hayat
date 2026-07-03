@@ -10,6 +10,25 @@ import { normalizeMediaUrl } from "@/lib/media-url";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+type BankAccountRecord = Parameters<typeof bankAccountFromRecord>[0];
+
+async function getBankAccountRows() {
+  const bankAccountClient = (prisma as unknown as {
+    bankAccount?: {
+      findMany: (args: unknown) => Promise<BankAccountRecord[]>;
+    };
+  }).bankAccount;
+
+  if (!bankAccountClient) return [];
+
+  return bankAccountClient.findMany({
+    orderBy: [
+      { sortOrder: "asc" },
+      { createdAt: "asc" }
+    ]
+  }).catch(() => []);
+}
+
 export default async function BankAccountsAdminPage() {
   const [page, accounts, media] = await Promise.all([
     prisma.policyPage.findFirst({
@@ -20,12 +39,7 @@ export default async function BankAccountsAdminPage() {
         ]
       }
     }).catch(() => null),
-    prisma.bankAccount.findMany({
-      orderBy: [
-        { sortOrder: "asc" },
-        { createdAt: "asc" }
-      ]
-    }).catch(() => []),
+    getBankAccountRows(),
     prisma.mediaAsset.findMany({
       select: {
         id: true,
