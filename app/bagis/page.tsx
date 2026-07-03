@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { DonationForm } from "@/components/DonationForm";
 import { getActiveDonationTypes } from "@/lib/donation-types";
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -28,7 +29,7 @@ const paymentPolicyDefaults = [
   }
 ];
 
-async function getPaymentPolicies() {
+const getPaymentPolicies = unstable_cache(async () => {
   const rows = await prisma.policyPage.findMany({
     where: {
       slug: { in: paymentPolicyDefaults.map((policy) => policy.slug) },
@@ -49,7 +50,7 @@ async function getPaymentPolicies() {
       content: row?.content || fallback.content
     };
   });
-}
+}, ["payment-policies"], { revalidate: 300, tags: ["policy-pages"] });
 
 function firstParam(value?: string | string[]) {
   return Array.isArray(value) ? value[0] : value;

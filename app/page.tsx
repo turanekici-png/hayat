@@ -13,6 +13,7 @@ import { getHomeSections, allByType, firstByType } from "@/lib/site-content";
 import { getActiveDonationTypes } from "@/lib/donation-types";
 import { normalizeMediaUrl } from "@/lib/media-url";
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 import { ArrowRight, CalendarDays, Camera, ChevronRight, ImageIcon, Megaphone, PlayCircle, ShieldCheck, Video } from "lucide-react";
 import type { CSSProperties } from "react";
 
@@ -120,13 +121,16 @@ function cardWidthClass(section: any) {
   return "w-[85vw] sm:w-[calc(50vw-28px)] lg:w-[360px]";
 }
 
-export default async function HomePage() {
-  const now = new Date();
-  const [sections, groupLabels, donationTypes, announcements, popup] = await Promise.all([
-    getHomeSections(),
-    prisma.sectionGroupLabel.findMany(),
-    getActiveDonationTypes(),
-    prisma.announcement.findMany({
+const getHomeGroupLabels = unstable_cache(
+  () => prisma.sectionGroupLabel.findMany(),
+  ["home-group-labels"],
+  { revalidate: 300, tags: ["site-content"] }
+);
+
+const getHomeAnnouncements = unstable_cache(
+  async () => {
+    const now = new Date();
+    return prisma.announcement.findMany({
       where: {
         isActive: true,
         OR: [{ startDate: null }, { startDate: { lte: now } }],
@@ -134,8 +138,25 @@ export default async function HomePage() {
       },
       orderBy: [{ isPinned: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }],
       take: 5
-    }),
-    prisma.popupSetting.findFirst({ where: { isActive: true }, orderBy: { updatedAt: "desc" } })
+    });
+  },
+  ["home-announcements"],
+  { revalidate: 60, tags: ["home-announcements"] }
+);
+
+const getHomePopup = unstable_cache(
+  () => prisma.popupSetting.findFirst({ where: { isActive: true }, orderBy: { updatedAt: "desc" } }),
+  ["home-popup"],
+  { revalidate: 60, tags: ["home-popup"] }
+);
+
+export default async function HomePage() {
+  const [sections, groupLabels, donationTypes, announcements, popup] = await Promise.all([
+    getHomeSections(),
+    getHomeGroupLabels(),
+    getActiveDonationTypes(),
+    getHomeAnnouncements(),
+    getHomePopup()
   ]);
 
   const getSectionTitle = (type: string, sectionsForType: any[], fallback: string) => {

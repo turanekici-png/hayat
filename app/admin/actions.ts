@@ -112,6 +112,21 @@ function revalidateSiteContent() {
   revalidatePath("/admin", "page");
 }
 
+function revalidateHomeAnnouncements() {
+  revalidateTag("home-announcements");
+  revalidatePath("/");
+}
+
+function revalidateHomePopup() {
+  revalidateTag("home-popup");
+  revalidatePath("/");
+}
+
+function revalidatePolicyPages() {
+  revalidateTag("policy-pages");
+  revalidatePath("/bagis");
+}
+
 function redirectWithRefresh(target: string) {
   const [pathAndQuery, hash] = target.split("#");
   const separator = pathAndQuery.includes("?") ? "&" : "?";
@@ -480,7 +495,7 @@ export async function savePopupSetting(formData: FormData) {
     await prisma.popupSetting.create({ data });
   }
   revalidatePath("/", "layout");
-  revalidatePath("/");
+  revalidateHomePopup();
   revalidatePath("/admin");
   redirectWithRefresh("/admin?sayfa=popup#popup-ayarlari");
 }
@@ -716,6 +731,7 @@ export async function seedDefaultPolicies() {
       update: {}
     });
   }
+  revalidatePolicyPages();
   revalidatePath("/admin/politikalar");
   revalidatePath("/");
   redirectWithRefresh("/admin/politikalar");
@@ -728,6 +744,7 @@ export async function updatePolicyPage(formData: FormData) {
   const isActive = formData.get("isActive") === "on";
   if (!id) return;
   const policy = await prisma.policyPage.update({ where: { id }, data: { title, content, isActive } });
+  revalidatePolicyPages();
   revalidatePath("/admin/politikalar");
   revalidatePath(`/${policy.slug}`);
 }
@@ -743,14 +760,14 @@ export async function seedDefaultAnnouncements() {
       ]
     });
   }
-  revalidatePath("/");
+  revalidateHomeAnnouncements();
   revalidatePath("/admin/duyurular");
   redirectWithRefresh("/admin/duyurular");
 }
 
 export async function createAnnouncement(formData: FormData) {
   await prisma.announcement.create({ data: announcementPayload(formData) });
-  revalidatePath("/");
+  revalidateHomeAnnouncements();
   revalidatePath("/admin/duyurular");
   redirectWithRefresh("/admin/duyurular");
 }
@@ -759,7 +776,7 @@ export async function updateAnnouncement(formData: FormData) {
   const id = textValue(formData, "id");
   if (!id) return;
   await prisma.announcement.update({ where: { id }, data: announcementPayload(formData) });
-  revalidatePath("/");
+  revalidateHomeAnnouncements();
   revalidatePath("/admin/duyurular");
 }
 
@@ -767,7 +784,7 @@ export async function deleteAnnouncement(formData: FormData) {
   const id = textValue(formData, "id");
   if (!id) return;
   await prisma.announcement.delete({ where: { id } });
-  revalidatePath("/");
+  revalidateHomeAnnouncements();
   revalidatePath("/admin/duyurular");
 }
 
