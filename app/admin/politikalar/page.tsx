@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FileText, Save, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { AdminShell } from "../AdminShell";
-import { seedDefaultPolicies, updatePolicyPage } from "../actions";
+import { updatePolicyPage } from "../actions";
 
 const labels: Record<string, string> = {
   KVKK: "KVKK Aydınlatma Metni",
@@ -10,19 +10,40 @@ const labels: Record<string, string> = {
   REFUND: "İade Politikası"
 };
 
-const visiblePolicyTypes = ["KVKK", "TERMS_PRIVACY", "REFUND"];
+const editablePolicies = [
+  {
+    type: "KVKK",
+    slug: "kvkk",
+    title: "KVKK Aydınlatma Metni",
+    content: "Bu alan yönetim panelinden kurumunuzun resmi KVKK Aydınlatma Metni ile güncellenmelidir. Bağışçı ve başvuru sahibi kişisel verileri, ilgili mevzuat kapsamında yalnızca dernek faaliyetlerinin yürütülmesi amacıyla işlenir."
+  },
+  {
+    type: "TERMS_PRIVACY",
+    slug: "kullanim-kosullari-ve-gizlilik-politikasi",
+    title: "Kullanım Koşulları ve Gizlilik Politikası",
+    content: "Bu alan yönetim panelinden kurumunuzun resmi kullanım koşulları ve gizlilik politikası ile güncellenmelidir. Site kullanımı, bağış işlemleri ve kişisel veri güvenliği esasları burada açıklanır."
+  },
+  {
+    type: "REFUND",
+    slug: "iade-politikasi",
+    title: "İade Politikası",
+    content: "Bu alan yönetim panelinden kurumunuzun resmi iade politikası ile güncellenmelidir. Hatalı veya mükerrer bağış talepleri kurum incelemesi sonrasında değerlendirilir."
+  }
+] as const;
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function PolicyAdminPage() {
-  const policies = await prisma.policyPage.findMany({
-    where: {
-      type: { in: visiblePolicyTypes }
-    },
-    orderBy: { createdAt: "asc" }
-  });
-  const sortedPolicies = [...policies].sort((a, b) => visiblePolicyTypes.indexOf(a.type) - visiblePolicyTypes.indexOf(b.type));
+  const sortedPolicies = await Promise.all(
+    editablePolicies.map((policy) =>
+      prisma.policyPage.upsert({
+        where: { type: policy.type },
+        create: policy,
+        update: {}
+      })
+    )
+  );
   return (
     <AdminShell activePath="/admin/politikalar" contentClassName="max-w-6xl">
           <div className="mb-6 rounded-[2rem] bg-hayat-dark p-6 text-white shadow-soft">
@@ -31,7 +52,6 @@ export default async function PolicyAdminPage() {
             <p className="mt-2 text-white/65">Online bağış alanındaki yasal onay linkleri ve footer bağlantıları buradaki metinleri gösterir.</p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link href="/admin" className="rounded-full bg-white/10 px-5 py-3 font-black">Admin Panele Dön</Link>
-              {policies.length < visiblePolicyTypes.length && <form action={seedDefaultPolicies}><button className="rounded-full bg-hayat-gold px-5 py-3 font-black text-hayat-dark">Varsayılan Metinleri Oluştur</button></form>}
             </div>
           </div>
           <div className="space-y-5">
@@ -56,7 +76,6 @@ export default async function PolicyAdminPage() {
                 <button className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-hayat-green px-6 py-3 font-black text-white"><Save size={18} /> Kaydet</button>
               </form>
             ))}
-            {!policies.length && <p className="rounded-2xl bg-white p-6 text-slate-600 shadow-sm">Henüz politika metni yok. Yukarıdaki “Varsayılan Metinleri Oluştur” butonuna basın.</p>}
           </div>
     </AdminShell>
   );
