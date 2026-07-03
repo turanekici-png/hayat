@@ -8,7 +8,7 @@ import { updateDonationWithReceiptOnPaid } from "@/lib/receipt-number";
 
 const schema = z.object({
   fullName: z.string().min(3),
-  phone: z.string().min(10, "Telefon numarası zorunludur."),
+  phone: z.string().trim().regex(/^\d{10,15}$/, "Telefon numarası sadece rakamlardan oluşmalıdır."),
   email: z.string().email().optional().or(z.literal("")),
   amount: z.coerce.number().positive(),
   type: z.string().min(1),

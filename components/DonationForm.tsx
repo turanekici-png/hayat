@@ -18,6 +18,10 @@ function formatAmount(value: string) {
   return numeric.toLocaleString("tr-TR", { maximumFractionDigits: 2 });
 }
 
+function digitsOnly(value: string) {
+  return value.replace(/\D/g, "");
+}
+
 function StepTitle({ number, title, icon: Icon }: { number: number; title: string; icon: typeof HeartHandshake }) {
   return (
     <div className="flex items-center gap-3">
@@ -45,6 +49,7 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
   const [selectedType, setSelectedType] = useState(defaultType);
   const [selectedAmount, setSelectedAmount] = useState(defaultPreset);
   const [customAmount, setCustomAmount] = useState(defaultCustomAmount);
+  const [phone, setPhone] = useState("");
   const activeType = useMemo(
     () => donationTypes.find((type) => type.code === selectedType) || donationTypes[0],
     [donationTypes, selectedType]
@@ -59,6 +64,7 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
     const form = new FormData(e.currentTarget);
     form.set("type", selectedType);
     form.set("amount", amount);
+    form.set("phone", digitsOnly(phone));
     const res = await fetch("/api/donations", { method: "POST", body: form });
     const data = await res.json();
     setLoading(false);
@@ -151,7 +157,23 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
             <StepTitle number={3} title="Bağışçı Bilgileri" icon={UserRound} />
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <input required name="fullName" placeholder="Ad Soyad" className="h-[58px] rounded-[16px] border border-[#dcd4c7] bg-[#fbfaf7] px-5 text-sm font-bold outline-hayat-blue placeholder:text-[#7a858a] focus:bg-white" />
-              <input required name="phone" placeholder="Telefon" className="h-[58px] rounded-[16px] border border-[#dcd4c7] bg-[#fbfaf7] px-5 text-sm font-bold outline-hayat-blue placeholder:text-[#7a858a] focus:bg-white" />
+              <input
+                required
+                name="phone"
+                value={phone}
+                onChange={(event) => setPhone(digitsOnly(event.target.value))}
+                onKeyDown={(event) => {
+                  const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "Tab"];
+                  if (allowedKeys.includes(event.key) || event.ctrlKey || event.metaKey) return;
+                  if (!/^\d$/.test(event.key)) event.preventDefault();
+                }}
+                type="tel"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                autoComplete="tel"
+                placeholder="Telefon"
+                className="h-[58px] rounded-[16px] border border-[#dcd4c7] bg-[#fbfaf7] px-5 text-sm font-bold outline-hayat-blue placeholder:text-[#7a858a] focus:bg-white"
+              />
               <textarea name="description" placeholder="Bağış açıklaması / notunuz" rows={4} className="rounded-[16px] border border-[#dcd4c7] bg-[#fbfaf7] p-5 text-sm font-bold outline-hayat-blue placeholder:text-[#7a858a] focus:bg-white sm:col-span-2" />
             </div>
           </section>
