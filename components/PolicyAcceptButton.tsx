@@ -5,7 +5,12 @@ export function PolicyAcceptButton() {
     <button
       type="button"
       onClick={() => {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: "policy-accepted", slug: window.location.pathname.replace(/^\/+/, "") }, window.location.origin);
+          return;
+        }
         if (window.opener) {
+          window.opener.postMessage({ type: "policy-accepted", slug: window.location.pathname.replace(/^\/+/, "") }, window.location.origin);
           window.close();
           return;
         }

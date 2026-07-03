@@ -4,6 +4,7 @@ export type BankIban = {
 };
 
 export type BankAccount = {
+  id?: string;
   bank: string;
   sortOrder?: number;
   logoUrl?: string;
@@ -11,6 +12,7 @@ export type BankAccount = {
   accountName?: string;
   type?: string;
   description?: string;
+  isActive?: boolean;
   ibans: BankIban[];
 };
 
@@ -52,6 +54,8 @@ export const defaultBankAccounts: BankAccount[] = [
 ];
 
 const defaultNote = "Hesap sahibi tüm hesaplarda Hayat Ağacı Derneği'dir. Açıklama kısmına bağış türünü yazmanız yeterlidir.";
+
+export { defaultNote as defaultBankAccountsNote };
 
 function clean(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
@@ -104,6 +108,7 @@ function normalizeAccount(value: unknown): BankAccount | null {
   if (!bank && !ibans.some((item) => item.iban)) return null;
 
   return {
+    id: clean(record.id) || undefined,
     bank,
     sortOrder: cleanSortOrder(record.sortOrder),
     logoUrl: clean(record.logoUrl),
@@ -111,7 +116,40 @@ function normalizeAccount(value: unknown): BankAccount | null {
     accountName: clean(record.accountName),
     type: clean(record.type),
     description: clean(record.description),
+    isActive: typeof record.isActive === "boolean" ? record.isActive : true,
     ibans
+  };
+}
+
+export function bankAccountFromRecord(record: {
+  id?: string | null;
+  bank?: string | null;
+  sortOrder?: number | null;
+  logoUrl?: string | null;
+  branch?: string | null;
+  accountName?: string | null;
+  type?: string | null;
+  description?: string | null;
+  tlIban?: string | null;
+  dolarIban?: string | null;
+  euroIban?: string | null;
+  isActive?: boolean | null;
+}): BankAccount {
+  return {
+    id: record.id || undefined,
+    bank: record.bank || "",
+    sortOrder: record.sortOrder || 0,
+    logoUrl: record.logoUrl || "",
+    branch: record.branch || "",
+    accountName: record.accountName || "",
+    type: record.type || "",
+    description: record.description || "",
+    isActive: record.isActive ?? true,
+    ibans: [
+      { label: defaultIbanLabels[0], iban: record.tlIban || "" },
+      { label: defaultIbanLabels[1], iban: record.dolarIban || "" },
+      { label: defaultIbanLabels[2], iban: record.euroIban || "" }
+    ]
   };
 }
 

@@ -19,6 +19,7 @@ export async function saveBankAccountsPage(formData: FormData) {
   const note = textValue(formData, "note");
   const isActive = formData.get("isActive") === "on";
 
+  const accountIds = textValues(formData, "accountId");
   const banks = textValues(formData, "bank");
   const sortOrders = textValues(formData, "sortOrder");
   const logoUrls = textValues(formData, "logoUrl");
@@ -31,6 +32,7 @@ export async function saveBankAccountsPage(formData: FormData) {
   const descriptions = textValues(formData, "description");
 
   const accounts: BankAccount[] = banks.map((bank, index) => ({
+    id: accountIds[index] || undefined,
     bank,
     sortOrder: Number(sortOrders[index]) || 0,
     logoUrl: logoUrls[index] || "",
@@ -79,6 +81,30 @@ export async function saveBankAccountsPage(formData: FormData) {
       }
     });
   }
+
+  const keptIds = accounts.map((account) => account.id).filter((id): id is string => Boolean(id));
+  await prisma.$transaction([
+    prisma.bankAccount.deleteMany(keptIds.length ? { where: { id: { notIn: keptIds } } } : undefined),
+    ...accounts.map((account) => {
+      const data = {
+        bank: account.bank.trim(),
+        sortOrder: account.sortOrder || 0,
+        logoUrl: account.logoUrl?.trim() || null,
+        branch: account.branch?.trim() || null,
+        accountName: account.accountName?.trim() || null,
+        type: account.type?.trim() || null,
+        description: account.description?.trim() || null,
+        tlIban: account.ibans[0]?.iban.trim() || null,
+        dolarIban: account.ibans[1]?.iban.trim() || null,
+        euroIban: account.ibans[2]?.iban.trim() || null,
+        isActive: true
+      };
+
+      return account.id
+        ? prisma.bankAccount.update({ where: { id: account.id }, data })
+        : prisma.bankAccount.create({ data });
+    })
+  ]);
 
   revalidatePath("/admin/hesaplar");
   revalidatePath("/hesap-numaralarimiz");

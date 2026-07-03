@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import { CopyIbanButton } from "@/components/CopyIbanButton";
 import { PolicyAcceptButton } from "@/components/PolicyAcceptButton";
 import { prisma } from "@/lib/prisma";
-import { defaultBankAccounts, parseBankAccountsContent, type BankAccount } from "@/lib/bank-accounts";
+import { bankAccountFromRecord, defaultBankAccounts, parseBankAccountsContent, type BankAccount } from "@/lib/bank-accounts";
 import { normalizeMediaUrl } from "@/lib/media-url";
 import { DollarSign, Euro } from "lucide-react";
 import type { CSSProperties } from "react";
@@ -193,7 +193,16 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
   const label = fallback?.label || "Hayat Ağacı Derneği";
   const isBankPage = slug === "hesap-numaralarimiz";
   const bankContent = isBankPage ? parseBankAccountsContent(content) : null;
-  const bankAccounts = (bankContent?.accounts.length ? bankContent.accounts : defaultBankAccounts)
+  const bankRows = isBankPage
+    ? await prisma.bankAccount.findMany({
+      where: { isActive: true },
+      orderBy: [
+        { sortOrder: "asc" },
+        { createdAt: "asc" }
+      ]
+    }).catch(() => [])
+    : [];
+  const bankAccounts = (bankRows.length ? bankRows.map(bankAccountFromRecord) : bankContent?.accounts.length ? bankContent.accounts : defaultBankAccounts)
     .filter((account) => visibleIbans(account).length > 0);
   const displayContent = isBankPage ? bankContent?.note : content;
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileText, Save, ShieldCheck } from "lucide-react";
+import { Building2, Eye, FileText, Save, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { AdminShell } from "../AdminShell";
 import { seedDefaultPolicies, updatePolicyPage } from "../actions";
@@ -11,14 +11,18 @@ const labels: Record<string, string> = {
   COOKIE: "Çerez Politikası"
 };
 
-const hiddenPolicyTypes = ["CONSENT_KVKK", "CONSENT_TERMS_PRIVACY", "CONSENT_REFUND"];
+const hiddenPolicyTypes = ["CONSENT_KVKK", "CONSENT_TERMS_PRIVACY", "CONSENT_REFUND", "BANK_ACCOUNTS"];
+const hiddenPolicySlugs = ["hesap-numaralarimiz"];
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function PolicyAdminPage() {
   const policies = await prisma.policyPage.findMany({
-    where: { type: { notIn: hiddenPolicyTypes } },
+    where: {
+      type: { notIn: hiddenPolicyTypes },
+      slug: { notIn: hiddenPolicySlugs }
+    },
     orderBy: { createdAt: "asc" }
   });
   return (
@@ -29,6 +33,12 @@ export default async function PolicyAdminPage() {
             <p className="mt-2 text-white/65">Online bağış alanındaki yasal onay linkleri ve footer bağlantıları buradaki metinleri gösterir.</p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link href="/admin" className="rounded-full bg-white/10 px-5 py-3 font-black">Admin Panele Dön</Link>
+              <Link href="/admin/hesaplar" className="inline-flex items-center gap-2 rounded-full bg-hayat-gold px-5 py-3 font-black text-hayat-dark">
+                <Building2 size={17} /> Banka Hesap Bilgilerini Düzenle
+              </Link>
+              <Link href="/hesap-numaralarimiz" className="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-3 font-black">
+                <Eye size={17} /> Hesap Sayfasını Gör
+              </Link>
               {policies.length === 0 && <form action={seedDefaultPolicies}><button className="rounded-full bg-hayat-gold px-5 py-3 font-black text-hayat-dark">Varsayılan Metinleri Oluştur</button></form>}
             </div>
           </div>
@@ -43,8 +53,14 @@ export default async function PolicyAdminPage() {
                   </div>
                   <label className="flex items-center gap-2 rounded-full bg-hayat-soft px-4 py-2 font-bold"><input name="isActive" type="checkbox" defaultChecked={policy.isActive} /> Aktif</label>
                 </div>
-                <input name="title" defaultValue={policy.title} className="w-full rounded-2xl border p-4 text-xl font-black" />
-                <textarea name="content" defaultValue={policy.content} rows={12} className="mt-4 w-full rounded-2xl border p-4 leading-7" />
+                <label className="block text-sm font-black text-slate-600">
+                  Başlık metni
+                  <input name="title" defaultValue={policy.title} className="mt-2 w-full rounded-2xl border border-hayat-border bg-hayat-soft p-4 text-xl font-black text-hayat-dark outline-hayat-blue" />
+                </label>
+                <label className="mt-5 block text-sm font-black text-slate-600">
+                  Sayfa metni
+                  <textarea name="content" defaultValue={policy.content} rows={22} className="mt-2 min-h-[520px] w-full resize-y rounded-2xl border border-hayat-border bg-hayat-soft p-4 leading-7 text-hayat-dark outline-hayat-blue" />
+                </label>
                 <button className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-hayat-green px-6 py-3 font-black text-white"><Save size={18} /> Kaydet</button>
               </form>
             ))}

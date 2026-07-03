@@ -227,6 +227,26 @@ model PolicyPage {
   createdAt DateTime   @default(now())
 }
 
+model BankAccount {
+  id          String   @id @default(cuid())
+  bank        String
+  sortOrder   Int      @default(0)
+  logoUrl     String?
+  branch      String?
+  accountName String?
+  type        String?
+  description String?
+  tlIban      String?
+  dolarIban   String?
+  euroIban    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
 model Announcement {
   id        String           @id @default(cuid())
   title     String

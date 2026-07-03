@@ -91,6 +91,7 @@ export function BankAccountsEditor({ accounts, media }: { accounts: BankAccount[
 
       {rows.map((row, index) => (
         <div key={index} className="rounded-[20px] border border-hayat-border bg-hayat-soft p-4">
+          <input type="hidden" name="accountId" value={row.id || ""} />
           <div className="mb-4 flex items-center justify-between gap-3">
             <p className="text-sm font-black text-hayat-dark">Banka {index + 1}</p>
             <button type="button" onClick={() => removeRow(index)} className="inline-flex items-center gap-1 rounded-[12px] bg-red-50 px-3 py-2 text-xs font-black text-red-600">

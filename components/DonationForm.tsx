@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowRight, Banknote, CheckCircle2, CreditCard, HeartHandshake, LockKeyhole, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowRight, Banknote, CheckCircle2, CreditCard, HeartHandshake, LockKeyhole, ShieldCheck, UserRound, X } from "lucide-react";
 
 type DonationTypeOption = {
   code: string;
@@ -56,6 +56,8 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [fieldWarnings, setFieldWarnings] = useState<{ fullName?: string; phone?: string }>({});
+  const [kvkkConsent, setKvkkConsent] = useState(false);
+  const [isKvkkModalOpen, setIsKvkkModalOpen] = useState(false);
   const warningTimers = useRef<{ fullName?: ReturnType<typeof setTimeout>; phone?: ReturnType<typeof setTimeout> }>({});
   const activeType = useMemo(
     () => donationTypes.find((type) => type.code === selectedType) || donationTypes[0],
@@ -63,6 +65,18 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
   );
   const amount = customAmount.trim() || String(selectedAmount);
   const displayedAmount = formatAmount(amount);
+
+  useEffect(() => {
+    function handlePolicyAccept(event: MessageEvent) {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type !== "policy-accepted" || event.data?.slug !== "kvkk") return;
+      setKvkkConsent(true);
+      setIsKvkkModalOpen(false);
+    }
+
+    window.addEventListener("message", handlePolicyAccept);
+    return () => window.removeEventListener("message", handlePolicyAccept);
+  }, []);
 
   function showFieldWarning(field: "fullName" | "phone", text: string) {
     setFieldWarnings((current) => ({ ...current, [field]: text }));
@@ -98,6 +112,7 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
   }
 
   return (
+    <>
     <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_380px] xl:gap-8">
       <form id="donation-form" onSubmit={submit} className="overflow-hidden rounded-[28px] border border-[#d9e5ec] bg-white shadow-[0_24px_70px_rgba(10,58,85,0.1)]">
         <input type="hidden" name="type" value={selectedType} />
@@ -234,10 +249,12 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
           </section>
 
           <section className="rounded-[20px] border border-[#dce9d2] bg-[#f5fbef] p-5 text-xs font-semibold leading-6 text-[#4f6170]">
-            <label className="flex gap-3">
-              <input required name="kvkkConsent" type="checkbox" value="true" className="mt-1 accent-hayat-green" />
-              <span><Link className="font-black text-hayat-blue underline" href="/kvkk" target="_blank">KVKK Aydınlatma Metni</Link>ni okudum ve kabul ediyorum.</span>
-            </label>
+            <div className="flex gap-3">
+              <input id="kvkkConsent" required name="kvkkConsent" type="checkbox" value="true" checked={kvkkConsent} onChange={(event) => setKvkkConsent(event.target.checked)} className="mt-1 accent-hayat-green" />
+              <span>
+                <button type="button" onClick={() => setIsKvkkModalOpen(true)} className="font-black text-hayat-blue underline">KVKK Aydınlatma Metni</button>ni okudum ve kabul ediyorum.
+              </span>
+            </div>
             <label className="mt-2 flex gap-3">
               <input required name="privacyConsent" type="checkbox" value="true" className="mt-1 accent-hayat-green" />
               <span><Link className="font-black text-hayat-blue underline" href="/kullanim-kosullari-ve-gizlilik-politikasi" target="_blank">Kullanım Koşulları ve Gizlilik Politikası</Link>nı kabul ediyorum.</span>
@@ -296,6 +313,28 @@ function DonationFormInner({ donationTypes }: { donationTypes: DonationTypeOptio
         </div>
       </aside>
     </div>
+    {isKvkkModalOpen && (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#061b2a]/70 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="KVKK Aydınlatma Metni">
+        <div className="flex h-[88vh] w-full max-w-5xl flex-col overflow-hidden rounded-[20px] bg-white shadow-[0_28px_90px_rgba(0,0,0,0.32)]">
+          <div className="flex items-center justify-between gap-3 border-b border-hayat-border bg-hayat-soft px-4 py-3 sm:px-5">
+            <h3 className="text-base font-black text-hayat-dark sm:text-lg">KVKK Aydınlatma Metni</h3>
+            <button type="button" onClick={() => setIsKvkkModalOpen(false)} className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-hayat-dark shadow-sm ring-1 ring-hayat-border hover:text-hayat-blue" aria-label="Pencereyi kapat">
+              <X size={20} />
+            </button>
+          </div>
+          <iframe src="/kvkk" title="KVKK Aydınlatma Metni" className="min-h-0 flex-1 border-0 bg-white" />
+          <div className="flex flex-wrap items-center justify-end gap-3 border-t border-hayat-border bg-white px-4 py-3 sm:px-5">
+            <button type="button" onClick={() => setIsKvkkModalOpen(false)} className="min-h-11 rounded-[14px] border border-hayat-border bg-white px-5 text-sm font-black text-hayat-dark hover:bg-hayat-soft">
+              Kapat
+            </button>
+            <button type="button" onClick={() => { setKvkkConsent(true); setIsKvkkModalOpen(false); }} className="min-h-11 rounded-[14px] bg-hayat-green px-6 text-sm font-black text-white shadow-green hover:bg-hayat-blue">
+              Onaylıyorum
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
 
