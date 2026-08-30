@@ -310,7 +310,7 @@ export function DonationsTable({
                   </td>
                 )}
                 {visible.description && (
-                  <td className="overflow-hidden text-ellipsis whitespace-nowrap p-4" style={{ width: widths.description }} title={donation.description}>
+                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.description }}>
                     {donation.description}
                   </td>
                 )}
