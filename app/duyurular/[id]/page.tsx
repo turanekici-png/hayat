@@ -3,13 +3,22 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
 import { CalendarDays } from "lucide-react";
+import { unstable_cache } from "next/cache";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+// Sayfa her istekte yeniden render edilse de veri sorgusu 60sn cache'lenir;
+// admin panelden yapılan güncellemeler revalidateTag("home-announcements") ile aninda yansir.
+const getAnnouncementById = unstable_cache(
+  (id: string) => prisma.announcement.findUnique({ where: { id } }).catch(() => null),
+  ["announcement-detail-by-id"],
+  { revalidate: 60, tags: ["home-announcements"] }
+);
+
 export default async function AnnouncementDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const ann = await prisma.announcement.findUnique({ where: { id } }).catch(() => null);
+  const ann = await getAnnouncementById(id);
   if (!ann || !ann.isActive) notFound();
 
   return (

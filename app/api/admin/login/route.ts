@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { signSession } from "@/lib/auth-server";
 import { ensureEnvAdminUser } from "@/lib/admin-bootstrap";
-import { createHash } from "crypto";
+import { hashPassword, needsRehash, verifyPassword } from "@/lib/password";
 
 function getBaseUrl(req: Request) {
   const forwardedHost = req.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
@@ -37,7 +37,40 @@ function isHttpsRequest(req: Request) {
   return new URL(req.url).protocol === "https:";
 }
 
+function clientIp(req: Request) {
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  return forwardedFor?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown";
+}
+
+// Basit bellek-ici hiz sinirlama: ayni IP'den 15 dakikada 8'den fazla deneme
+// yapilirsa girisler geciktirilir. Tek instance production dagitimlari icin
+// yeterli bir kaba korumadir (brute-force denemelerini yavaslatir).
+const LOGIN_ATTEMPT_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_ATTEMPT_LIMIT = 8;
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function isRateLimited(ip: string) {
+  const now = Date.now();
+  if (loginAttempts.size > 5000) loginAttempts.clear(); // olasi bellek sismesine karsi kaba guvenlik
+  const entry = loginAttempts.get(ip);
+  if (!entry || entry.resetAt < now) {
+    loginAttempts.set(ip, { count: 1, resetAt: now + LOGIN_ATTEMPT_WINDOW_MS });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > LOGIN_ATTEMPT_LIMIT;
+}
+
+function clearRateLimit(ip: string) {
+  loginAttempts.delete(ip);
+}
+
 export async function POST(req: Request) {
+  const ip = clientIp(req);
+  if (isRateLimited(ip)) {
+    return NextResponse.redirect(redirectUrl(req, "/admin/login?error=too_many"));
+  }
+
   const form = await req.formData();
   const username = (form.get("username") as string || form.get("email") as string || "").trim().toLowerCase();
   const password = (form.get("password") as string || "").trim();
@@ -60,9 +93,18 @@ export async function POST(req: Request) {
   });
   if (!user) return NextResponse.redirect(redirectUrl(req, "/admin/login?error=invalid"));
 
-  const hash = createHash("sha256").update(password).digest("hex");
-  if (hash !== user.passwordHash) return NextResponse.redirect(redirectUrl(req, "/admin/login?error=invalid"));
+  const passwordOk = await verifyPassword(password, user.passwordHash);
+  if (!passwordOk) return NextResponse.redirect(redirectUrl(req, "/admin/login?error=invalid"));
   if (!user.isActive) return NextResponse.redirect(redirectUrl(req, "/admin/login?error=inactive"));
+
+  // Basarili giris: eski (salt'siz SHA-256) hash bulunan hesaplar sessizce
+  // bcrypt'e yukseltilir; sifir kesinti, kullaniciya ek islem yok.
+  if (needsRehash(user.passwordHash)) {
+    const upgradedHash = await hashPassword(password);
+    await prisma.adminUser.update({ where: { id: user.id }, data: { passwordHash: upgradedHash } }).catch(() => null);
+  }
+
+  clearRateLimit(ip);
 
   const maxAge = remember ? 60 * 60 * 24 * 30 : 60 * 60 * 8; // 30 days vs 8 hours
   const token = signSession({ sub: user.id, role: user.role }, maxAge);

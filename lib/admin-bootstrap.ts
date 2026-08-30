@@ -1,5 +1,5 @@
-import { createHash } from "crypto";
 import { prisma } from "@/lib/prisma";
+import { hashPassword } from "@/lib/password";
 
 function normalizeUsername(value?: string) {
   return value?.trim().toLocaleLowerCase("tr-TR").replace(/\s+/g, "");
@@ -7,10 +7,6 @@ function normalizeUsername(value?: string) {
 
 function normalizeEmail(value?: string) {
   return value?.trim().toLocaleLowerCase("tr-TR");
-}
-
-function passwordHash(value: string) {
-  return createHash("sha256").update(value).digest("hex");
 }
 
 export async function ensureEnvAdminUser() {
@@ -32,7 +28,7 @@ export async function ensureEnvAdminUser() {
         username,
         email,
         role: "ADMIN",
-        passwordHash: passwordHash(password),
+        passwordHash: await hashPassword(password),
         isActive: true
       }
     });

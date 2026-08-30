@@ -7,7 +7,9 @@ export default async function AdminLoginPage({ searchParams }: { searchParams?: 
     ? "Kullanici adi veya parola hatali."
     : params?.error === "inactive"
       ? "Hesabiniz pasif. Lutfen yoneticinizle gorusun."
-      : null;
+      : params?.error === "too_many"
+        ? "Cok fazla basarisiz deneme yapildi. Lutfen birkac dakika sonra tekrar deneyin."
+        : null;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">

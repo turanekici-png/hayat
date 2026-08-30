@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function AdminKurbanPage() {
-  const orders = await prisma.sacrificeOrder.findMany({ orderBy: { createdAt: "desc" } });
+  const orders = await prisma.sacrificeOrder.findMany({ orderBy: { createdAt: "desc" }, take: 500 });
 
   return (
     <AdminShell activePath="/admin/kurban" contentClassName="max-w-7xl">

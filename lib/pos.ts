@@ -316,6 +316,8 @@ function startVakifKatilimCommonPayment(input: PosStartInput): PosStartResult {
   console.info("[VakifKatilim common_page v2]", {
     endpoint,
     ...requestFields,
+    HashPassword: "[redacted]",
+    HashData: "[redacted]",
     fieldNames
   });
 

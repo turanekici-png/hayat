@@ -4,13 +4,22 @@ import { Footer } from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
 import { normalizeMediaUrl } from "@/lib/media-url";
 import { CalendarDays } from "lucide-react";
+import { unstable_cache } from "next/cache";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+// Sayfa her istekte yeniden render edilse de veri sorgusu 60sn cache'lenir;
+// admin panelden yapılan güncellemeler revalidateTag("site-content") ile aninda yansir.
+const getSectionById = unstable_cache(
+  (id: string) => prisma.siteSection.findUnique({ where: { id }, include: { images: true } }).catch(() => null),
+  ["news-detail-by-id"],
+  { revalidate: 60, tags: ["site-content"] }
+);
+
 export default async function NewsDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const section = await prisma.siteSection.findUnique({ where: { id }, include: { images: true } }).catch(() => null);
+  const section = await getSectionById(id);
   if (!section || !section.isActive) notFound();
 
   const rawImage = Array.isArray(section.images) && section.images.length ? section.images[0].url : section.imageUrl;

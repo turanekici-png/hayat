@@ -9,7 +9,7 @@ import { unlink } from "fs/promises";
 import { sendSms } from "@/lib/sms";
 import { publicPath } from "@/lib/public-files";
 import path from "path";
-import { createHash } from "crypto";
+import { hashPassword } from "@/lib/password";
 
 type AnnouncementType = string;
 type ApplicationStatus = string;
@@ -166,10 +166,6 @@ function codeValue(formData: FormData, key: string) {
     .replace(/[^A-Z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
   return value;
-}
-
-function passwordHash(value: string) {
-  return createHash("sha256").update(value).digest("hex");
 }
 
 function normalizeEmail(value?: string) {
@@ -958,13 +954,14 @@ export async function createAdminUser(formData: FormData) {
 
   if (!username || !email || !password) return;
 
+  const hashedPassword = await hashPassword(password);
   await prisma.adminUser.create({
     data: {
       fullName,
       username,
       email,
       role,
-      passwordHash: passwordHash(password),
+      passwordHash: hashedPassword,
       isActive: formData.get("isActive") === "on"
     }
   }).catch(() => null);
@@ -984,6 +981,7 @@ export async function updateAdminUser(formData: FormData) {
 
   if (!id || !username || !email) return;
 
+  const passwordUpdate = password ? { passwordHash: await hashPassword(password) } : {};
   await prisma.adminUser.update({
     where: { id },
     data: {
@@ -993,7 +991,7 @@ export async function updateAdminUser(formData: FormData) {
       role,
       ...(activeValue === "on" ? { isActive: true } : {}),
       ...(activeValue === "off" ? { isActive: false } : {}),
-      ...(password ? { passwordHash: passwordHash(password) } : {})
+      ...passwordUpdate
     }
   }).catch(() => null);
 

@@ -18,6 +18,17 @@ function runStep(label, command, args) {
   }
 }
 
+if (!process.env.ADMIN_SESSION_SECRET || !process.env.ADMIN_SESSION_SECRET.trim()) {
+  console.warn("\n" + "!".repeat(70));
+  console.warn("[GUVENLIK UYARISI] ADMIN_SESSION_SECRET ortam degiskeni tanimli degil!");
+  console.warn("Uygulama gecici/varsayilan bir anahtarla calisiyor. Bu, admin oturum");
+  console.warn("cerezlerinin sahte olarak uretilebilmesine yol acabilir.");
+  console.warn("Lutfen sunucu ortam degiskenlerine ('.env' veya Dokploy panelinden)");
+  console.warn("uzun/rastgele bir ADMIN_SESSION_SECRET ekleyip yeniden baslatin.");
+  console.warn("Orn: openssl rand -hex 32");
+  console.warn("!".repeat(70) + "\n");
+}
+
 runStep("Veritabani migration", npxCommand, ["prisma", "migrate", "deploy"]);
 runStep("Admin kullanici kontrolu", npmCommand, ["run", "admin:ensure"]);
 runStep("Eski medya kayitlarini DB'ye aktarma", npmCommand, ["run", "media:backfill-db"]);

@@ -31,6 +31,7 @@ export default async function AdminApplicationsPage() {
   const [applications, counts] = await Promise.all([
     prisma.aidApplication.findMany({
       orderBy: { createdAt: "desc" },
+      take: 500,
       include: { documents: { orderBy: { createdAt: "desc" } }, smsLogs: { orderBy: { createdAt: "desc" }, take: 3 } }
     }),
     Promise.all([

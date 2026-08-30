@@ -1,6 +1,6 @@
-import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 function loadLocalEnv() {
   if (!existsSync(".env")) return;
@@ -37,8 +37,8 @@ function normalizeEmail(value) {
   return value?.trim().toLocaleLowerCase("tr-TR");
 }
 
-function passwordHash(value) {
-  return createHash("sha256").update(value).digest("hex");
+async function passwordHash(value) {
+  return bcrypt.hash(value, 10);
 }
 
 async function main() {
@@ -65,7 +65,7 @@ async function main() {
       username,
       email,
       role: "ADMIN",
-      passwordHash: passwordHash(password),
+      passwordHash: await passwordHash(password),
       isActive: true
     }
   });
