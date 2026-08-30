@@ -1,7 +1,8 @@
 ﻿import { Newspaper } from "lucide-react";
 import { SectionIndexPage } from "@/components/SectionIndexPage";
 
-export const revalidate = 60; // ISR: Cloudflare/CDN'de önbelleklenebilir olsun diye force-dynamic kaldırıldı
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default function NewsPage() {
   return (

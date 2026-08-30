@@ -17,7 +17,8 @@ import { unstable_cache } from "next/cache";
 import { ArrowRight, CalendarDays, Camera, ChevronRight, ImageIcon, Megaphone, PlayCircle, ShieldCheck, Video } from "lucide-react";
 import type { CSSProperties } from "react";
 
-export const revalidate = 60; // ISR: Cloudflare/CDN'de önbelleklenebilir olsun diye force-dynamic kaldırıldı
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type SectionSlide = {
   src: string;

@@ -6,7 +6,8 @@ import { MediaLightboxTile } from "@/components/MediaLightboxTile";
 import { getSectionsByType, type HomeSection } from "@/lib/site-content";
 import { normalizeMediaUrl } from "@/lib/media-url";
 
-export const revalidate = 60; // ISR: Cloudflare/CDN'de önbelleklenebilir olsun diye force-dynamic kaldırıldı
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type GalleryItem = {
   id: string;
