@@ -376,38 +376,40 @@ export default async function AdminDonations({ searchParams }: { searchParams: A
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+          <table className="w-full min-w-[1200px] table-auto border-collapse text-left text-sm">
             <thead className="bg-hayat-dark text-white">
               <tr>
-                <th className="p-4">Seç</th>
-                <th>Tarih</th>
-                <th>Makbuz No</th>
-                <th>Ad Soyad</th>
-                <th>Telefon</th>
-                <th>Tutar</th>
-                <th>Tür</th>
-                <th>Açıklama</th>
-                <th>Durum</th>
-                <th>Ref</th>
-                <th>Makbuz</th>
+                <th className="whitespace-nowrap p-4">Seç</th>
+                <th className="whitespace-nowrap p-4">Tarih</th>
+                <th className="whitespace-nowrap p-4">Makbuz No</th>
+                <th className="whitespace-nowrap p-4">Ad Soyad</th>
+                <th className="whitespace-nowrap p-4">Telefon</th>
+                <th className="whitespace-nowrap p-4">Tutar</th>
+                <th className="whitespace-nowrap p-4">Tür</th>
+                <th className="p-4">Açıklama</th>
+                <th className="whitespace-nowrap p-4">Durum</th>
+                <th className="whitespace-nowrap p-4">Ref</th>
+                <th className="whitespace-nowrap p-4">Makbuz</th>
               </tr>
             </thead>
             <tbody>
               {donations.map((donation) => (
-                <tr key={donation.id} className="border-b">
-                  <td className="p-4">
+                <tr key={donation.id} className="border-b align-middle">
+                  <td className="whitespace-nowrap p-4">
                     <input name="ids" value={donation.id} type="checkbox" className="h-4 w-4 accent-hayat-green" aria-label={`${donation.fullName} bağışını seç`} />
                   </td>
-                  <td>{donation.createdAt.toLocaleString("tr-TR")}</td>
-                  <td className="font-mono text-xs">{donation.status === "PAID" ? donation.receiptNo || "-" : "-"}</td>
-                  <td>{donation.fullName}</td>
-                  <td>{donation.phone || "-"}</td>
-                  <td>{currency(donation.amount)} TL</td>
-                  <td>{donation.type}</td>
-                  <td>{donation.description}</td>
-                  <td><span className="rounded-full bg-slate-100 px-3 py-1 font-bold">{statusLabel(donation.status)}</span></td>
-                  <td>{donation.paymentRef}</td>
-                  <td>
+                  <td className="whitespace-nowrap p-4">{donation.createdAt.toLocaleString("tr-TR")}</td>
+                  <td className="whitespace-nowrap p-4 font-mono text-xs">{donation.status === "PAID" ? donation.receiptNo || "-" : "-"}</td>
+                  <td className="whitespace-nowrap p-4">{donation.fullName}</td>
+                  <td className="whitespace-nowrap p-4">{donation.phone || "-"}</td>
+                  <td className="whitespace-nowrap p-4">{currency(donation.amount)} TL</td>
+                  <td className="whitespace-nowrap p-4">{donation.type}</td>
+                  <td className="max-w-xs p-4">{donation.description}</td>
+                  <td className="whitespace-nowrap p-4">
+                    <span className="rounded-full bg-slate-100 px-3 py-1 font-bold">{statusLabel(donation.status)}</span>
+                  </td>
+                  <td className="whitespace-nowrap p-4">{donation.paymentRef}</td>
+                  <td className="whitespace-nowrap p-4">
                     {donation.status === "PAID" ? (
                       <Link href={`/bagis/makbuz/${donation.id}`} target="_blank" className="inline-flex rounded-full bg-hayat-green px-4 py-2 text-xs font-black text-white">
                         Makbuz Al
