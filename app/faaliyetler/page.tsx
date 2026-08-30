@@ -1,8 +1,7 @@
 ﻿import { HeartHandshake } from "lucide-react";
 import { SectionIndexPage } from "@/components/SectionIndexPage";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 60; // ISR: Cloudflare/CDN'de önbelleklenebilir olsun diye force-dynamic kaldırıldı
 
 export default function ActivitiesPage() {
   return (

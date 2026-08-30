@@ -5,8 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { CalendarDays } from "lucide-react";
 import { unstable_cache } from "next/cache";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 60; // ISR: Cloudflare/CDN'de önbelleklenebilir olsun diye force-dynamic kaldırıldı
 
 // Sayfa her istekte yeniden render edilse de veri sorgusu 60sn cache'lenir;
 // admin panelden yapılan güncellemeler revalidateTag("home-announcements") ile aninda yansir.

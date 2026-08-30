@@ -34,8 +34,7 @@ const fallbackPolicies: Record<string, { title: string; content: string; label?:
   }
 };
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 60; // ISR: Cloudflare/CDN'de önbelleklenebilir olsun diye force-dynamic kaldırıldı
 
 function visibleIbans(account: BankAccount) {
   return account.ibans.filter((iban) => iban.iban.trim().length > 0);
