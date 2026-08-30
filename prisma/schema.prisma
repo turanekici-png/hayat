@@ -29,6 +29,9 @@ model Donation {
   paymentLogs     PaymentLog[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
 }
 
 model PaymentLog {
@@ -176,6 +179,9 @@ model AidApplication {
   smsLogs        SmsLog[]
   createdAt      DateTime              @default(now())
   updatedAt      DateTime              @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
 }
 
 model ApplicationDocument {
@@ -214,6 +220,9 @@ model SacrificeOrder {
   status    String          @default("NEW")
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
 }
 
 model PolicyPage {
@@ -259,6 +268,8 @@ model Announcement {
   sortOrder Int              @default(0)
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
+
+  @@index([isActive])
 }
 
 model PopupSetting {
