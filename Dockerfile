@@ -16,7 +16,7 @@ WORKDIR /app
 RUN apk add --no-cache openssl
 
 ENV NEXT_TELEMETRY_DISABLED=1
-ARG DATABASE_URL="postgresql://hayat_user:hayat_password@postgres:5432/hayat_db?schema=public"
+ARG DATABASE_URL="postgresql://hayat_user:hayat_password@postgres:5433/hayat_db?schema=public"
 ENV DATABASE_URL=$DATABASE_URL
 
 COPY --from=deps /app/node_modules ./node_modules
