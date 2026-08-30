@@ -294,6 +294,16 @@ model SectionGroupLabel {
   updatedAt DateTime @updatedAt
 }
 
+// Ziyaret sayaci: her tarayicidan gunde bir kez (localStorage ile) kaydedilir,
+// boylece sayfa yenilemeleri sayaci sismez. bkz. components/VisitTracker.tsx
+model SiteVisit {
+  id        String   @id @default(cuid())
+  path      String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 model AdminUser {
   id           String   @id @default(cuid())
   fullName     String

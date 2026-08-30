@@ -387,7 +387,13 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
   const mediaStatus = searchParamValue(params.medyaDurum);
   const mediaError = searchParamValue(params.medyaHata);
 
-  const [sections, media, donationTypes, adminUsers, totals, popup, groupLabels] = await Promise.all([
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const weekStart = new Date(todayStart);
+  weekStart.setDate(weekStart.getDate() - 6);
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const [sections, media, donationTypes, adminUsers, totals, popup, groupLabels, visitCounts] = await Promise.all([
     prisma.siteSection.findMany({
       include: {
         images: { orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }] }
@@ -418,12 +424,19 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
       prisma.announcement.count()
     ]),
     prisma.popupSetting.findFirst({ orderBy: { updatedAt: "desc" } }),
-    prisma.sectionGroupLabel.findMany()
+    prisma.sectionGroupLabel.findMany(),
+    prisma.$transaction([
+      prisma.siteVisit.count(),
+      prisma.siteVisit.count({ where: { createdAt: { gte: todayStart } } }),
+      prisma.siteVisit.count({ where: { createdAt: { gte: weekStart } } }),
+      prisma.siteVisit.count({ where: { createdAt: { gte: monthStart } } })
+    ])
   ]);
   const safeMedia = media
     .filter((item) => item.url.trim().length > 0)
     .map((item) => ({ ...item, url: displayMediaUrl(item.url) }));
   const [sectionCount, activeSectionCount, mediaCount, donationCount, applicationCount, newApplicationCount, sacrificeCount, announcementCount] = totals;
+  const [totalVisitCount, todayVisitCount, weekVisitCount, monthVisitCount] = visitCounts;
   const selectedGroupItems = sections.filter((section) => section.type === selectedGroup.type);
   const selectedGroupLabel = groupLabels.find((label) => label.type === selectedGroup.type)?.label || selectedGroup.title;
   const posProvider = process.env.POS_PROVIDER || "demo";
@@ -499,6 +512,31 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                       <button className="rounded-2xl bg-hayat-dark px-5 py-3 text-sm font-black text-white">Varsayılanları oluştur</button>
                     </form>
                   )}
+                </div>
+              </section>
+
+              <section className="rounded-[1.4rem] bg-white p-4 shadow-sm">
+                <p className="flex items-center gap-2 text-sm font-black uppercase tracking-[.16em] text-hayat-green">
+                  <Eye size={18} /> Ziyaretçi İstatistikleri
+                </p>
+                <p className="mt-1 text-xs font-semibold text-slate-400">Aynı tarayıcıdan günde bir kez sayılır, sayfa yenilemeleri tekrar saymaz.</p>
+                <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <b className="block text-2xl font-black text-hayat-dark">{totalVisitCount}</b>
+                    <span className="text-xs font-bold text-slate-500">Toplam</span>
+                  </div>
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <b className="block text-2xl font-black text-hayat-dark">{todayVisitCount}</b>
+                    <span className="text-xs font-bold text-slate-500">Bugün</span>
+                  </div>
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <b className="block text-2xl font-black text-hayat-dark">{weekVisitCount}</b>
+                    <span className="text-xs font-bold text-slate-500">Son 7 gün</span>
+                  </div>
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <b className="block text-2xl font-black text-hayat-dark">{monthVisitCount}</b>
+                    <span className="text-xs font-bold text-slate-500">Bu ay</span>
+                  </div>
                 </div>
               </section>
 
