@@ -280,12 +280,12 @@ export function DonationsTable({
                   />
                 </td>
                 {visible.date && (
-                  <td className="overflow-hidden text-ellipsis whitespace-nowrap p-4" style={{ width: widths.date }}>
+                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.date }}>
                     {donation.dateLabel}
                   </td>
                 )}
                 {visible.receipt && (
-                  <td className="overflow-hidden text-ellipsis whitespace-nowrap p-4 font-mono text-xs" style={{ width: widths.receipt }}>
+                  <td className="whitespace-normal break-words p-4 align-top font-mono text-xs" style={{ width: widths.receipt }}>
                     {donation.receiptNo}
                   </td>
                 )}
@@ -295,17 +295,17 @@ export function DonationsTable({
                   </td>
                 )}
                 {visible.phone && (
-                  <td className="overflow-hidden text-ellipsis whitespace-nowrap p-4" style={{ width: widths.phone }}>
+                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.phone }}>
                     {donation.phone}
                   </td>
                 )}
                 {visible.amount && (
-                  <td className="overflow-hidden text-ellipsis whitespace-nowrap p-4" style={{ width: widths.amount }}>
+                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.amount }}>
                     {donation.amountLabel}
                   </td>
                 )}
                 {visible.type && (
-                  <td className="overflow-hidden text-ellipsis whitespace-nowrap p-4" style={{ width: widths.type }}>
+                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.type }}>
                     {donation.type}
                   </td>
                 )}
@@ -315,18 +315,18 @@ export function DonationsTable({
                   </td>
                 )}
                 {visible.status && (
-                  <td className="overflow-hidden text-ellipsis whitespace-nowrap p-4" style={{ width: widths.status }}>
+                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.status }}>
                     <span className="rounded-full bg-slate-100 px-3 py-1 font-bold">{donation.statusLabel}</span>
                   </td>
                 )}
                 {visible.ref && (
-                  <td className="overflow-hidden text-ellipsis whitespace-nowrap p-4" style={{ width: widths.ref }}>
+                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.ref }}>
                     {donation.paymentRef}
                   </td>
                 )}
                 {visible.action && (
-                  <td className="overflow-hidden p-4" style={{ width: widths.action }}>
-                    <div className="flex items-center gap-2">
+                  <td className="p-4 align-top" style={{ width: widths.action }}>
+                    <div className="flex flex-wrap items-center gap-2">
                       {donation.isPaid ? (
                         <Link href={`/bagis/makbuz/${donation.id}`} target="_blank" className="inline-flex rounded-full bg-hayat-green px-4 py-2 text-xs font-black text-white">
                           Makbuz Al
