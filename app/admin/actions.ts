@@ -1001,6 +1001,30 @@ export async function updateAdminUser(formData: FormData) {
   redirectWithRefresh("/admin?sayfa=kullanicilar#admin-kullanicilar");
 }
 
+export async function deleteDonation(formData: FormData) {
+  const id = textValue(formData, "id");
+  if (!id) return;
+
+  // Güvenlik: ödemesi tamamlanmış (PAID) bağış kayıtları burada asla silinmez,
+  // sadece geçersiz/başarısız/bekleyen kayıtlar silinebilir.
+  const donation = await prisma.donation.findUnique({ where: { id }, select: { status: true } });
+  if (!donation || donation.status === "PAID") return;
+
+  await prisma.donation.delete({ where: { id } }).catch(() => null);
+  revalidatePath("/admin/bagislar");
+  revalidatePath("/admin");
+}
+
+export async function deleteSelectedDonations(formData: FormData) {
+  const ids = formData.getAll("ids").filter((value): value is string => typeof value === "string" && value.length > 0);
+  if (!ids.length) return;
+
+  // Aynı güvenlik kuralı: seçim içinde PAID kayıt varsa dahi o kayıtlar atlanır.
+  await prisma.donation.deleteMany({ where: { id: { in: ids }, status: { not: "PAID" } } }).catch(() => null);
+  revalidatePath("/admin/bagislar");
+  revalidatePath("/admin");
+}
+
 export async function deleteAdminUser(formData: FormData) {
   const id = textValue(formData, "id");
   if (!id) return;
