@@ -43,6 +43,7 @@ const nextConfig: NextConfig = {
       "/haberler/:id",
       "/galeri",
       "/projeler",
+      "/projeler/:id",
       "/kurumsal",
       "/faaliyetler",
       "/faaliyetler/:id",

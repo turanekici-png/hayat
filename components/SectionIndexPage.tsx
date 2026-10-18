@@ -39,6 +39,7 @@ function detailHref(item: HomeSection) {
   if (item.href) return item.href;
   if (item.type === "NEWS") return `/haberler/${item.id}`;
   if (item.type === "ACTIVITY") return `/faaliyetler/${item.id}`;
+  if (item.type === "CAMPAIGN") return `/projeler/${item.id}`;
   return null;
 }
 

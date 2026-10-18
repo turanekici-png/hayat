@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
 import { normalizeMediaUrl } from "@/lib/media-url";
+import { optimizedImageSrc } from "@/lib/image-src";
 import { CalendarDays } from "lucide-react";
 import { unstable_cache } from "next/cache";
 
@@ -39,7 +40,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
               <CalendarDays size={32} />
             </div>
           </div>
-          {image && <img src={image} alt={section.imageAlt || section.title} className="mt-8 max-h-[620px] w-full rounded-lg bg-white object-contain" />}
+          {image && <img src={optimizedImageSrc(image, 1920)} alt={section.imageAlt || section.title} className="mt-8 max-h-[620px] w-full rounded-lg bg-white object-contain" />}
           <div className="mt-8 whitespace-pre-line rounded-[1.5rem] bg-slate-50 p-6 text-lg font-semibold leading-9 text-slate-700 md:p-8">
             {section.body}
           </div>

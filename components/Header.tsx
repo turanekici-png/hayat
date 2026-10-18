@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { PrefetchKind } from "next/dist/client/components/router-reducer/router-reducer-types";
 import { Menu } from "lucide-react";
 import { optimizedImageSrc } from "@/lib/image-src";
 
@@ -21,8 +23,38 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+// Menu sayfalari sayfa acildiktan sonra, tarayici bostayken arka planda tam olarak
+// onceden yuklenir; menuye tiklandiginda sayfa sunucuyu beklemeden aninda acilir.
+// (Mobilde menu kapali oldugu icin Link'in kendi on yuklemesi devreye girmiyordu.)
+const prefetchTargets = [...nav.map((item) => item.href), "/bagis"];
+
+function usePrefetchNavigation(pathname: string) {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (pathname.startsWith("/admin")) return;
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    if (connection?.saveData || connection?.effectiveType === "2g" || connection?.effectiveType === "slow-2g") return;
+
+    const run = () => {
+      for (const href of prefetchTargets) {
+        if (href !== pathname) router.prefetch(href, { kind: PrefetchKind.FULL });
+      }
+    };
+
+    const idle = (window as Window & { requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number }).requestIdleCallback;
+    if (idle) {
+      const id = idle(run, { timeout: 3000 });
+      return () => window.cancelIdleCallback?.(id);
+    }
+    const timer = window.setTimeout(run, 1500);
+    return () => window.clearTimeout(timer);
+  }, [pathname, router]);
+}
+
 export function Header() {
   const pathname = usePathname() || "/";
+  usePrefetchNavigation(pathname);
 
   return (
     <header className="sticky top-0 z-[100] w-full border-y border-[#d7e5ec]/75 bg-[#f7f5ef]/82 shadow-[0_10px_30px_rgba(10,58,85,0.06)] backdrop-blur-xl supports-[backdrop-filter]:bg-[#f7f5ef]/72">
