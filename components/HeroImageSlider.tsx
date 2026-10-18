@@ -56,7 +56,7 @@ export function HeroImageSlider({
                 src={optimizedImageSrc(slide.src, 256)}
                 alt=""
                 aria-hidden="true"
-                loading={index === 0 ? "eager" : "lazy"}
+                loading="lazy"
                 decoding="async"
                 className="absolute inset-0 h-full w-full scale-110 bg-white object-cover object-center opacity-45 blur-2xl"
               />
@@ -68,9 +68,8 @@ export function HeroImageSlider({
             srcSet={optimizedImageSrcSet(slide.src, [640, 1080, 1920])}
             sizes="(max-width: 1024px) 100vw, 60vw"
             alt={slide.alt}
-            loading={index === 0 ? "eager" : "lazy"}
+            loading="lazy"
             decoding="async"
-            fetchPriority={index === 0 ? "high" : "auto"}
             className={`relative z-10 h-full w-full bg-white object-contain object-center transition-transform duration-1000 ${index === active ? "scale-100" : "scale-[1.015]"}`}
           />}
         </div>

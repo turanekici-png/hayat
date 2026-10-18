@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { PrefetchKind } from "next/dist/client/components/router-reducer/router-reducer-types";
 import { ClipboardList, Menu } from "lucide-react";
 import { usePublicSiteSettings } from "@/components/SiteSettingsProvider";
-import { optimizedImageSrc } from "@/lib/image-src";
+import { optimizedImageSrc, optimizedImageSrcSet } from "@/lib/image-src";
 
 const nav = [
   { label: "Ana Sayfa", href: "/" },
@@ -43,13 +43,24 @@ function usePrefetchNavigation(pathname: string) {
       }
     };
 
+    // Dar bant genisliginde sayfanin kendi gorselleriyle yarismasin diye on yukleme,
+    // sayfa tamamen yuklendikten sonra ve tarayici bostayken baslar.
     const idle = (window as Window & { requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number }).requestIdleCallback;
-    if (idle) {
-      const id = idle(run, { timeout: 3000 });
-      return () => window.cancelIdleCallback?.(id);
-    }
-    const timer = window.setTimeout(run, 1500);
-    return () => window.clearTimeout(timer);
+    let timer: number | undefined;
+    let idleId: number | undefined;
+    const start = () => {
+      timer = window.setTimeout(() => {
+        if (idle) idleId = idle(run, { timeout: 4000 });
+        else run();
+      }, 2500);
+    };
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+    return () => {
+      window.removeEventListener("load", start);
+      if (timer) window.clearTimeout(timer);
+      if (idleId) window.cancelIdleCallback?.(idleId);
+    };
   }, [pathname, router]);
 }
 
@@ -64,7 +75,9 @@ export function Header() {
       <div className="mx-auto flex h-[86px] max-w-[1840px] items-center justify-between gap-2 px-3 sm:h-[100px] sm:px-4 lg:h-[116px] lg:gap-5 lg:px-4">
         <Link href="/" className="block min-w-0 shrink" aria-label="Hayat Ağacı Derneği ana sayfa">
           <img
-            src={optimizedImageSrc("/media/brand/logolar-vektorel-yatay.png", 1200)}
+            src={optimizedImageSrc("/media/brand/logolar-vektorel-yatay.png", 640)}
+            srcSet={optimizedImageSrcSet("/media/brand/logolar-vektorel-yatay.png", [384, 640, 828])}
+            sizes="(min-width: 1024px) 270px, 220px"
             alt="Hayat Ağacı Derneği"
             loading="eager"
             decoding="async"

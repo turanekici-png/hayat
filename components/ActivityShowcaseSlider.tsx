@@ -195,9 +195,8 @@ export function ActivityShowcaseSlider({
                 srcSet={optimizedImageSrcSet(activeImage.src, [640, 1080, 1920])}
                 sizes="(max-width: 1024px) 100vw, 67vw"
                 alt={activeImage.alt}
-                loading={active === 0 ? "eager" : "lazy"}
+                loading="lazy"
                 decoding="async"
-                fetchPriority={active === 0 ? "high" : "auto"}
                 className={`relative z-10 block h-full w-full object-center ${mediaWide && !showFullMedia && !blurMediaFill ? "object-cover" : "object-contain"}`}
               />
             </>
@@ -234,9 +233,8 @@ export function ActivityShowcaseSlider({
             srcSet={optimizedImageSrcSet(image.src, [640, 1080, 1920])}
             sizes="100vw"
             alt={image.alt}
-            loading={index === 0 ? "eager" : "lazy"}
+            loading="lazy"
             decoding="async"
-            fetchPriority={index === 0 ? "high" : "auto"}
             className={`absolute inset-0 h-full w-full bg-white object-contain transition-all duration-1000 ${
               index === active ? "scale-100 opacity-100" : "scale-105 opacity-0"
             }`}
