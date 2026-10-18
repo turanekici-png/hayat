@@ -2,8 +2,10 @@ import Link from "next/link";
 import { ConfirmButton } from "../ConfirmButton";
 import { prisma } from "@/lib/prisma";
 import { AdminShell } from "../AdminShell";
-import { deleteApplication, updateApplicationStatus } from "../actions";
-import { ClipboardList, Download, Eye, Save, Trash2 } from "lucide-react";
+import { deleteAllApplications, deleteApplication, updateApplicationStatus } from "../actions";
+import { DeleteAllApplications } from "./DeleteAllApplications";
+import { applicationHref, getSiteSettings } from "@/lib/site-settings";
+import { BadgeCheck, ClipboardList, Download, Eye, Lock, Save, Trash2, Unlock } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -28,8 +30,9 @@ const aidTypeLabels: Record<string, string> = {
   DIGER: "Diğer"
 };
 
-export default async function AdminApplicationsPage() {
-  const [applications, counts] = await Promise.all([
+export default async function AdminApplicationsPage({ searchParams }: { searchParams: Promise<{ silindi?: string; silme?: string }> }) {
+  const params = await searchParams;
+  const [applications, counts, settings] = await Promise.all([
     prisma.aidApplication.findMany({
       orderBy: { createdAt: "desc" },
       take: 500,
@@ -40,7 +43,8 @@ export default async function AdminApplicationsPage() {
       prisma.aidApplication.count({ where: { status: "NEW" } }),
       prisma.aidApplication.count({ where: { status: "IN_REVIEW" } }),
       prisma.aidApplication.count({ where: { status: "APPROVED" } })
-    ])
+    ]),
+    getSiteSettings()
   ]);
 
   return (
@@ -58,6 +62,36 @@ export default async function AdminApplicationsPage() {
             </div>
           </div>
 
+          {params.silindi && (
+            <div className="mb-5 flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-black text-green-800" role="status">
+              <BadgeCheck size={18} /> {params.silindi} başvuru belgeleri ve SMS kayıtlarıyla birlikte silindi.
+            </div>
+          )}
+          {params.silme === "onaysiz" && (
+            <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-black text-red-800" role="alert">
+              Silme yapılmadı: onay alanına “SİL” yazılmadı.
+            </div>
+          )}
+
+          <section className={`mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border p-5 ${settings.applicationsEnabled ? "border-green-200 bg-green-50" : "border-slate-200 bg-white"}`}>
+            <div className="flex items-start gap-3">
+              <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${settings.applicationsEnabled ? "bg-green-600 text-white" : "bg-slate-200 text-slate-600"}`}>
+                {settings.applicationsEnabled ? <Unlock size={20} /> : <Lock size={20} />}
+              </span>
+              <div>
+                <p className="font-black text-hayat-dark">Online başvuru şu an {settings.applicationsEnabled ? "AÇIK" : "KAPALI"}</p>
+                <p className="mt-0.5 text-sm font-semibold text-slate-600">
+                  {settings.applicationsEnabled
+                    ? <>Sitede “Yardım Başvurusu” butonu görünüyor ve <span className="break-all">{applicationHref(settings)}</span> adresine gidiyor.</>
+                    : "Başvuru butonları gizli; başvuru sayfası kapalı mesajı gösteriyor ve hiçbir başvuru kabul edilmiyor."}
+                </p>
+              </div>
+            </div>
+            <Link href="/admin/ayarlar" className="inline-flex h-11 items-center rounded-xl bg-hayat-dark px-5 text-sm font-black text-white">
+              {settings.applicationsEnabled ? "Başvuruları Kapat / Link Değiştir" : "Başvuruları Aç"}
+            </Link>
+          </section>
+
           <section className="mb-6 grid gap-4 md:grid-cols-4">
             {[[counts[0], "Toplam başvuru"], [counts[1], "Yeni"], [counts[2], "İnceleniyor"], [counts[3], "Onaylı"]].map(([value, label]) => (
               <div key={label as string} className="rounded-[1.5rem] bg-white p-5 shadow-sm">
@@ -66,6 +100,15 @@ export default async function AdminApplicationsPage() {
               </div>
             ))}
           </section>
+
+          {counts[0] > 0 && (
+            <details className="mb-6 rounded-2xl border border-slate-200 bg-white">
+              <summary className="cursor-pointer list-none px-5 py-3.5 text-sm font-black text-slate-500 hover:text-red-700">Tehlikeli işlemler: tüm başvuruları silme ▾</summary>
+              <div className="px-5 pb-5">
+                <DeleteAllApplications count={counts[0]} action={deleteAllApplications} />
+              </div>
+            </details>
+          )}
 
           <section className="space-y-4">
             {applications.map((app) => (

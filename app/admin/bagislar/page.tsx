@@ -3,7 +3,8 @@ import { Prisma } from "@prisma/client";
 import { AdminShell } from "../AdminShell";
 import { prisma } from "@/lib/prisma";
 import { deleteDonation, deleteSelectedDonations } from "../actions";
-import { DonationsTable, type ClientDonation } from "./DonationsTable";
+import { DonationsTable, type ClientDonation, type DonationStatusKey } from "./DonationsTable";
+import { AlertTriangle, CheckCircle2, PiggyBank, TrendingUp } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -30,17 +31,29 @@ type AdminDonationSearchParams = Promise<{
 
 const statusLabels: Record<string, string> = {
   PAID: "Ödendi",
-  PENDING: "Bekliyor",
+  PENDING: "Ödeme Bekleniyor",
+  STALE: "Yarım Kaldı",
   FAILED: "Başarısız",
   CANCELLED: "İptal"
 };
 
 const statusColors: Record<string, string> = {
-  PAID: "#6fb744",
+  PAID: "#3f7d17",
   PENDING: "#f4b740",
-  FAILED: "#ef4444",
+  STALE: "#ea580c",
+  FAILED: "#dc2626",
   CANCELLED: "#64748b"
 };
+
+// Bu sureden uzun suredir bankadan donus gelmeyen odeme "Yarim Kaldi" sayilir
+// (bagisci banka sayfasini kapatmis/geri donmus). Sadece gorunumde hesaplanir.
+const STALE_PENDING_MS = 30 * 60 * 1000;
+
+function displayStatusKey(status: string, createdAt: Date, now = Date.now()): DonationStatusKey {
+  if (status === "PENDING") return now - createdAt.getTime() > STALE_PENDING_MS ? "STALE" : "PENDING";
+  if (status === "PAID" || status === "FAILED" || status === "CANCELLED") return status;
+  return "OTHER";
+}
 
 function firstParam(value?: string | string[]) {
   return Array.isArray(value) ? value[0] || "" : value || "";
@@ -126,15 +139,22 @@ async function getDonations(filters: DonationFilters) {
 type DonationRow = Awaited<ReturnType<typeof getDonations>>[number];
 
 function donationSummary(donations: DonationRow[]) {
+  const now = Date.now();
   const totalAmount = donations.reduce((sum, donation) => sum + donation.amount, 0);
   const paidDonations = donations.filter((donation) => donation.status === "PAID");
   const paidAmount = paidDonations.reduce((sum, donation) => sum + donation.amount, 0);
-  const averageAmount = donations.length ? totalAmount / donations.length : 0;
+  const averageAmount = paidDonations.length ? paidAmount / paidDonations.length : 0;
   const successRate = donations.length ? Math.round((paidDonations.length / donations.length) * 100) : 0;
+  const incomplete = donations.filter((donation) => {
+    const key = displayStatusKey(donation.status, donation.createdAt, now);
+    return key === "STALE" || key === "FAILED" || key === "CANCELLED";
+  });
+  const incompleteAmount = incomplete.reduce((sum, donation) => sum + donation.amount, 0);
 
   const statusItems = Object.entries(
     donations.reduce<Record<string, number>>((acc, donation) => {
-      acc[donation.status] = (acc[donation.status] || 0) + 1;
+      const key = displayStatusKey(donation.status, donation.createdAt, now);
+      acc[key] = (acc[key] || 0) + 1;
       return acc;
     }, {})
   ).map(([status, count]) => ({ status, count }));
@@ -163,15 +183,18 @@ function donationSummary(donations: DonationRow[]) {
     .slice(-6)
     .map(([, value]) => value);
 
-  return { totalAmount, paidAmount, averageAmount, successRate, statusItems, typeItems, monthItems };
+  return { totalAmount, paidAmount, paidCount: paidDonations.length, averageAmount, successRate, incompleteCount: incomplete.length, incompleteAmount, statusItems, typeItems, monthItems };
 }
 
-function StatCard({ label, value, hint }: { label: string; value: string; hint: string }) {
+function StatCard({ label, value, hint, icon: Icon, tone }: { label: string; value: string; hint: string; icon: typeof PiggyBank; tone: string }) {
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-      <p className="text-xs font-black uppercase tracking-[.18em] text-slate-400">{label}</p>
-      <b className="mt-3 block text-3xl font-black text-hayat-dark">{value}</b>
-      <p className="mt-2 text-sm font-semibold text-slate-500">{hint}</p>
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-xs font-black uppercase tracking-[.14em] text-slate-500">{label}</p>
+        <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl ${tone}`}><Icon size={18} /></span>
+      </div>
+      <b className="mt-2 block text-[28px] font-black tabular-nums text-hayat-dark">{value}</b>
+      <p className="mt-1 text-sm font-semibold text-slate-500">{hint}</p>
     </div>
   );
 }
@@ -191,7 +214,7 @@ function FilterInput({ label, name, value, type = "text", placeholder }: { label
   );
 }
 
-function DonationAnalytics({ donations }: { donations: DonationRow[] }) {
+function DonationAnalytics({ donations, typeLabels }: { donations: DonationRow[]; typeLabels: Map<string, string> }) {
   const summary = donationSummary(donations);
   const maxMonthAmount = Math.max(...summary.monthItems.map((item) => item.amount), 1);
   const maxTypeAmount = Math.max(...summary.typeItems.map((item) => item.amount), 1);
@@ -201,10 +224,10 @@ function DonationAnalytics({ donations }: { donations: DonationRow[] }) {
   return (
     <section className="mt-8 space-y-5">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Toplam bağış" value={`${currency(summary.totalAmount)} TL`} hint={`${donations.length} kayıt toplamı`} />
-        <StatCard label="Ödenen tutar" value={`${currency(summary.paidAmount)} TL`} hint="Ödendi durumundaki bağışlar" />
-        <StatCard label="Ortalama bağış" value={`${currency(summary.averageAmount)} TL`} hint="Kayıt başına ortalama" />
-        <StatCard label="Başarı oranı" value={`%${summary.successRate}`} hint="Ödenen kayıt / toplam kayıt" />
+        <StatCard icon={PiggyBank} tone="bg-green-50 text-green-700" label="Tahsil edilen" value={`${currency(summary.paidAmount)} TL`} hint={`${summary.paidCount} başarılı bağış`} />
+        <StatCard icon={TrendingUp} tone="bg-blue-50 text-blue-700" label="Ortalama bağış" value={`${currency(summary.averageAmount)} TL`} hint="Başarılı bağış başına" />
+        <StatCard icon={AlertTriangle} tone="bg-orange-50 text-orange-700" label="Tamamlanmayan" value={`${summary.incompleteCount}`} hint={`${currency(summary.incompleteAmount)} TL · yarım kalan / başarısız`} />
+        <StatCard icon={CheckCircle2} tone="bg-slate-100 text-slate-700" label="Başarı oranı" value={`%${summary.successRate}`} hint="Başarılı / toplam kayıt" />
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[1fr_1.1fr]">
@@ -278,7 +301,7 @@ function DonationAnalytics({ donations }: { donations: DonationRow[] }) {
         <div className="mt-6 space-y-3">
           {summary.typeItems.length ? summary.typeItems.map((item) => (
             <div key={item.type} className="grid gap-2 md:grid-cols-[180px_1fr_120px] md:items-center">
-              <b className="text-sm text-hayat-dark">{item.type}</b>
+              <b className="text-sm text-hayat-dark">{typeLabels.get(item.type) || item.type}</b>
               <div className="h-4 overflow-hidden rounded-full bg-slate-100">
                 <div className="h-full rounded-full bg-hayat-blue" style={{ width: `${Math.max((item.amount / maxTypeAmount) * 100, 4)}%` }} />
               </div>
@@ -311,20 +334,30 @@ export default async function AdminDonations({ searchParams }: { searchParams: A
     prisma.donationType.findMany({ orderBy: [{ sortOrder: "asc" }, { label: "asc" }], select: { code: true, label: true } }),
     prisma.donation.groupBy({ by: ["status"], _count: { _all: true }, orderBy: { status: "asc" } })
   ]);
-  const clientDonations: ClientDonation[] = donations.map((donation) => ({
-    id: donation.id,
-    dateLabel: donation.createdAt.toLocaleString("tr-TR"),
-    receiptNo: donation.status === "PAID" ? donation.receiptNo || "-" : "-",
-    fullName: donation.fullName,
-    phone: donation.phone || "-",
-    amountLabel: `${currency(donation.amount)} TL`,
-    type: donation.type,
-    description: donation.description || "",
-    status: donation.status,
-    statusLabel: statusLabel(donation.status),
-    paymentRef: donation.paymentRef || "",
-    isPaid: donation.status === "PAID"
-  }));
+  const typeLabels = new Map(donationTypes.map((type) => [type.code, type.label]));
+  const now = Date.now();
+  const dateFormatter = new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Europe/Istanbul" });
+  const timeFormatter = new Intl.DateTimeFormat("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" });
+  const clientDonations: ClientDonation[] = donations.map((donation) => {
+    const statusKey = displayStatusKey(donation.status, donation.createdAt, now);
+    return {
+      id: donation.id,
+      dateLabel: dateFormatter.format(donation.createdAt),
+      timeLabel: timeFormatter.format(donation.createdAt),
+      receiptNo: donation.status === "PAID" ? donation.receiptNo || "-" : "Makbuz yok",
+      fullName: donation.fullName,
+      phone: donation.phone || "-",
+      amountLabel: `${currency(donation.amount)} TL`,
+      type: donation.type,
+      typeLabel: typeLabels.get(donation.type) || donation.type,
+      description: donation.description || "",
+      status: donation.status,
+      statusKey,
+      statusLabel: statusLabel(statusKey),
+      paymentRef: donation.paymentRef || "",
+      isPaid: donation.status === "PAID"
+    };
+  });
 
   const exportParams = new URLSearchParams({
     scope: "all",
@@ -339,14 +372,17 @@ export default async function AdminDonations({ searchParams }: { searchParams: A
 
   return (
     <AdminShell activePath="/admin/bagislar" contentClassName="max-w-7xl">
-      <h1 className="text-3xl font-black">Bağış Kayıtları</h1>
-      <p className="mt-2 text-slate-500">Filtreye uyan son 300 bağış kaydı</p>
+      <div className="rounded-2xl bg-hayat-dark p-6 text-white shadow-soft">
+        <p className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.14em] text-[#a9d47a]"><PiggyBank size={17} /> Bağış Listesi</p>
+        <h1 className="mt-2 text-3xl font-black">Bağış kayıtları</h1>
+        <p className="mt-1 text-white/75">Filtreye uyan son 300 kayıt. <strong className="text-white">Yarım Kaldı</strong>: bağışçı banka sayfasında ödemeyi tamamlamadı, tahsilat yapılmadı.</p>
+      </div>
 
-      <DonationAnalytics donations={donations} />
+      <DonationAnalytics donations={donations} typeLabels={typeLabels} />
 
-      <form className="mt-8 rounded-3xl bg-white p-5 shadow-sm">
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1.4fr_180px_180px_150px_150px_130px_130px_auto]">
-          <FilterInput label="Arama" name="q" value={filters.query} placeholder="Ad, telefon, makbuz no, ref, açıklama" />
+      <form className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-[minmax(0,1.6fr)_repeat(6,minmax(0,1fr))_auto]">
+          <div className="sm:col-span-2 lg:col-span-2 2xl:col-span-1"><FilterInput label="Arama" name="q" value={filters.query} placeholder="Ad, telefon, makbuz no, ref, açıklama" /></div>
           <label className="text-xs font-black uppercase text-slate-500">
             Durum
             <select name="status" defaultValue={filters.status} className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold normal-case text-hayat-dark outline-hayat-blue">
@@ -369,8 +405,8 @@ export default async function AdminDonations({ searchParams }: { searchParams: A
           <FilterInput label="Bitiş" name="dateTo" value={filters.dateTo} type="date" />
           <FilterInput label="Min Tutar" name="minAmount" value={filters.minAmount} type="number" />
           <FilterInput label="Max Tutar" name="maxAmount" value={filters.maxAmount} type="number" />
-          <div className="flex items-end gap-2">
-            <button className="h-11 rounded-xl bg-hayat-blue px-5 text-sm font-black text-white">Filtrele</button>
+          <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-1">
+            <button className="h-11 rounded-xl bg-hayat-dark px-5 text-sm font-black text-white transition hover:bg-[#3f7d17]">Filtrele</button>
             <Link href="/admin/bagislar" className="grid h-11 place-items-center rounded-xl bg-slate-100 px-4 text-sm font-black text-slate-600">
               Temizle
             </Link>
@@ -378,7 +414,7 @@ export default async function AdminDonations({ searchParams }: { searchParams: A
         </div>
       </form>
 
-      <form action="/admin/bagislar/export" method="get" className="mt-8 rounded-3xl bg-white shadow-sm">
+      <form action="/admin/bagislar/export" method="get" className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <input type="hidden" name="scope" value="selected" />
         <DonationsTable
           donations={clientDonations}

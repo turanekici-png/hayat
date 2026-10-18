@@ -118,7 +118,10 @@ export async function POST(req: Request) {
 
       return NextResponse.json({
         redirectUrl: payment.redirectUrl,
-        paymentHtml: payment.paymentHtml || null
+        paymentHtml: payment.paymentHtml || null,
+        // Bagisci banka sayfasini yarida birakirsa sitede uyari gosterebilmek icin (bkz. PendingDonationNotice).
+        donationId: donation.id,
+        requiresBankStep: finalStatus !== "PAID"
       });
     } catch (paymentError) {
       await prisma.donation.update({

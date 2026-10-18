@@ -60,6 +60,9 @@ async function findByFilename(root: string, requestedName: string) {
     for (const entry of entries) {
       const fullPath = path.join(current, entry.name);
       if (entry.isDirectory()) {
+        // Yardim basvurusu belgeleri (kimlik vb.) isimle aramaya asla dahil edilmez;
+        // aksi halde tahmin edilen bir dosya adiyla baskasinin belgesi donebilirdi.
+        if (entry.name.toLowerCase() === "basvurular") continue;
         stack.push(fullPath);
         continue;
       }

@@ -3,52 +3,69 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 
+export type DonationStatusKey = "PAID" | "PENDING" | "STALE" | "FAILED" | "CANCELLED" | "OTHER";
+
 export type ClientDonation = {
   id: string;
   dateLabel: string;
+  timeLabel: string;
   receiptNo: string;
   fullName: string;
   phone: string;
   amountLabel: string;
   type: string;
+  typeLabel: string;
   description: string;
   status: string;
+  statusKey: DonationStatusKey;
   statusLabel: string;
   paymentRef: string;
   isPaid: boolean;
 };
 
-type ColumnKey = "date" | "receipt" | "name" | "phone" | "amount" | "type" | "description" | "status" | "ref" | "action";
+type ColumnKey = "date" | "donor" | "amount" | "type" | "status" | "receipt" | "description" | "action";
 
 const COLUMN_DEFS: { key: ColumnKey; label: string; toggleable: boolean }[] = [
   { key: "date", label: "Tarih", toggleable: true },
-  { key: "receipt", label: "Makbuz No", toggleable: true },
-  { key: "name", label: "Ad Soyad", toggleable: true },
-  { key: "phone", label: "Telefon", toggleable: true },
+  { key: "donor", label: "Bağışçı", toggleable: true },
   { key: "amount", label: "Tutar", toggleable: true },
   { key: "type", label: "Tür", toggleable: true },
-  { key: "description", label: "Açıklama", toggleable: true },
   { key: "status", label: "Durum", toggleable: true },
-  { key: "ref", label: "Ref", toggleable: true },
+  { key: "receipt", label: "Makbuz / Banka Ref.", toggleable: true },
+  { key: "description", label: "Açıklama", toggleable: true },
   { key: "action", label: "İşlem", toggleable: false }
 ];
 
 const MIN_WIDTH = 70;
+// Varsayilan genislikler admin icerik alanina (~1050px) yatay kaydirmadan sigar.
 const DEFAULT_WIDTHS: Record<ColumnKey, number> = {
-  date: 150,
-  receipt: 150,
-  name: 160,
-  phone: 150,
+  date: 100,
+  donor: 170,
   amount: 100,
   type: 100,
-  description: 240,
-  status: 100,
-  ref: 150,
-  action: 170
+  status: 128,
+  receipt: 140,
+  description: 128,
+  action: 92
 };
-const SELECT_COLUMN_WIDTH = 56;
+const SELECT_COLUMN_WIDTH = 44;
 
-const STORAGE_KEY = "hayatder-bagislar-sutunlar-v2";
+const STATUS_STYLES: Record<DonationStatusKey, string> = {
+  PAID: "bg-green-50 text-green-700 ring-green-600/20",
+  PENDING: "bg-amber-50 text-amber-700 ring-amber-600/20",
+  STALE: "bg-orange-50 text-orange-700 ring-orange-600/25",
+  FAILED: "bg-red-50 text-red-700 ring-red-600/20",
+  CANCELLED: "bg-slate-100 text-slate-600 ring-slate-500/20",
+  OTHER: "bg-slate-100 text-slate-600 ring-slate-500/20"
+};
+
+const STATUS_HINTS: Partial<Record<DonationStatusKey, string>> = {
+  PENDING: "Bağışçı banka sayfasında; ödeme henüz sonuçlanmadı.",
+  STALE: "Bağışçı banka sayfasında işlemi tamamlamadı (30 dakikadan uzun süredir bankadan dönüş yok). Ödeme alınmadı.",
+  FAILED: "Banka ödemeyi onaylamadı veya işlem iptal edildi."
+};
+
+const STORAGE_KEY = "hayatder-bagislar-sutunlar-v3";
 
 export function DonationsTable({
   donations,
@@ -180,7 +197,7 @@ export function DonationsTable({
     return (
       <div
         onMouseDown={(e) => startResize(columnKey, e)}
-        className={`absolute right-0 top-0 h-full w-2 cursor-col-resize select-none ${resizingKey === columnKey ? "bg-hayat-gold/70" : "hover:bg-white/30"}`}
+        className={`absolute right-0 top-0 h-full w-2 cursor-col-resize select-none ${resizingKey === columnKey ? "bg-hayat-blue/40" : "hover:bg-slate-300/60"}`}
         aria-hidden
       />
     );
@@ -188,19 +205,22 @@ export function DonationsTable({
 
   return (
     <>
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4">
-        <p className="text-sm font-bold text-slate-500">Başlıkların sağ kenarını sürükleyerek genişliği ayarlayabilirsiniz, tercihiniz kaydedilir.</p>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-4">
+        <div>
+          <h2 className="text-lg font-black text-hayat-dark">Bağış kayıtları <span className="ml-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-sm text-slate-500">{rows.length}</span></h2>
+          <p className="mt-0.5 text-xs font-semibold text-slate-500">Sütun genişliğini başlığın sağ kenarından sürükleyerek değiştirebilirsiniz.</p>
+        </div>
         <div className="relative flex flex-wrap gap-2">
-          <button type="submit" className="rounded-xl bg-hayat-green px-5 py-2.5 text-sm font-black text-white">
-            Seçilenleri XLSX&apos;e Aktar
+          <button type="submit" disabled={!selected.size} className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-hayat-dark transition hover:border-hayat-dark disabled:cursor-not-allowed disabled:opacity-40">
+            Seçilenleri Excel&apos;e Aktar {selected.size ? `(${selected.size})` : ""}
           </button>
-          <Link href={exportAllHref} className="rounded-xl bg-hayat-blue px-5 py-2.5 text-sm font-black text-white">
-            Tümünü XLSX&apos;e Aktar
+          <Link href={exportAllHref} className="inline-flex h-10 items-center rounded-xl bg-hayat-dark px-4 text-sm font-black text-white transition hover:bg-[#3f7d17]">
+            Tümünü Excel&apos;e Aktar
           </Link>
           <button
             type="button"
             onClick={() => setColumnsOpen((open) => !open)}
-            className="rounded-xl bg-slate-100 px-5 py-2.5 text-sm font-black text-slate-600"
+            className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-600 transition hover:border-hayat-dark"
           >
             Sütunlar
           </button>
@@ -208,7 +228,7 @@ export function DonationsTable({
             type="button"
             disabled={!selectedInvalidCount || isPending}
             onClick={handleDeleteSelected}
-            className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-40"
+            className="h-10 rounded-xl bg-red-600 px-4 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-30"
           >
             Seçilenleri Sil {selectedInvalidCount ? `(${selectedInvalidCount})` : ""}
           </button>
@@ -252,106 +272,101 @@ export function DonationsTable({
 
       <div className="overflow-x-auto">
         <table className="border-collapse text-left text-sm" style={{ tableLayout: "fixed", width: "max-content", minWidth: "100%" }}>
-          <thead className="bg-hayat-dark text-white">
+          <thead className="border-b border-slate-200 bg-slate-50 text-[11px] font-black uppercase tracking-[0.08em] text-slate-500">
             <tr>
-              <th className="p-4" style={{ width: SELECT_COLUMN_WIDTH }}>
-                Seç
+              <th className="px-3 py-3" style={{ width: SELECT_COLUMN_WIDTH }}>
+                <span className="sr-only">Seç</span>
               </th>
               {visibleColumns.map((col) => (
-                <th key={col.key} className="relative overflow-hidden text-ellipsis whitespace-nowrap p-4" style={{ width: widths[col.key] }}>
+                <th key={col.key} className={`relative overflow-hidden text-ellipsis whitespace-nowrap px-3 py-3 ${col.key === "amount" ? "text-right" : ""}`} style={{ width: widths[col.key] }}>
                   {col.label}
                   <ResizeHandle columnKey={col.key} />
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-slate-100">
             {rows.map((donation) => (
-              <tr key={donation.id} className="border-b align-middle">
-                <td className="p-4" style={{ width: SELECT_COLUMN_WIDTH }}>
+              <tr key={donation.id} className={`align-middle transition-colors hover:bg-slate-50 ${selected.has(donation.id) ? "bg-blue-50/60" : ""}`}>
+                <td className="px-3 py-3" style={{ width: SELECT_COLUMN_WIDTH }}>
                   <input
                     name="ids"
                     value={donation.id}
                     type="checkbox"
                     checked={selected.has(donation.id)}
                     onChange={(e) => toggleSelected(donation.id, e.target.checked)}
-                    className="h-4 w-4 accent-hayat-green"
+                    className="h-4 w-4 accent-hayat-dark"
                     aria-label={`${donation.fullName} bağışını seç`}
                   />
                 </td>
                 {visible.date && (
-                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.date }}>
-                    {donation.dateLabel}
+                  <td className="px-3 py-3" style={{ width: widths.date }}>
+                    <span className="block font-bold text-hayat-dark">{donation.dateLabel}</span>
+                    <span className="block text-xs font-semibold text-slate-400">{donation.timeLabel}</span>
                   </td>
                 )}
-                {visible.receipt && (
-                  <td className="whitespace-normal break-words p-4 align-top font-mono text-xs" style={{ width: widths.receipt }}>
-                    {donation.receiptNo}
-                  </td>
-                )}
-                {visible.name && (
-                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.name }}>
-                    {donation.fullName}
-                  </td>
-                )}
-                {visible.phone && (
-                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.phone }}>
-                    {donation.phone}
+                {visible.donor && (
+                  <td className="px-3 py-3" style={{ width: widths.donor }}>
+                    <span className="block truncate font-bold text-hayat-dark" title={donation.fullName}>{donation.fullName}</span>
+                    {donation.phone !== "-" ? (
+                      <a href={`tel:${donation.phone}`} className="block text-xs font-semibold text-slate-500 hover:text-hayat-blue">{donation.phone}</a>
+                    ) : (
+                      <span className="block text-xs font-semibold text-slate-400">Telefon yok</span>
+                    )}
                   </td>
                 )}
                 {visible.amount && (
-                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.amount }}>
+                  <td className="px-3 py-3 text-right font-black tabular-nums text-hayat-dark" style={{ width: widths.amount }}>
                     {donation.amountLabel}
                   </td>
                 )}
                 {visible.type && (
-                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.type }}>
-                    {donation.type}
-                  </td>
-                )}
-                {visible.description && (
-                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.description }}>
-                    {donation.description}
+                  <td className="px-3 py-3" style={{ width: widths.type }}>
+                    <span className="inline-block max-w-full truncate rounded-md bg-slate-100 px-2 py-1 text-xs font-bold text-slate-700" title={donation.typeLabel}>{donation.typeLabel}</span>
                   </td>
                 )}
                 {visible.status && (
-                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.status }}>
-                    <span className="rounded-full bg-slate-100 px-3 py-1 font-bold">{donation.statusLabel}</span>
+                  <td className="px-3 py-3" style={{ width: widths.status }}>
+                    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-black ring-1 ring-inset ${STATUS_STYLES[donation.statusKey]}`} title={STATUS_HINTS[donation.statusKey]}>
+                      <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
+                      {donation.statusLabel}
+                    </span>
                   </td>
                 )}
-                {visible.ref && (
-                  <td className="whitespace-normal break-words p-4 align-top" style={{ width: widths.ref }}>
-                    {donation.paymentRef}
+                {visible.receipt && (
+                  <td className="px-3 py-3" style={{ width: widths.receipt }}>
+                    <span className={`block truncate text-xs ${donation.isPaid ? "font-mono font-bold text-hayat-dark" : "font-semibold text-slate-400"}`}>{donation.receiptNo}</span>
+                    <span className="block truncate font-mono text-[11px] text-slate-400" title={donation.paymentRef}>{donation.paymentRef || "—"}</span>
+                  </td>
+                )}
+                {visible.description && (
+                  <td className="px-3 py-3" style={{ width: widths.description }}>
+                    <span className="line-clamp-2 text-xs font-semibold text-slate-600" title={donation.description}>{donation.description || "—"}</span>
                   </td>
                 )}
                 {visible.action && (
-                  <td className="p-4 align-top" style={{ width: widths.action }}>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {donation.isPaid ? (
-                        <Link href={`/bagis/makbuz/${donation.id}`} target="_blank" className="inline-flex rounded-full bg-hayat-green px-4 py-2 text-xs font-black text-white">
-                          Makbuz Al
-                        </Link>
-                      ) : (
-                        <span className="text-xs font-bold text-slate-400">Ödeme yok</span>
-                      )}
-                      {!donation.isPaid && (
-                        <button
-                          type="button"
-                          disabled={isPending}
-                          onClick={() => handleDeleteOne(donation.id, donation.fullName)}
-                          className="inline-flex rounded-full bg-red-600 px-4 py-2 text-xs font-black text-white disabled:opacity-40"
-                        >
-                          Sil
-                        </button>
-                      )}
-                    </div>
+                  <td className="px-3 py-3" style={{ width: widths.action }}>
+                    {donation.isPaid ? (
+                      <Link href={`/bagis/makbuz/${donation.id}`} target="_blank" className="inline-flex h-8 items-center rounded-lg bg-hayat-dark px-3 text-xs font-black text-white transition hover:bg-[#3f7d17]">
+                        Makbuz
+                      </Link>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => handleDeleteOne(donation.id, donation.fullName)}
+                        className="inline-flex h-8 items-center rounded-lg border border-red-200 px-3 text-xs font-black text-red-600 transition hover:bg-red-50 disabled:opacity-40"
+                      >
+                        Sil
+                      </button>
+                    )}
                   </td>
                 )}
               </tr>
             ))}
             {!rows.length && (
               <tr>
-                <td colSpan={visibleColumns.length + 1} className="p-8 text-center font-bold text-slate-500">
+                <td colSpan={visibleColumns.length + 1} className="p-10 text-center font-bold text-slate-500">
                   Filtreye uygun bağış kaydı yok.
                 </td>
               </tr>

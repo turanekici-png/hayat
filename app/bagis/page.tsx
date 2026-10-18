@@ -77,8 +77,9 @@ export default async function BagisPage({ searchParams }: { searchParams: BagisS
               <div className="mt-6 flex max-w-3xl gap-3 rounded-[18px] border border-red-100 bg-red-50 p-5 text-red-700">
                 <AlertCircle className="mt-1 shrink-0" />
                 <div>
-                  <p className="font-black">Ödeme tamamlanamadı.</p>
+                  <p className="font-black">Ödeme tamamlanamadı, bağışınız alınmadı.</p>
                   <p className="mt-1 text-sm font-semibold leading-6">{paymentMessage || "Banka 3D güvenli ödeme işlemini onaylamadı."}</p>
+                  <p className="mt-2 text-sm font-semibold leading-6">Aşağıdaki formdan tekrar deneyebilir veya havale/EFT ile bağış yapabilirsiniz. Kartınızdan tutar çekildiğini görürseniz lütfen bizimle iletişime geçin.</p>
                 </div>
               </div>
             )}

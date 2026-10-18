@@ -65,10 +65,11 @@ function value(params: URLSearchParams, key: string) {
   return params.get(key)?.trim() || "";
 }
 
-function statusLabel(status: string) {
+// Admin listesindeki gibi: 30 dakikadan uzun suredir bankadan donus gelmeyen odeme "Yarim Kaldi".
+function statusLabel(status: string, createdAt: Date) {
+  if (status === "PENDING") return Date.now() - createdAt.getTime() > 30 * 60 * 1000 ? "Yarım Kaldı" : "Ödeme Bekleniyor";
   const labels: Record<string, string> = {
     PAID: "Ödendi",
-    PENDING: "Bekliyor",
     FAILED: "Başarısız",
     CANCELLED: "İptal"
   };
@@ -119,7 +120,7 @@ export async function GET(req: Request) {
       donation.amount,
       donation.type,
       donation.description || "",
-      statusLabel(donation.status),
+      statusLabel(donation.status, donation.createdAt),
       donation.paymentRef || ""
     ])
   ];

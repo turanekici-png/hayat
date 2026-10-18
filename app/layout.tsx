@@ -3,7 +3,10 @@ import { Manrope, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { VisitTracker } from "@/components/VisitTracker";
 import { TopInfoBar } from "@/components/TopInfoBar";
-import { getSiteSettings, phoneHref } from "@/lib/site-settings";
+import { PendingDonationNotice } from "@/components/PendingDonationNotice";
+import { Suspense } from "react";
+import { applicationHref, getSiteSettings, isExternalUrl, phoneHref } from "@/lib/site-settings";
+import { SiteSettingsProvider } from "@/components/SiteSettingsProvider";
 
 // Fontlar build sirasinda indirilip siteyle birlikte sunulur (Google'a ek istek yok,
 // sayfa cizimini bloklamaz).
@@ -36,12 +39,22 @@ export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSiteSettings();
+  const publicSettings = {
+    applicationsEnabled: settings.applicationsEnabled,
+    applicationHref: applicationHref(settings),
+    applicationIsExternal: isExternalUrl(applicationHref(settings))
+  };
   return (
     <html lang="tr" className={`${manrope.variable} ${plusJakartaSans.variable}`}>
       <body>
-        <VisitTracker />
-        <TopInfoBar affiliationNote={settings.affiliationNote} registryNo={settings.registryNo} phone={settings.phone} phoneHref={phoneHref(settings.phone)} />
-        {children}
+        <SiteSettingsProvider value={publicSettings}>
+          <VisitTracker />
+          <TopInfoBar affiliationNote={settings.affiliationNote} registryNo={settings.registryNo} phone={settings.phone} phoneHref={phoneHref(settings.phone)} />
+          {children}
+          <Suspense fallback={null}>
+            <PendingDonationNotice />
+          </Suspense>
+        </SiteSettingsProvider>
       </body>
     </html>
   );

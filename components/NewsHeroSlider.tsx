@@ -71,7 +71,7 @@ export function NewsHeroSlider({ items }: { items: NewsHeroItem[] }) {
             loading={index === 0 ? "eager" : "lazy"}
             fetchPriority={index === 0 ? "high" : "auto"}
             decoding="async"
-            className={`absolute inset-0 -z-10 h-full w-full object-cover transition-opacity duration-700 ${index === active ? "opacity-100" : "opacity-0"}`}
+            className={`absolute inset-0 -z-10 h-full w-full object-cover object-[50%_18%] transition-opacity duration-700 ${index === active ? "opacity-100" : "opacity-0"}`}
           />
         ) : null
       )}

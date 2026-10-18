@@ -1113,3 +1113,23 @@ footer h3 {
     font-size: 0.84rem;
   }
 }
+
+/* Bagis formu: bankaya yonlendirme ekranindaki ilerleme cubugu */
+@keyframes payment-redirect {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Bagis formu: mobilde tur butonlari daha kompakt */
+@media (max-width: 639px) {
+  .donation-type-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+  .donation-type-button {
+    min-height: 2.5rem;
+    padding: 0 0.4rem;
+    border-radius: 12px;
+    font-size: 0.82rem;
+  }
+}

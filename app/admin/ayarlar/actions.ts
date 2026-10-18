@@ -14,6 +14,7 @@ function nullableText(formData: FormData, key: string, maxLength = 500) {
 function safeUrl(formData: FormData, key: string) {
   const value = nullableText(formData, key, 300);
   if (!value) return null;
+  if (value.startsWith("/") && !value.startsWith("//")) return value; // site ici adres (orn. /basvuru)
   return /^https?:\/\//i.test(value) ? value : `https://${value}`;
 }
 
@@ -36,7 +37,9 @@ export async function saveSiteSettings(formData: FormData) {
     instagramUrl: safeUrl(formData, "instagramUrl"),
     twitterUrl: safeUrl(formData, "twitterUrl"),
     youtubeUrl: safeUrl(formData, "youtubeUrl"),
-    donationImpacts: donationImpacts || null
+    donationImpacts: donationImpacts || null,
+    applicationsEnabled: formData.get("applicationsEnabled") === "on",
+    applicationUrl: safeUrl(formData, "applicationUrl")
   };
 
   await prisma.siteSettings.upsert({
@@ -46,6 +49,8 @@ export async function saveSiteSettings(formData: FormData) {
   });
 
   revalidateTag("site-settings");
+  revalidatePath("/basvuru");
+  revalidatePath("/admin/basvurular");
   revalidatePath("/", "layout");
   redirect(`/admin/ayarlar?kaydedildi=${Date.now()}`);
 }

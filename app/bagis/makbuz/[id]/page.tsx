@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import { getDonationTypeLabel } from "@/lib/donation-types";
 import { prisma } from "@/lib/prisma";
 import { updateDonationWithReceiptOnPaid } from "@/lib/receipt-number";
-import { CalendarDays, CheckCircle2, Hash, HeartHandshake, Phone, ShieldCheck, UserRound } from "lucide-react";
+import { CalendarDays, CheckCircle2, Clock3, Hash, HeartHandshake, Phone, RotateCcw, ShieldCheck, UserRound, XCircle } from "lucide-react";
 import { ReceiptActions } from "./ReceiptActions";
 
 export const dynamic = "force-dynamic";
@@ -47,6 +47,42 @@ export default async function DonationReceiptPage({ params }: { params: Promise<
         <div className="mx-auto max-w-5xl px-5 print:max-w-none print:px-0">
           {!donation ? (
             <div className="rounded-[2rem] bg-white p-10 text-center shadow-soft">Makbuz bulunamadı.</div>
+          ) : !isPaid ? (
+            // Odenmemis bagista makbuza benzeyen sayfa gosterilmez; bagisci "bagis yaptim" sanmasin.
+            <section className="mx-auto max-w-2xl overflow-hidden rounded-[1.5rem] border border-[#d9e5ec] bg-white shadow-[0_24px_70px_rgba(10,58,85,0.12)]">
+              <div className={`h-2 ${donation.status === "PENDING" ? "bg-amber-500" : "bg-red-600"}`} />
+              <div className="p-6 md:p-8">
+                <span className={`grid h-14 w-14 place-items-center rounded-2xl ${donation.status === "PENDING" ? "bg-amber-50 text-amber-600" : "bg-red-50 text-red-600"}`}>
+                  {donation.status === "PENDING" ? <Clock3 size={30} /> : <XCircle size={30} />}
+                </span>
+                <h1 className="mt-5 text-2xl font-black leading-tight text-hayat-dark md:text-3xl">
+                  {donation.status === "PENDING" ? "Ödemeniz henüz onaylanmadı" : "Bu bağış tamamlanmadı"}
+                </h1>
+                <p className="mt-3 text-base font-semibold leading-7 text-[#52646d]">
+                  {donation.status === "PENDING"
+                    ? "Bankadan bu bağış için onay gelmedi. Banka ödeme sayfasında kart bilgilerinizi ve SMS onayını tamamlamadıysanız ödemeniz alınmamıştır ve bağışınız gerçekleşmemiştir."
+                    : "Banka bu ödemeyi onaylamadı veya işlem yarıda kaldı. Bu bağış için ödeme alınmamıştır, bu sayfa bir makbuz değildir."}
+                </p>
+                <div className="mt-5 grid gap-2 rounded-2xl bg-slate-50 p-4 text-sm font-bold text-[#33464f] sm:grid-cols-3">
+                  <span>Tür: <span className="text-hayat-dark">{donationTypeLabel}</span></span>
+                  <span>Tutar: <span className="text-hayat-dark">{currency(donation.amount)} TL</span></span>
+                  <span>Durum: <span className={donation.status === "PENDING" ? "text-amber-700" : "text-red-700"}>{donation.status === "PENDING" ? "Onay bekleniyor" : statusLabel(donation.status)}</span></span>
+                </div>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link href={`/bagis?type=${encodeURIComponent(donation.type)}&amount=${encodeURIComponent(String(donation.amount))}`} className="inline-flex h-12 items-center gap-2 rounded-xl bg-[#3f7d17] px-6 font-black text-white transition hover:bg-hayat-dark">
+                    <RotateCcw size={17} /> Bağışı Tekrar Dene
+                  </Link>
+                  {donation.status === "PENDING" && (
+                    <Link href={`/bagis/makbuz/${donation.id}`} className="inline-flex h-12 items-center rounded-xl border-2 border-hayat-dark px-6 font-black text-hayat-dark transition hover:bg-hayat-dark hover:text-white">
+                      Durumu Yenile
+                    </Link>
+                  )}
+                  <Link href="/hesap-numaralarimiz" className="inline-flex h-12 items-center rounded-xl border border-slate-200 px-6 font-black text-hayat-dark transition hover:border-hayat-dark">
+                    Havale / EFT ile Bağış
+                  </Link>
+                </div>
+              </div>
+            </section>
           ) : (
             <section className="receipt-print-sheet overflow-hidden rounded-[1.5rem] border border-[#d9e5ec] bg-white shadow-[0_24px_70px_rgba(10,58,85,0.12)] print:rounded-none print:border-0 print:shadow-none">
               <div className="receipt-print-header bg-[#0a3a55] px-5 py-4 text-white md:px-6">

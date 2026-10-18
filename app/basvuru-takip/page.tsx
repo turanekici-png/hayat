@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
+import { applicationHref, getSiteSettings, isExternalUrl } from "@/lib/site-settings";
 import { SearchCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +19,8 @@ const statusLabels: Record<string, string> = {
 
 export default async function ApplicationTrackPage({ searchParams }: { searchParams: Promise<{ no?: string; tc?: string }> }) {
   const params = await searchParams;
+  const settings = await getSiteSettings();
+  const newApplicationHref = applicationHref(settings);
   const no = params.no?.trim();
   const tc = params.tc?.trim();
   const application = no
@@ -51,7 +53,9 @@ export default async function ApplicationTrackPage({ searchParams }: { searchPar
           {no && !application && (
             <div className="mt-6 rounded-[2rem] bg-white p-8 text-center shadow-sm">
               <p className="font-bold text-slate-600">Bu bilgilerle başvuru bulunamadı.</p>
-              <Link href="/basvuru" className="mt-4 inline-block rounded-full bg-hayat-dark px-5 py-3 font-black text-white">Yeni başvuru yap</Link>
+              {settings.applicationsEnabled && (
+                <a href={newApplicationHref} {...(isExternalUrl(newApplicationHref) ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="mt-4 inline-block rounded-full bg-hayat-dark px-5 py-3 font-black text-white">Yeni başvuru yap</a>
+              )}
             </div>
           )}
 

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { PrefetchKind } from "next/dist/client/components/router-reducer/router-reducer-types";
-import { Menu } from "lucide-react";
+import { ClipboardList, Menu } from "lucide-react";
+import { usePublicSiteSettings } from "@/components/SiteSettingsProvider";
 import { optimizedImageSrc } from "@/lib/image-src";
 
 const nav = [
@@ -55,6 +56,8 @@ function usePrefetchNavigation(pathname: string) {
 export function Header() {
   const pathname = usePathname() || "/";
   usePrefetchNavigation(pathname);
+  const { applicationsEnabled, applicationHref, applicationIsExternal } = usePublicSiteSettings();
+  const externalProps = applicationIsExternal ? { target: "_blank", rel: "noopener noreferrer" } : {};
 
   return (
     <header className="sticky top-0 z-[100] w-full border-y border-[#d7e5ec]/75 bg-[#f7f5ef]/82 shadow-[0_10px_30px_rgba(10,58,85,0.06)] backdrop-blur-xl supports-[backdrop-filter]:bg-[#f7f5ef]/72">
@@ -86,6 +89,15 @@ export function Header() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          {applicationsEnabled && (
+            <a
+              href={applicationHref}
+              {...externalProps}
+              className="hidden h-[48px] items-center justify-center gap-2 rounded-full border-2 border-hayat-dark px-5 text-[15px] font-black text-hayat-dark transition hover:bg-hayat-dark hover:text-white xl:inline-flex"
+            >
+              <ClipboardList size={17} /> Yardım Başvurusu
+            </a>
+          )}
           <Link href="/bagis" className="inline-flex h-[38px] items-center justify-center rounded-full bg-hayat-green px-3.5 text-[12px] font-black text-white shadow-green transition hover:-translate-y-0.5 hover:bg-hayat-blue active:scale-95 sm:h-[42px] sm:px-5 sm:text-[14px] lg:h-[48px] lg:px-7 lg:text-[16px]">
             Bağış Yap
           </Link>
@@ -96,6 +108,11 @@ export function Header() {
             </summary>
             <div className="absolute right-0 top-[calc(100%+10px)] w-[min(330px,calc(100vw-24px))] overflow-hidden rounded-[20px] border border-hayat-border bg-white p-2 shadow-2xl sm:p-3">
               <div className="grid gap-1 text-base font-black">
+                {applicationsEnabled && (
+                  <a href={applicationHref} {...externalProps} className="mb-1 flex items-center gap-2 rounded-[14px] bg-hayat-dark px-4 py-3 text-sm text-white sm:px-5 sm:py-3.5 sm:text-base">
+                    <ClipboardList size={17} /> Yardım Başvurusu
+                  </a>
+                )}
                 {nav.map((item) => {
                   const active = isActive(pathname, item.href);
                   return (

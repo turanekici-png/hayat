@@ -13,6 +13,8 @@ export type SiteSettingsData = {
   twitterUrl: string | null;
   youtubeUrl: string | null;
   donationImpacts: string | null;
+  applicationsEnabled: boolean;
+  applicationUrl: string | null;
 };
 
 // Kayit yoksa veya veritabanina ulasilamazsa sitenin mevcut sabit bilgileri kullanilir.
@@ -27,7 +29,9 @@ export const defaultSiteSettings: SiteSettingsData = {
   instagramUrl: null,
   twitterUrl: null,
   youtubeUrl: null,
-  donationImpacts: null
+  donationImpacts: null,
+  applicationsEnabled: true,
+  applicationUrl: null
 };
 
 function pick(value: string | null | undefined, fallback: string | null) {
@@ -48,7 +52,9 @@ async function loadSiteSettings(): Promise<SiteSettingsData> {
     instagramUrl: pick(row.instagramUrl, null),
     twitterUrl: pick(row.twitterUrl, null),
     youtubeUrl: pick(row.youtubeUrl, null),
-    donationImpacts: pick(row.donationImpacts, null)
+    donationImpacts: pick(row.donationImpacts, null),
+    applicationsEnabled: row.applicationsEnabled,
+    applicationUrl: pick(row.applicationUrl, null)
   };
 }
 
@@ -72,4 +78,22 @@ export function parseDonationImpacts(value: string | null | undefined) {
 export function phoneHref(phone: string | null | undefined) {
   const digits = (phone || "").replace(/[^\d+]/g, "");
   return digits ? `tel:${digits}` : undefined;
+}
+
+/** "Yardim Basvurusu" butonunun gidecegi adres: admin linki verdiyse o, yoksa sitedeki form. */
+export function applicationHref(settings: Pick<SiteSettingsData, "applicationUrl">) {
+  return settings.applicationUrl || "/basvuru";
+}
+
+export function isExternalUrl(href: string) {
+  return /^https?:\/\//i.test(href);
+}
+
+/**
+ * Basvuru kabul edilip edilmeyecegini onbellege takilmadan dogrudan veritabanindan okur
+ * (admin kapattigi anda API'nin de basvuru almayi birakmasi icin).
+ */
+export async function areApplicationsOpen() {
+  const row = await prisma.siteSettings.findUnique({ where: { id: "default" }, select: { applicationsEnabled: true } }).catch(() => null);
+  return row ? row.applicationsEnabled : defaultSiteSettings.applicationsEnabled;
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BadgeCheck, Building2, Eye, HandCoins, Phone, Save, Share2 } from "lucide-react";
+import { BadgeCheck, Building2, ClipboardList, Eye, HandCoins, Phone, Save, Share2 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { AdminShell } from "../AdminShell";
 import { saveSiteSettings } from "./actions";
@@ -57,6 +57,22 @@ export default async function SiteSettingsPage({ searchParams }: { searchParams:
       )}
 
       <form action={saveSiteSettings} className="grid gap-5">
+        <Card icon={ClipboardList} title="Online Yardım Başvurusu" description="Açıkken sitede belirgin bir “Yardım Başvurusu” butonu görünür. Kapalıyken butonlar gizlenir, başvuru sayfası kapalı mesajı gösterir ve hiçbir şekilde başvuru alınmaz.">
+          <div className="grid gap-4">
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <input type="checkbox" name="applicationsEnabled" defaultChecked={row?.applicationsEnabled ?? true} className="mt-1 h-5 w-5 accent-hayat-green" />
+              <span>
+                <span className="block font-black text-hayat-dark">Online başvuru açık</span>
+                <span className="mt-0.5 block text-sm font-semibold text-slate-500">İşareti kaldırıp kaydederseniz başvurular hemen kapanır.</span>
+              </span>
+            </label>
+            <label className={labelClass}>Başvuru Linki (opsiyonel)
+              <input name="applicationUrl" defaultValue={row?.applicationUrl || ""} placeholder="Örn: https://forms.gle/... veya https://hayatder.org.tr/basvuru" className={inputClass} />
+              <span className="mt-1.5 block text-xs font-semibold text-slate-500">Boş bırakılırsa sitedeki başvuru formu (/basvuru) kullanılır. Doluysa tüm “Yardım Başvurusu” butonları bu linke gider.</span>
+            </label>
+          </div>
+        </Card>
+
         <Card icon={Building2} title="Kurum Bilgileri" description="Sitenin en üstündeki ince bilgi şeridinde görünür.">
           <div className="grid gap-4 md:grid-cols-2">
             <label className={labelClass}>Dernek Kütük No

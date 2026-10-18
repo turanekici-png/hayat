@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Phone, ShieldCheck } from "lucide-react";
+import { ClipboardList, Phone, ShieldCheck } from "lucide-react";
+import { usePublicSiteSettings } from "@/components/SiteSettingsProvider";
 
 type TopInfoBarProps = {
   affiliationNote: string | null;
@@ -14,6 +15,7 @@ type TopInfoBarProps = {
 /** Tum genel sayfalarin en ustundeki ince kurumsal bilgi seridi (admin panelinde gizli). */
 export function TopInfoBar({ affiliationNote, registryNo, phone, phoneHref }: TopInfoBarProps) {
   const pathname = usePathname() || "/";
+  const { applicationsEnabled, applicationHref, applicationIsExternal } = usePublicSiteSettings();
   if (pathname.startsWith("/admin")) return null;
   if (!affiliationNote && !registryNo && !phone) return null;
 
@@ -32,6 +34,15 @@ export function TopInfoBar({ affiliationNote, registryNo, phone, phoneHref }: To
           {phone && (
             <a href={phoneHref} className="inline-flex items-center gap-1.5 hover:text-white">
               <Phone size={13} aria-hidden="true" /> {phone}
+            </a>
+          )}
+          {applicationsEnabled && (
+            <a
+              href={applicationHref}
+              {...(applicationIsExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              className="inline-flex items-center gap-1.5 rounded-full bg-hayat-green px-3 py-1 font-black text-white transition hover:bg-white hover:text-hayat-dark"
+            >
+              <ClipboardList size={13} aria-hidden="true" /> Online yardım başvurusu açık
             </a>
           )}
           <Link href="/basvuru-takip" className="hidden hover:text-white sm:inline">Başvuru Takibi</Link>

@@ -728,12 +728,45 @@ export async function updateApplicationStatus(formData: FormData) {
   revalidatePath("/admin");
 }
 
+// Basvuru silinirken kisisel veri kalmasin: yuklenen belgeler diskten, basvuruya
+// ait SMS kayitlari (telefon + mesaj) veritabanindan da silinir.
+async function purgeApplications(where: { id?: string }) {
+  const documents = await prisma.applicationDocument.findMany({
+    where: where.id ? { applicationId: where.id } : {},
+    select: { url: true, filename: true }
+  });
+  for (const document of documents) {
+    const name = path.basename(document.filename || document.url || "");
+    if (!name) continue;
+    try {
+      await unlink(publicPath("uploads", "basvurular", name));
+    } catch {
+      // Dosya zaten yoksa devam edilir.
+    }
+  }
+  await prisma.smsLog.deleteMany({ where: where.id ? { applicationId: where.id } : { applicationId: { not: null } } });
+  const result = await prisma.aidApplication.deleteMany({ where: where.id ? { id: where.id } : {} });
+  return result.count;
+}
+
 export async function deleteApplication(formData: FormData) {
   const id = textValue(formData, "id");
   if (!id) return;
-  await prisma.aidApplication.delete({ where: { id } });
+  await purgeApplications({ id });
   revalidatePath("/admin/basvurular");
   revalidatePath("/admin");
+}
+
+export async function deleteAllApplications(formData: FormData) {
+  // Geri alinamaz: tarayicidaki onaya ek olarak sunucu da "SIL" yazilmasini ister.
+  const confirmation = rawTextValue(formData, "confirm").toLocaleUpperCase("tr-TR");
+  if (confirmation !== "SİL" && confirmation !== "SIL") {
+    redirect(`/admin/basvurular?silme=onaysiz`);
+  }
+  const count = await purgeApplications({});
+  revalidatePath("/admin/basvurular");
+  revalidatePath("/admin");
+  redirect(`/admin/basvurular?silindi=${count}`);
 }
 
 export async function seedDefaultPolicies() {

@@ -1,6 +1,6 @@
 ﻿import Link from "next/link";
 import { optimizedImageSrc } from "@/lib/image-src";
-import { getSiteSettings, phoneHref } from "@/lib/site-settings";
+import { applicationHref, getSiteSettings, isExternalUrl, phoneHref } from "@/lib/site-settings";
 import { Phone, Mail, MapPin, Facebook, Instagram, Twitter, Youtube, ChevronRight, ArrowRight, HeartHandshake } from "lucide-react";
 
 const quickLinks = [
@@ -9,7 +9,6 @@ const quickLinks = [
   ["Devam Eden Projeler", "/projeler"],
   ["Haberler", "/haberler"],
   ["Online Bağış", "/bagis"],
-  ["Yardım Başvurusu", "/basvuru"],
   ["Başvuru Takibi", "/basvuru-takip"],
   ["İletişim", "/iletisim"]
 ];
@@ -59,6 +58,11 @@ export async function Footer() {
           <div>
             <h3 className="mb-5 text-[13px] font-black uppercase tracking-[0.16em] text-white">Hızlı Menü</h3>
             <nav className="grid gap-2.5">
+              {settings.applicationsEnabled && (
+                <a href={applicationHref(settings)} {...(isExternalUrl(applicationHref(settings)) ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="group flex items-center gap-2 text-[15px] font-black text-white transition-colors hover:text-hayat-green">
+                  <ChevronRight size={14} className="text-hayat-green transition-transform group-hover:translate-x-0.5" /> Yardım Başvurusu
+                </a>
+              )}
               {quickLinks.map(([item, href]) => (
                 <Link key={item} href={href} className="group flex items-center gap-2 text-[15px] font-semibold text-[#c9dce7] transition-colors hover:text-white">
                   <ChevronRight size={14} className="text-hayat-green transition-transform group-hover:translate-x-0.5" /> {item}

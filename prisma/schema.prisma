@@ -324,19 +324,23 @@ model AdminUser {
 // Sitenin geneline ait kurumsal bilgiler (tek kayit, id = "default").
 // Ust bilgi seridi, footer ve hizli bagis kutusu buradan beslenir.
 model SiteSettings {
-  id              String   @id @default("default")
-  registryNo      String?
-  affiliationNote String?
-  phone           String?
-  email           String?
-  address         String?
-  footerAbout     String?
-  facebookUrl     String?
-  instagramUrl    String?
-  twitterUrl      String?
-  youtubeUrl      String?
+  id                  String   @id @default("default")
+  registryNo          String?
+  affiliationNote     String?
+  phone               String?
+  email               String?
+  address             String?
+  footerAbout         String?
+  facebookUrl         String?
+  instagramUrl        String?
+  twitterUrl          String?
+  youtubeUrl          String?
   // Her satir "tutar|karsiligi" (orn. "500|bir ailenin aylik gida kolisi")
-  donationImpacts String?
-  updatedAt       DateTime @updatedAt
-  createdAt       DateTime @default(now())
+  donationImpacts     String?
+  // Online yardim basvurusu: kapaliyken form, linkler ve API basvuru kabul etmez.
+  applicationsEnabled Boolean  @default(true)
+  // Doluysa "Yardim Basvurusu" butonu bu adrese gider; bossa sitedeki /basvuru formu kullanilir.
+  applicationUrl      String?
+  updatedAt           DateTime @updatedAt
+  createdAt           DateTime @default(now())
 }

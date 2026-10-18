@@ -5,6 +5,7 @@ import path from "path";
 import { prisma } from "@/lib/prisma";
 import { sendSms } from "@/lib/sms";
 import { publicPath } from "@/lib/public-files";
+import { areApplicationsOpen } from "@/lib/site-settings";
 
 const optionalNumber = z.preprocess(
   (value) => (value === "" || value === null || value === undefined ? undefined : value),
@@ -37,17 +38,32 @@ function emptyToNull(value: unknown) {
   return typeof value === "string" && value.trim() === "" ? null : value;
 }
 
+// Numara, kayit sayisina gore degil yilin en buyuk numarasina gore uretilir; aradan
+// basvuru silinse bile yeni numara mevcut bir numarayla cakismaz.
 async function nextApplicationNo() {
   const year = new Date().getFullYear();
-  const count = await prisma.aidApplication.count({
-    where: { applicationNo: { startsWith: `HA-${year}-` } }
+  const prefix = `HA-${year}-`;
+  const last = await prisma.aidApplication.findFirst({
+    where: { applicationNo: { startsWith: prefix } },
+    orderBy: { applicationNo: "desc" },
+    select: { applicationNo: true }
   });
-  return `HA-${year}-${String(count + 1).padStart(6, "0")}`;
+  const lastNumber = Number(last?.applicationNo?.slice(prefix.length)) || 0;
+  return `${prefix}${String(lastNumber + 1).padStart(6, "0")}`;
+}
+
+function isUniqueConflict(error: unknown) {
+  return typeof error === "object" && error !== null && (error as { code?: string }).code === "P2002";
 }
 
 const uploadDir = publicPath("uploads", "basvurular");
 
 export async function POST(request: Request) {
+  // Admin basvurulari kapattiysa (Site Ayarlari) dogrudan gonderilen istekler de reddedilir.
+  if (!(await areApplicationsOpen())) {
+    return NextResponse.json({ ok: false, message: "Online yardım başvuruları şu an kapalıdır." }, { status: 403 });
+  }
+
   const form = await request.formData();
   const parsed = applicationSchema.safeParse(Object.fromEntries(form.entries()));
 
@@ -56,10 +72,9 @@ export async function POST(request: Request) {
   }
 
   const data = parsed.data;
-  const applicationNo = await nextApplicationNo();
-  const application = await prisma.aidApplication.create({
+  const createApplication = async () => prisma.aidApplication.create({
     data: {
-      applicationNo,
+      applicationNo: await nextApplicationNo(),
       fullName: data.fullName,
       nationalId: emptyToNull(data.nationalId) as string | null,
       phone: data.phone,
@@ -77,6 +92,19 @@ export async function POST(request: Request) {
       trackingNote: "Başvurunuz alınmıştır. İnceleme süreci başladığında durum bilgisi bu ekrandan takip edilebilir."
     }
   });
+
+  // Ayni anda gelen iki basvuru ayni numarayi almaya calisirsa yeniden denenir.
+  let application: Awaited<ReturnType<typeof createApplication>> | null = null;
+  for (let attempt = 0; attempt < 3 && !application; attempt += 1) {
+    try {
+      application = await createApplication();
+    } catch (error) {
+      if (!isUniqueConflict(error) || attempt === 2) throw error;
+    }
+  }
+  if (!application) {
+    return NextResponse.json({ ok: false, message: "Başvuru kaydedilemedi, lütfen tekrar deneyin." }, { status: 500 });
+  }
 
   await mkdir(uploadDir, { recursive: true });
   const files = form.getAll("documents").filter((item): item is File => item instanceof File && item.size > 0);
