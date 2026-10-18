@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
+import { optimizedImageSrc } from "@/lib/image-src";
 
 const nav = [
   { label: "Ana Sayfa", href: "/" },
@@ -28,7 +29,7 @@ export function Header() {
       <div className="mx-auto flex h-[86px] max-w-[1840px] items-center justify-between gap-2 px-3 sm:h-[100px] sm:px-4 lg:h-[116px] lg:gap-5 lg:px-4">
         <Link href="/" className="block min-w-0 shrink" aria-label="Hayat Ağacı Derneği ana sayfa">
           <img
-            src="/media/brand/logolar-vektorel-yatay.png"
+            src={optimizedImageSrc("/media/brand/logolar-vektorel-yatay.png", 1200)}
             alt="Hayat Ağacı Derneği"
             loading="eager"
             decoding="async"

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { readFile } from "fs/promises";
 import path from "path";
 import { resolvePublicFilePath } from "@/lib/public-files";
+import { cachedMediaPath, contentTypeFromFilename, serveFile, writeMediaCache } from "@/lib/serve-media";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -17,53 +17,50 @@ function responseFromBuffer(content: Buffer | Uint8Array, filename: string, mime
   });
 }
 
-function contentTypeFromFilename(filename: string) {
-  const ext = path.extname(filename).toLowerCase();
-  const contentTypes: Record<string, string> = {
-    ".avif": "image/avif",
-    ".gif": "image/gif",
-    ".jpg": "image/jpeg",
-    ".jpeg": "image/jpeg",
-    ".mp4": "video/mp4",
-    ".mov": "video/quicktime",
-    ".ogg": "video/ogg",
-    ".png": "image/png",
-    ".svg": "image/svg+xml",
-    ".webm": "video/webm",
-    ".webp": "image/webp"
-  };
-  return contentTypes[ext] || "application/octet-stream";
-}
-
-export async function GET(_request: Request, { params }: { params: Promise<{ id: string; name?: string[] }> }) {
+async function handle(request: Request, { params }: { params: Promise<{ id: string; name?: string[] }> }) {
   const { id, name } = await params;
+
+  // Once sadece kucuk alanlar okunur; buyuk "content" alani her istekte cekilmez.
   const media = await prisma.mediaAsset.findUnique({
     where: { id },
     select: {
-      content: true,
       filename: true,
-      mimeType: true
+      mimeType: true,
+      size: true
     }
   }).catch(() => null);
 
-  if (!media?.content) {
-    const requestedName = name?.[name.length - 1] || media?.filename;
-    if (requestedName) {
-      const filePath =
-        await resolvePublicFilePath("uploads", [requestedName]) ||
-        await resolvePublicFilePath("brand", [requestedName]);
-
-      if (filePath) {
-        const file = await readFile(filePath).catch(() => null);
-        if (file) {
-          const filename = path.basename(filePath);
-          return responseFromBuffer(file, filename, contentTypeFromFilename(filename));
-        }
-      }
+  if (media) {
+    const cacheKey = `${id}-${media.size}`;
+    const cachedPath = await cachedMediaPath(cacheKey);
+    if (cachedPath) {
+      return serveFile(request, cachedPath, { contentType: media.mimeType, filename: media.filename, inline: true });
     }
 
-    return new NextResponse("Not found", { status: 404 });
+    const row = await prisma.mediaAsset.findUnique({ where: { id }, select: { content: true } }).catch(() => null);
+    if (row?.content) {
+      const writtenPath = await writeMediaCache(cacheKey, row.content);
+      if (writtenPath) {
+        return serveFile(request, writtenPath, { contentType: media.mimeType, filename: media.filename, inline: true });
+      }
+      return responseFromBuffer(row.content, media.filename, media.mimeType);
+    }
   }
 
-  return responseFromBuffer(media.content, media.filename, media.mimeType);
+  const requestedName = name?.[name.length - 1] || media?.filename;
+  if (requestedName) {
+    const filePath =
+      await resolvePublicFilePath("uploads", [requestedName]) ||
+      await resolvePublicFilePath("brand", [requestedName]);
+
+    if (filePath) {
+      const filename = path.basename(filePath);
+      return serveFile(request, filePath, { contentType: contentTypeFromFilename(filename), filename, inline: true });
+    }
+  }
+
+  return new NextResponse("Not found", { status: 404 });
 }
+
+export const GET = handle;
+export const HEAD = handle;

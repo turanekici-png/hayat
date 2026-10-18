@@ -7,6 +7,7 @@ import { ExpandableCard } from "@/components/ExpandableCard";
 import { ExpandableText } from "@/components/ExpandableText";
 import { getHomeSections, getSectionGroupLabel, getSectionsByType, type HomeSection } from "@/lib/site-content";
 import { normalizeMediaUrl } from "@/lib/media-url";
+import { optimizedImageSrc } from "@/lib/image-src";
 
 type SectionIndexPageProps = {
   type?: string;
@@ -90,7 +91,7 @@ export async function SectionIndexPage({
                 <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label={itemLabel} className="group h-full cursor-zoom-in overflow-hidden rounded-[24px] border border-[#d7e4eb] bg-white text-left shadow-[0_18px_50px_rgba(10,58,85,0.08)] transition duration-300 hover:-translate-y-1 hover:border-hayat-blue/30 hover:shadow-[0_24px_70px_rgba(10,58,85,0.14)]">
                   <div className="relative aspect-[16/10] overflow-hidden bg-[linear-gradient(135deg,#eaf6fb,#f4faef)]">
                     {image ? (
-                      <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-cover transition duration-500 group-hover:scale-[1.03]" />
+                      <img src={optimizedImageSrc(image.src, 828)} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-cover transition duration-500 group-hover:scale-[1.03]" />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-hayat-blue/50">
                         <ImageIcon size={44} />

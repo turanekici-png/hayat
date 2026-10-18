@@ -79,6 +79,14 @@ async function findByFilename(root: string, requestedName: string) {
   return null;
 }
 
+// Dosya adiyla yapilan klasor taramasi pahali oldugu icin sonuclar kisa sure
+// hafizada tutulur (bulunamayanlar daha kisa), boylece kirik linkler/botlar
+// her istekte tum klasoru taratmaz.
+const lookupCache = new Map<string, { value: string | null; expiresAt: number }>();
+const FOUND_TTL_MS = 10 * 60 * 1000;
+const MISSING_TTL_MS = 60 * 1000;
+const MAX_LOOKUP_CACHE_ENTRIES = 2000;
+
 export async function resolvePublicFilePath(rootName: string, parts: string[]) {
   const filePath = safePublicFilePath(rootName, parts);
   if (!filePath) return null;
@@ -87,5 +95,15 @@ export async function resolvePublicFilePath(rootName: string, parts: string[]) {
   const requestedName = parts[parts.length - 1];
   if (!requestedName) return null;
   const root = path.resolve(publicRoot(), rootName);
-  return findByFilename(root, requestedName);
+
+  const cacheKey = `${root}::${requestedName}`;
+  const cached = lookupCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now() && (cached.value === null || existsSync(cached.value))) {
+    return cached.value;
+  }
+
+  const value = await findByFilename(root, requestedName);
+  if (lookupCache.size >= MAX_LOOKUP_CACHE_ENTRIES) lookupCache.clear();
+  lookupCache.set(cacheKey, { value, expiresAt: Date.now() + (value ? FOUND_TTL_MS : MISSING_TTL_MS) });
+  return value;
 }

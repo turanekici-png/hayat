@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Play, X } from "lucide-react";
+import { optimizedImageSrc } from "@/lib/image-src";
 
 type MediaLightboxTileProps = {
   src?: string | null;
@@ -98,7 +99,7 @@ export function MediaLightboxTile({
             </span>
           </>
         ) : (
-          <img src={src} alt={alt} loading="lazy" decoding="async" className={`${className} transition duration-500`} />
+          <img src={optimizedImageSrc(src, 1080)} alt={alt} loading="lazy" decoding="async" className={`${className} transition duration-500`} />
         )}
       </button>
 
@@ -119,7 +120,7 @@ export function MediaLightboxTile({
           ) : isVideo ? (
             <video src={src} className="max-h-[88vh] max-w-[94vw] rounded-lg bg-black shadow-2xl" controls autoPlay onClick={(event) => event.stopPropagation()} />
           ) : (
-            <img src={src} alt={alt} className="max-h-[88vh] max-w-[94vw] rounded-lg object-contain shadow-2xl" onClick={(event) => event.stopPropagation()} />
+            <img src={optimizedImageSrc(src, 1920)} alt={alt} className="max-h-[88vh] max-w-[94vw] rounded-lg object-contain shadow-2xl" onClick={(event) => event.stopPropagation()} />
           )}
         </div>,
         document.body

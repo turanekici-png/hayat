@@ -4,6 +4,7 @@ import { Activity, Beef, ClipboardList, Eye, FileText, LayoutDashboard, Megaphon
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 import { AdminNavLink } from "./AdminNavLink";
 
 type AdminShellProps = {
@@ -23,7 +24,7 @@ const adminLinks = [
   { href: "/admin/politikalar", label: "KVKK / Politikalar", icon: FileText }
 ];
 
-async function getSidebarStats() {
+async function loadSidebarStats() {
   const [sectionCount, activeSectionCount, mediaCount, announcementCount, applicationCount, newApplicationCount, donationCount, paymentLogCount, sacrificeCount] = await Promise.all([
     prisma.siteSection.count(),
     prisma.siteSection.count({ where: { isActive: true } }),
@@ -48,6 +49,9 @@ async function getSidebarStats() {
     [sacrificeCount, "Kurban"]
   ] as const;
 }
+
+// Kenar cubugu sayaclari her admin sayfasinda 9 ayri sorgu attigi icin kisa sure onbelleklenir.
+const getSidebarStats = unstable_cache(loadSidebarStats, ["admin-sidebar-stats"], { revalidate: 30 });
 
 export async function AdminShell({ activePath = "/admin", children, contentClassName = "max-w-7xl" }: AdminShellProps) {
   const stats = await getSidebarStats();

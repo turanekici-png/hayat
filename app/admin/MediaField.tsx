@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
+import { optimizedImageSrc } from "@/lib/image-src";
 
 type MediaItem = {
   id: string;
@@ -98,7 +99,7 @@ export function MediaField({
                       {isVideoMedia(item.url, item.mimeType) ? (
                         <video src={item.url} className="h-36 w-full rounded-xl object-cover" preload="metadata" />
                       ) : (
-                        <img src={item.url} alt={item.title || item.filename} loading="lazy" decoding="async" className="h-36 w-full rounded-xl object-cover" />
+                        <img src={optimizedImageSrc(item.url, 384)} alt={item.title || item.filename} loading="lazy" decoding="async" className="h-36 w-full rounded-xl object-cover" />
                       )}
                       <div className="p-2">
                         <p className="truncate text-sm font-black text-hayat-dark">{item.title || item.filename}</p>

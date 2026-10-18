@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X, ArrowRight } from "lucide-react";
+import { optimizedImageSrc } from "@/lib/image-src";
 
 type PopupData = {
   id: string;
@@ -62,7 +63,7 @@ export function HomePopup({ popup }: { popup: PopupData }) {
 
         {popup.imageUrl && (
           <div className="bg-hayat-soft">
-            <img src={popup.imageUrl} alt={popup.imageAlt || popup.title} loading="lazy" decoding="async" className="h-56 w-full object-cover sm:h-72" />
+            <img src={optimizedImageSrc(popup.imageUrl, 1080)} alt={popup.imageAlt || popup.title} loading="lazy" decoding="async" className="h-56 w-full object-cover sm:h-72" />
           </div>
         )}
 

@@ -1,7 +1,7 @@
 ﻿"use server";
 
 import { prisma } from "@/lib/prisma";
-import { ensureDefaultDonationTypes } from "@/lib/donation-types";
+import { ensureDefaultDonationTypes, resetDefaultDonationTypesCheck } from "@/lib/donation-types";
 import { ensureManagedSectionsOnce, fallbackSections } from "@/lib/site-content";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
@@ -96,6 +96,7 @@ async function createDatabaseMediaAsset({
 }
 
 function revalidateDonationTypes() {
+  resetDefaultDonationTypesCheck();
   revalidateTag("donation-types");
   revalidatePath("/", "layout");
   revalidatePath("/");
@@ -885,6 +886,7 @@ export async function updateDonationTypesBulk(formData: FormData) {
 
     if (deleteIds.has(id)) {
       await prisma.donationType.delete({ where: { id } }).catch(() => null);
+      resetDefaultDonationTypesCheck();
       continue;
     }
 
@@ -934,12 +936,14 @@ export async function deleteDonationType(formData: FormData) {
   if (!id) return;
 
   await prisma.donationType.delete({ where: { id } });
+  resetDefaultDonationTypesCheck();
 
   revalidateDonationTypes();
   redirectWithRefresh("/admin?sayfa=bagis#bagis-turleri");
 }
 
 export async function seedDonationTypes() {
+  resetDefaultDonationTypesCheck();
   await ensureDefaultDonationTypes();
   revalidateDonationTypes();
   redirectWithRefresh("/admin?sayfa=bagis#bagis-turleri");

@@ -26,6 +26,7 @@ import { AdminNavLink } from "./AdminNavLink";
 import { MediaField } from "./MediaField";
 import { MediaLibraryUploader, SectionMediaUploader } from "./MediaUploadClient";
 import { normalizeMediaUrl } from "@/lib/media-url";
+import { optimizedImageSrc } from "@/lib/image-src";
 import {
   Building2,
   Bell,
@@ -208,7 +209,7 @@ function SectionEditor({ section, media }: { section: SiteSectionWithImages; med
                   {isVideoMedia(image.url) ? (
                     <video src={displayMediaUrl(image.url)} className="h-24 w-full rounded-xl object-cover" muted preload="metadata" />
                   ) : (
-                    <img src={displayMediaUrl(image.url)} alt={image.alt || section.title} loading="lazy" decoding="async" className="h-24 w-full rounded-xl object-cover" />
+                    <img src={optimizedImageSrc(displayMediaUrl(image.url), 384)} alt={image.alt || section.title} loading="lazy" decoding="async" className="h-24 w-full rounded-xl object-cover" />
                   )}
                 </div>
                 <label className="text-sm font-bold text-slate-600 md:col-span-4">Medya yolu<MediaField name="sectionImageUrl" defaultValue={displayMediaUrl(image.url)} placeholder="/uploads/medya.jpg" media={media} /></label>
@@ -775,7 +776,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                         {isVideoMedia(m.url, m.mimeType) ? (
                           <video src={m.url} className="h-28 w-full rounded-xl object-cover" controls preload="metadata" />
                         ) : (
-                          <img src={m.url} alt={m.title || m.filename} loading="lazy" decoding="async" className="h-28 w-full rounded-xl object-cover" />
+                          <img src={optimizedImageSrc(m.url, 384)} alt={m.title || m.filename} loading="lazy" decoding="async" className="h-28 w-full rounded-xl object-cover" />
                         )}
                         <p className="mt-2 break-all rounded-xl bg-white p-2 text-xs font-bold text-slate-600">{m.url}</p>
                         <form action={deleteMedia} className="mt-2"><input type="hidden" name="id" value={m.id} /><button className="w-full rounded-xl bg-red-50 px-3 py-2 text-xs font-black text-red-600">Medyayı Sil</button></form>

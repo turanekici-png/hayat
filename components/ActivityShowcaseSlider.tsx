@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { CSSProperties } from "react";
+import { optimizedImageSrc, optimizedImageSrcSet } from "@/lib/image-src";
 
 type ActivitySlide = {
   src: string;
@@ -94,6 +95,20 @@ export function ActivityShowcaseSlider({
 }) {
   const [active, setActive] = useState(0);
   const current = items[active] || items[0];
+  // Sadece gosterilmis ve siradaki slaytin gorseli DOM'a eklenir.
+  const [rendered, setRendered] = useState<Set<number>>(() => new Set([0, 1]));
+
+  useEffect(() => {
+    if (!items.length) return;
+    setRendered((value) => {
+      const next = (active + 1) % items.length;
+      if (value.has(active) && value.has(next)) return value;
+      const updated = new Set(value);
+      updated.add(active);
+      updated.add(next);
+      return updated;
+    });
+  }, [active, items.length]);
 
   useEffect(() => {
     if (items.length < 2) return;
@@ -164,7 +179,7 @@ export function ActivityShowcaseSlider({
                 <>
                   <img
                     key={`${current.id}-${activeImage.src}-blur`}
-                    src={activeImage.src}
+                    src={optimizedImageSrc(activeImage.src, 256)}
                     alt=""
                     aria-hidden="true"
                     loading="lazy"
@@ -176,7 +191,9 @@ export function ActivityShowcaseSlider({
               )}
               <img
                 key={`${current.id}-${activeImage.src}`}
-                src={activeImage.src}
+                src={optimizedImageSrc(activeImage.src, 1920)}
+                srcSet={optimizedImageSrcSet(activeImage.src, [640, 1080, 1920])}
+                sizes="(max-width: 1024px) 100vw, 67vw"
                 alt={activeImage.alt}
                 loading={active === 0 ? "eager" : "lazy"}
                 decoding="async"
@@ -210,10 +227,12 @@ export function ActivityShowcaseSlider({
     <div className="relative h-[360px] overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk sm:h-[460px] md:h-[600px]">
       {items.map((item, index) => {
         const image = item.slides[0];
-        return image ? (
+        return image && rendered.has(index) ? (
           <img
             key={item.id}
-            src={image.src}
+            src={optimizedImageSrc(image.src, 1920)}
+            srcSet={optimizedImageSrcSet(image.src, [640, 1080, 1920])}
+            sizes="100vw"
             alt={image.alt}
             loading={index === 0 ? "eager" : "lazy"}
             decoding="async"

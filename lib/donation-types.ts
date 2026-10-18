@@ -13,7 +13,16 @@ export const defaultDonationTypes = [
   { code: "EGITIM", label: "Eğitim", sortOrder: 8 }
 ];
 
+// Varsayilan turler surec basina bir kez kontrol edilir; her bagis isteginde
+// 8 ayri upsert sorgusu atilmaz. Hata olursa bir sonraki cagrida tekrar denenir.
+let defaultDonationTypesReady = false;
+
+export function resetDefaultDonationTypesCheck() {
+  defaultDonationTypesReady = false;
+}
+
 export async function ensureDefaultDonationTypes() {
+  if (defaultDonationTypesReady) return;
   try {
     for (const item of defaultDonationTypes) {
       await prisma.donationType.upsert({
@@ -22,6 +31,7 @@ export async function ensureDefaultDonationTypes() {
         update: {}
       });
     }
+    defaultDonationTypesReady = true;
   } catch {
     return;
   }

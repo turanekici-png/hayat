@@ -12,6 +12,7 @@ import { QuickDonationCard } from "@/components/QuickDonationCard";
 import { getHomeSections, allByType, firstByType } from "@/lib/site-content";
 import { getActiveDonationTypes } from "@/lib/donation-types";
 import { normalizeMediaUrl } from "@/lib/media-url";
+import { optimizedImageSrc } from "@/lib/image-src";
 import { prisma } from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
 import { ArrowRight, CalendarDays, Camera, ChevronRight, ImageIcon, Megaphone, PlayCircle, ShieldCheck, Video } from "lucide-react";
@@ -295,7 +296,7 @@ export default async function HomePage() {
       <ExpandableCard key={item.id} title={item.title} subtitle={item.subtitle} body={item.body} imageUrl={image?.src} imageAlt={image?.alt} label="Proje" className={`group ${widthClass} cursor-zoom-in overflow-hidden rounded-[24px] border border-[#dbe6ee] bg-white text-left shadow-[0_18px_46px_rgba(10,58,85,0.1)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(10,58,85,0.16)]`} style={cardStyle(item, { padding: "0px" })}>
         <div className="relative h-[220px] overflow-hidden bg-[linear-gradient(135deg,#e8f4fb,#f5fafc)] sm:h-[290px]">
           {image ? (
-            <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-cover transition duration-700 group-hover:scale-105" />
+            <img src={optimizedImageSrc(image.src, 828)} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full bg-white object-cover transition duration-700 group-hover:scale-105" />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-hayat-blue/50">
               <ImageIcon size={44} />

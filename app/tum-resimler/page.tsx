@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { GalleryLightboxGrid } from "@/components/GalleryLightboxGrid";
 import { getSectionGroupLabel, getSectionsByType } from "@/lib/site-content";
 import { normalizeMediaUrl } from "@/lib/media-url";
+import { optimizedImageSrc } from "@/lib/image-src";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -86,7 +87,7 @@ export default async function AllImagesPage({ searchParams }: { searchParams: Al
                     <Link key={gallery.id} href={`/tum-resimler?galeri=${gallery.id}`} className="group overflow-hidden rounded-lg border border-[#dfe7ed] bg-white shadow-stk transition hover:-translate-y-1 hover:shadow-stk-hover">
                       <div className="relative h-64 bg-hayat-soft">
                         {cover ? (
-                    <img src={cover.src} alt={cover.alt} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                    <img src={optimizedImageSrc(cover.src, 828)} alt={cover.alt} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-hayat-blue">
                             <ImageIcon size={46} />

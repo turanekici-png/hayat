@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { optimizedImageSrc, optimizedImageSrcSet } from "@/lib/image-src";
 
 type HeroSlide = {
   src: string;
@@ -20,6 +21,20 @@ export function HeroImageSlider({
 }) {
   const slides = images.length ? images : [{ src: "/media/brand/hayat-agaci-logo.jpg", alt: "Hayat Ağacı Derneği" }];
   const [active, setActive] = useState(0);
+  // Sadece gosterilmis slaytlar ve siradaki slayt DOM'a eklenir; boylece ilk
+  // acilista tum slayt gorselleri ayni anda indirilmez.
+  const [rendered, setRendered] = useState<Set<number>>(() => new Set([0, 1]));
+
+  useEffect(() => {
+    setRendered((current) => {
+      const next = (active + 1) % slides.length;
+      if (current.has(active) && current.has(next)) return current;
+      const updated = new Set(current);
+      updated.add(active);
+      updated.add(next);
+      return updated;
+    });
+  }, [active, slides.length]);
 
   useEffect(() => {
     if (slides.length < 2) return;
@@ -35,10 +50,10 @@ export function HeroImageSlider({
     <div className={`relative h-full overflow-hidden rounded-lg border border-white bg-hayat-soft shadow-stk ${fitToParent ? "min-h-0" : "min-h-[360px] lg:min-h-full"} ${className || ""}`}>
       {slides.map((slide, index) => (
         <div key={`${slide.src}-${index}`} className={`absolute inset-0 transition-opacity duration-1000 ${index === active ? "opacity-100" : "opacity-0"}`}>
-          {fitToParent && (
+          {rendered.has(index) && fitToParent && (
             <>
               <img
-                src={slide.src}
+                src={optimizedImageSrc(slide.src, 256)}
                 alt=""
                 aria-hidden="true"
                 loading={index === 0 ? "eager" : "lazy"}
@@ -48,14 +63,16 @@ export function HeroImageSlider({
               <div className="absolute inset-0 bg-white/35" />
             </>
           )}
-          <img
-            src={slide.src}
+          {rendered.has(index) && <img
+            src={optimizedImageSrc(slide.src, 1920)}
+            srcSet={optimizedImageSrcSet(slide.src, [640, 1080, 1920])}
+            sizes="(max-width: 1024px) 100vw, 60vw"
             alt={slide.alt}
             loading={index === 0 ? "eager" : "lazy"}
             decoding="async"
             fetchPriority={index === 0 ? "high" : "auto"}
             className={`relative z-10 h-full w-full bg-white object-contain object-center transition-transform duration-1000 ${index === active ? "scale-100" : "scale-[1.015]"}`}
-          />
+          />}
         </div>
       ))}
       {showOverlay && <div className="absolute inset-0 bg-gradient-to-t from-hayat-dark/35 via-transparent to-transparent" />}

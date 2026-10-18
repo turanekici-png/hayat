@@ -25,8 +25,8 @@ const config: Config = {
         }
       },
       fontFamily: {
-        montserrat: ['Manrope', 'system-ui', 'sans-serif'],
-        jakarta: ['Plus Jakarta Sans', 'Manrope', 'system-ui', 'sans-serif'],
+        montserrat: ['var(--font-manrope)', 'Manrope', 'system-ui', 'sans-serif'],
+        jakarta: ['var(--font-jakarta)', 'Plus Jakarta Sans', 'var(--font-manrope)', 'Manrope', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         soft: "0 18px 45px rgba(10,58,85,0.08)",

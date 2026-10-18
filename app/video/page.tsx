@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { VideoLightboxGrid } from "@/components/VideoLightboxGrid";
 import { getSectionGroupLabel, getSectionsByType } from "@/lib/site-content";
 import { normalizeMediaUrl } from "@/lib/media-url";
+import { optimizedImageSrc } from "@/lib/image-src";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -103,7 +104,7 @@ export default async function VideosPage({ searchParams }: { searchParams: Video
                           coverIsVideo ? (
                             <video src={cover.src} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" preload="metadata" muted />
                           ) : (
-                            <img src={cover.src} alt={cover.title} loading="lazy" decoding="async" className="h-full w-full bg-white object-contain transition duration-500" />
+                            <img src={optimizedImageSrc(cover.src, 828)} alt={cover.title} loading="lazy" decoding="async" className="h-full w-full bg-white object-contain transition duration-500" />
                           )
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-white">

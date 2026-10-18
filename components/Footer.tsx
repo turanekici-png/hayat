@@ -1,4 +1,5 @@
 ﻿﻿import Link from "next/link";
+import { optimizedImageSrc } from "@/lib/image-src";
 import { Phone, Mail, MapPin, Facebook, Instagram, Twitter, Youtube, ChevronRight, ArrowRight, HeartHandshake } from "lucide-react";
 
 const quickLinks = [
@@ -26,7 +27,7 @@ export function Footer() {
         <div className="grid gap-8 py-10 md:grid-cols-[1.15fr_0.85fr] lg:grid-cols-[1.2fr_0.78fr_0.78fr_1.08fr] lg:gap-12 lg:py-14">
           <div>
             <Link href="/" className="inline-flex h-20 w-20 items-center justify-center rounded-[18px] bg-white p-2 shadow-[0_20px_50px_rgba(0,0,0,0.18)]">
-               <img src="/media/brand/hayat-agaci-logo.jpg" alt="Hayat Ağacı Derneği" loading="lazy" decoding="async" className="h-full w-full object-contain" />
+               <img src={optimizedImageSrc("/media/brand/hayat-agaci-logo.jpg", 384)} alt="Hayat Ağacı Derneği" loading="lazy" decoding="async" className="h-full w-full object-contain" />
             </Link>
             <p className="mt-7 max-w-md text-[15px] font-semibold leading-8 text-[#d8ecf5]/78">
               &quot;Alan elin veren eli görmediği&quot;, şeffaf ve güvenilir bir yardımlaşma ekosistemi inşa ediyoruz. Sivas merkezli derneğimizle tüm ihtiyaç sahiplerine umut oluyoruz.

@@ -13,6 +13,16 @@ const nextConfig: NextConfig = {
     ]
   },
   reactStrictMode: true,
+  // Gorseller /_next/image uzerinden kucultulup WebP olarak sunulur (bkz. lib/image-src.ts).
+  // Medya adresleri her yuklemede degistigi (id + dosya adi) icin uzun onbellek guvenlidir.
+  images: {
+    formats: ["image/webp"],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60 * 60 * 24 * 30
+  },
+  compress: true,
+  poweredByHeader: false,
   allowedDevOrigins: ["10.0.0.183"],
   experimental: {
     serverActions: {
