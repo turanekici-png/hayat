@@ -17,7 +17,7 @@ import { optimizedImageSrc } from "@/lib/image-src";
 import { prisma } from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
 import { ArrowRight, CalendarDays, ChevronRight, HandHeart, ImageIcon, Megaphone, PlayCircle, Quote, ShieldCheck } from "lucide-react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -103,6 +103,16 @@ function formatDate(value: unknown) {
   return Number.isNaN(date.getTime()) ? null : date.toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" });
 }
 
+function safeAlign(value?: string | null): CSSProperties["textAlign"] {
+  return value === "center" || value === "right" || value === "justify" ? value : "left";
+}
+function headingStyle(section: any, fallbackColor = "#1f3444", fallbackSize = 32): CSSProperties {
+  return { color: section?.titleColor || fallbackColor, fontSize: `${section?.titleSize || fallbackSize}px`, textAlign: safeAlign(section?.textAlign) };
+}
+function bodyStyle(section: any, fallbackColor = "#607081", fallbackSize = 16): CSSProperties {
+  return { color: section?.bodyColor || fallbackColor, fontSize: `${section?.bodySize || fallbackSize}px`, textAlign: safeAlign(section?.textAlign), whiteSpace: "pre-line" };
+}
+
 function formatNumber(value: number) {
   return value.toLocaleString("tr-TR", { maximumFractionDigits: 2 });
 }
@@ -146,7 +156,7 @@ function announcementLabel(type: string) {
 /* ---------- Ortak parcalar ---------- */
 
 function Container({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`mx-auto w-full max-w-[1400px] px-3 sm:px-4 lg:px-6 ${className}`}>{children}</div>;
+  return <div className={`mx-auto w-full max-w-[1840px] px-3 sm:px-4 lg:px-4 ${className}`}>{children}</div>;
 }
 
 function SectionHeading({ eyebrow, title, href, linkLabel, dark = false }: { eyebrow: string; title: string; href?: string; linkLabel?: string; dark?: boolean }) {
@@ -215,7 +225,6 @@ export default async function HomePage() {
   ];
   const corporateDisplaySections = corporateIdentitySections.length ? corporateIdentitySections : fallbackCorporateSections;
   const mainCorporate = corporateDisplaySections.find((s) => s.layout === "SPLIT" || s.layout === "BANNER" || s.layout === "MINIMAL" || (s.title || "").toLocaleLowerCase("tr-TR").includes("ana") || (s.title || "").toLocaleLowerCase("tr-TR").includes("hakkımızda") || (s.title || "").toLocaleLowerCase("tr-TR").includes("hakkimizda")) || corporateDisplaySections[0];
-  const corporateCards = corporateDisplaySections.filter((s) => s.id !== mainCorporate?.id && (s.body || "").trim());
 
   const newsItems = newsSections.slice(0, 8).map((item) => {
     const image = firstSlide(item);
@@ -298,9 +307,49 @@ export default async function HomePage() {
           </Container>
         </section>
 
-        {/* 2. AKTIF KAMPANYALAR / PROJELER */}
+        {/* 2. FAALIYETLER + SON DUYURULAR */}
+        {(activityShowcaseItems.length > 0 || announcements.length > 0) && (
+          <section id="faaliyetler" className="bg-white py-12">
+            <Container>
+              <SectionHeading eyebrow="Bağışlarınızla yaptıklarımız" title={activitiesTitle} href="/faaliyetler" linkLabel="Tüm faaliyetler" />
+              <div className="grid items-stretch gap-5 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px]">
+                {activityShowcaseItems.length > 0 ? (
+                  <ActivityShowcaseSlider items={activityShowcaseItems} splitMedia compactMedia reducedMedia blurMediaFill />
+                ) : (
+                  <div className="hidden lg:block" />
+                )}
+                <aside className="flex min-h-0 flex-col overflow-hidden rounded-[20px] border border-[#e3eaef] bg-white lg:max-h-[482px]">
+                  <div className="flex items-center justify-between gap-3 bg-hayat-dark px-5 py-4 text-white">
+                    <h3 className="flex items-center gap-2 font-jakarta text-lg font-extrabold"><Megaphone size={19} /> Son Duyurular</h3>
+                  </div>
+                  {announcements.length > 0 ? (
+                    <div className="min-h-0 flex-1 divide-y divide-[#eef2f5] overflow-y-auto">
+                      {announcements.map((item) => (
+                        <Link key={item.id} href={`/duyurular/${item.id}`} className="block px-5 py-4 transition hover:bg-[#f7fafc]">
+                          <div className="flex items-center justify-between gap-2 text-xs font-black">
+                            <span className={`rounded-full px-2.5 py-1 ${item.type === "ACIL" ? "bg-red-50 text-red-700" : "bg-[#eaf3df] text-[#2f5f10]"}`}>{announcementLabel(item.type)}</span>
+                            <span className="inline-flex items-center gap-1 text-[#6a7c86]"><CalendarDays size={12} /> {new Date(item.createdAt).toLocaleDateString("tr-TR")}</span>
+                          </div>
+                          <p className="mt-2 font-extrabold leading-snug text-hayat-dark">{item.title}</p>
+                          <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#52646d]">{item.content}</p>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
+                      <Megaphone className="text-[#3f7d17]" size={30} />
+                      <p className="mt-3 font-black text-hayat-dark">Henüz aktif duyuru yok</p>
+                    </div>
+                  )}
+                </aside>
+              </div>
+            </Container>
+          </section>
+        )}
+
+        {/* 3. AKTIF KAMPANYALAR / PROJELER */}
         {featuredCampaigns.length > 0 && (
-          <section id="projeler" className="bg-white py-12">
+          <section id="projeler" className="border-t border-[#e6edf2] bg-[#f6f8f4] py-12">
             <Container>
               <SectionHeading eyebrow="Şu an destek bekleyenler" title={campaignsTitle} href="/projeler" linkLabel="Tüm projeler" />
               <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -347,46 +396,6 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* 3. FAALIYETLER + SON DUYURULAR */}
-        {(activityShowcaseItems.length > 0 || announcements.length > 0) && (
-          <section id="faaliyetler" className="border-t border-[#e6edf2] bg-[#f6f8f4] py-12">
-            <Container>
-              <SectionHeading eyebrow="Bağışlarınızla yaptıklarımız" title={activitiesTitle} href="/faaliyetler" linkLabel="Tüm faaliyetler" />
-              <div className="grid items-stretch gap-5 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px]">
-                {activityShowcaseItems.length > 0 ? (
-                  <ActivityShowcaseSlider items={activityShowcaseItems} splitMedia compactMedia reducedMedia blurMediaFill />
-                ) : (
-                  <div className="hidden lg:block" />
-                )}
-                <aside className="flex min-h-0 flex-col overflow-hidden rounded-[20px] border border-[#e3eaef] bg-white lg:max-h-[482px]">
-                  <div className="flex items-center justify-between gap-3 bg-hayat-dark px-5 py-4 text-white">
-                    <h3 className="flex items-center gap-2 font-jakarta text-lg font-extrabold"><Megaphone size={19} /> Son Duyurular</h3>
-                  </div>
-                  {announcements.length > 0 ? (
-                    <div className="min-h-0 flex-1 divide-y divide-[#eef2f5] overflow-y-auto">
-                      {announcements.map((item) => (
-                        <Link key={item.id} href={`/duyurular/${item.id}`} className="block px-5 py-4 transition hover:bg-[#f7fafc]">
-                          <div className="flex items-center justify-between gap-2 text-xs font-black">
-                            <span className={`rounded-full px-2.5 py-1 ${item.type === "ACIL" ? "bg-red-50 text-red-700" : "bg-[#eaf3df] text-[#2f5f10]"}`}>{announcementLabel(item.type)}</span>
-                            <span className="inline-flex items-center gap-1 text-[#6a7c86]"><CalendarDays size={12} /> {new Date(item.createdAt).toLocaleDateString("tr-TR")}</span>
-                          </div>
-                          <p className="mt-2 font-extrabold leading-snug text-hayat-dark">{item.title}</p>
-                          <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#52646d]">{item.content}</p>
-                        </Link>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
-                      <Megaphone className="text-[#3f7d17]" size={30} />
-                      <p className="mt-3 font-black text-hayat-dark">Henüz aktif duyuru yok</p>
-                    </div>
-                  )}
-                </aside>
-              </div>
-            </Container>
-          </section>
-        )}
-
         {/* 4. BAGIS ALANLARI (kisayollar) */}
         {donationShortcuts.length > 0 && (
           <section className="bg-white py-12">
@@ -416,9 +425,10 @@ export default async function HomePage() {
           <section id="video" className="bg-[#082f45] py-12 text-white">
             <Container>
               <SectionHeading dark eyebrow="Video Blog" title={videosTitle} href="/video" linkLabel="Tüm videolar" />
-              <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+              {/* Sabit yukseklik: dikey (telefon) videolar alani uzatmaz, kutuya sigacak sekilde kirpilir. */}
+              <div className={`grid gap-4 ${videoMediaItems.length > 1 ? "lg:h-[440px] lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:grid-rows-2" : ""}`}>
                 {videoMediaItems.slice(0, 3).map((item, index) => (
-                  <article key={item.id} className={`group relative overflow-hidden rounded-[20px] bg-black ${index === 0 ? "aspect-video lg:row-span-2 lg:aspect-auto lg:min-h-[420px]" : "aspect-video"}`}>
+                  <article key={item.id} className={`group relative aspect-video overflow-hidden rounded-[20px] bg-black ${videoMediaItems.length > 1 ? "lg:aspect-auto lg:h-full" : "lg:mx-auto lg:h-[440px] lg:w-auto"} ${index === 0 || videoMediaItems.length === 2 ? "lg:row-span-2" : ""}`}>
                     <MediaLightboxTile src={item.slide?.src} alt={mediaItemTitle(item, "Video")} isVideo={isVideoSrc(item.slide?.src)} className="h-full w-full object-cover" videoClassName="h-full w-full bg-black object-cover" />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-black/80 to-transparent p-4 pt-14 sm:p-5">
                       <PlayCircle size={index === 0 ? 30 : 24} className="shrink-0 text-white" />
@@ -547,42 +557,51 @@ export default async function HomePage() {
           </Container>
         </section>
 
-        {/* 10. KURUMSAL GUVEN: Hakkimizda / Misyon / Vizyon */}
-        <section id="kurumsal" className="border-t border-[#e6edf2] bg-[#f6f8f4] py-12">
-          <Container className="grid items-center gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-12">
-            <div className="relative h-[320px] overflow-hidden rounded-3xl bg-white sm:h-[440px]">
-              <HeroImageSlider images={sectionSlides(mainCorporate, undefined, corporateTitle)} className="h-full w-full rounded-3xl" showOverlay={false} fitToParent />
-              <span className="absolute left-4 top-4 z-20 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-xs font-black uppercase tracking-[0.12em] text-[#2f5f10]">
-                <ShieldCheck size={14} /> Kurumsal Güven
-              </span>
-            </div>
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-[#3f7d17]">{mainCorporate?.badge || "Hakkımızda"}</p>
-              <h2 className="mt-2 font-jakarta text-[30px] font-extrabold leading-tight text-hayat-dark sm:text-[42px]">{corporateTitle}</h2>
-              {mainCorporate?.body && <p className="mt-4 whitespace-pre-line text-lg leading-8 text-[#44575f]">{mainCorporate.body}</p>}
-              {corporateCards.length > 0 && (
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                  {corporateCards.slice(0, 4).map((item) => (
-                    <div key={item.id} className="rounded-[18px] border border-[#e3eaef] bg-white p-5">
-                      <p className="text-xs font-black uppercase tracking-[0.12em] text-[#3f7d17]">{item.badge || item.title}</p>
-                      <p className="mt-2 text-[15px] leading-7 text-[#33464f]">{item.body}</p>
+        {/* 10. KURUMSAL GUVEN (eski gorunum) */}
+        <section id="kurumsal" className="border-t border-[#e6edf2] bg-white py-12" style={{ backgroundColor: mainCorporate?.backgroundColor || "#ffffff" }}>
+          <div className={`mx-auto px-3 sm:px-4 lg:px-4 ${mainCorporate?.contentWidth === "full" ? "w-full max-w-none" : "w-full max-w-[1840px]"}`}>
+            <div className="grid items-stretch gap-7 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
+              <div className="relative min-h-[360px] overflow-hidden rounded-[24px] border border-[#dbe6ee] bg-hayat-soft shadow-[0_24px_70px_rgba(10,58,85,0.12)] lg:min-h-[480px]" style={{ borderColor: mainCorporate?.borderColor || undefined }}>
+                <HeroImageSlider images={sectionSlides(mainCorporate, undefined, corporateTitle)} className="h-full w-full rounded-[24px]" showOverlay fitToParent />
+                <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-white/92 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-hayat-green shadow-sm">
+                  <ShieldCheck size={15} /> Kurumsal Güven
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-center rounded-[24px] border border-[#dbe6ee] bg-[#f8fbfd] p-6 shadow-[0_18px_50px_rgba(10,58,85,0.08)] sm:p-8 lg:p-10">
+                <div className="flex h-16 w-16 items-center justify-center rounded-[18px] bg-hayat-mint text-hayat-green shadow-sm">
+                  <ShieldCheck size={34} />
+                </div>
+                <p className="mt-6 text-xs font-black uppercase tracking-[0.24em] text-hayat-green">Dayanışmayla Büyüyoruz</p>
+                <h2 className="mt-3 text-3xl font-black leading-tight text-[#1f3444] sm:text-4xl md:text-6xl" style={headingStyle(mainCorporate, "#1f3444", 58)}>{corporateTitle}</h2>
+                {mainCorporate?.body && (
+                  <div className="mt-5 max-w-4xl">
+                    {/* Uzun kurumsal metin karti uzatmasin: 6 satir, tamami tiklayinca acilir. */}
+                    <ExpandableText title={corporateTitle} text={mainCorporate.body} className="line-clamp-6 text-base font-semibold leading-8 text-[#607081] sm:text-lg sm:leading-9" style={bodyStyle(mainCorporate)} />
+                  </div>
+                )}
+
+                <div className="mt-7 grid gap-3 sm:grid-cols-3">
+                  {["Şeffaf Süreç", "Yerel Dayanışma", "Güvenli Takip"].map((label) => (
+                    <div key={label} className="rounded-[16px] border border-[#dbe6ee] bg-white px-4 py-4 shadow-sm">
+                      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-hayat-mint text-hayat-green">
+                        <ShieldCheck size={18} />
+                      </div>
+                      <p className="text-sm font-black text-[#1f3444]">{label}</p>
                     </div>
                   ))}
                 </div>
-              )}
-              <div className="mt-5 flex flex-wrap gap-2">
-                {["Şeffaf Süreç", "Yerel Dayanışma", "Güvenli Takip"].map((label) => (
-                  <span key={label} className="inline-flex items-center gap-1.5 rounded-full border border-[#e3eaef] bg-white px-4 py-2 text-sm font-extrabold text-[#1f3440]">
-                    <ShieldCheck size={15} className="text-[#3f7d17]" /> {label}
-                  </span>
-                ))}
-              </div>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link href={mainCorporate?.href || "/kurumsal"} className="inline-flex h-12 items-center rounded-xl bg-hayat-dark px-6 font-black text-white transition hover:bg-[#3f7d17]">{mainCorporate?.buttonLabel || "Kurumsal"}</Link>
-                <Link href={mainCorporate?.secondaryHref || "/iletisim"} className="inline-flex h-12 items-center rounded-xl border-2 border-hayat-dark px-6 font-black text-hayat-dark transition hover:bg-hayat-dark hover:text-white">{mainCorporate?.secondaryButtonLabel || "İletişim"}</Link>
+
+                {(mainCorporate?.buttonLabel || mainCorporate?.secondaryButtonLabel) && (
+                  <div className="mt-7 flex flex-wrap gap-3">
+                    {mainCorporate.buttonLabel && <Link href={mainCorporate.href || "/kurumsal"} className="inline-flex h-[52px] items-center justify-center rounded-[14px] bg-hayat-green px-7 text-sm font-black text-white shadow-green transition hover:-translate-y-0.5 hover:bg-hayat-dark">{mainCorporate.buttonLabel}</Link>}
+                    {mainCorporate.secondaryButtonLabel && <Link href={mainCorporate.secondaryHref || "/iletisim"} className="inline-flex h-[52px] items-center justify-center rounded-[14px] border border-[#d9e4ec] bg-white px-7 text-sm font-black text-hayat-dark shadow-sm transition hover:-translate-y-0.5 hover:border-hayat-green hover:text-hayat-green">{mainCorporate.secondaryButtonLabel}</Link>}
+                  </div>
+                )}
               </div>
             </div>
-          </Container>
+
+          </div>
         </section>
 
         {/* 11. SON CAGRI */}
