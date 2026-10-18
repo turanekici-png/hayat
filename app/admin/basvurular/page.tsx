@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ConfirmButton } from "../ConfirmButton";
 import { prisma } from "@/lib/prisma";
 import { AdminShell } from "../AdminShell";
 import { deleteApplication, updateApplicationStatus } from "../actions";
@@ -116,7 +117,7 @@ export default async function AdminApplicationsPage() {
                     </form>
                     <form action={deleteApplication} className="mt-3">
                       <input type="hidden" name="id" value={app.id} />
-                      <button className="w-full rounded-2xl bg-red-50 px-5 py-3 font-black text-red-600"><Trash2 className="mr-1 inline" size={16} /> Başvuruyu Sil</button>
+                      <ConfirmButton confirmMessage="Bu başvuru ve belgeleri kalıcı olarak silinecek. Emin misiniz?" className="w-full rounded-2xl bg-red-50 px-5 py-3 font-black text-red-600"><Trash2 className="mr-1 inline" size={16} /> Başvuruyu Sil</ConfirmButton>
                     </form>
                   </div>
                 </div>

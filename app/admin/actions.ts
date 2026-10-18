@@ -258,7 +258,26 @@ function sectionPayload(formData: FormData) {
     borderColor: nullableTextValue(formData, "borderColor"),
     backgroundColor: nullableTextValue(formData, "backgroundColor"),
     customTitle: nullableTextValue(formData, "customTitle"),
+    ...campaignProgressPayload(formData),
     isActive: formData.get("isActive") === "on"
+  };
+}
+
+function optionalPositiveNumber(formData: FormData, key: string) {
+  const raw = rawTextValue(formData, key).replace(",", ".");
+  if (!raw) return null;
+  const value = Number(raw);
+  return Number.isFinite(value) && value >= 0 ? value : null;
+}
+
+// Kampanya ilerleme alanlari sadece kampanya formunda bulunur; form bu alanlari
+// hic gondermiyorsa (baska bolum turleri) mevcut degerlere dokunulmaz.
+function campaignProgressPayload(formData: FormData) {
+  if (!formData.has("goalValue")) return {};
+  return {
+    goalValue: optionalPositiveNumber(formData, "goalValue"),
+    currentValue: optionalPositiveNumber(formData, "currentValue"),
+    goalUnit: nullableTextValue(formData, "goalUnit")
   };
 }
 
@@ -619,6 +638,9 @@ export async function duplicateSection(formData: FormData) {
       borderColor: section.borderColor,
       backgroundColor: section.backgroundColor,
       customTitle: section.customTitle,
+      goalValue: section.goalValue,
+      currentValue: section.currentValue,
+      goalUnit: section.goalUnit,
       isActive: false,
       images: {
         create: images.map((image) => ({

@@ -7,7 +7,7 @@
 const optimizableImagePattern = /\.(jpe?g|png|webp|avif)$/i;
 
 // next.config.ts icindeki deviceSizes/imageSizes listesinde olmali.
-export type ImageWidth = 256 | 384 | 640 | 828 | 1080 | 1200 | 1920;
+export type ImageWidth = 128 | 256 | 384 | 640 | 828 | 1080 | 1200 | 1920;
 
 const optimizationEnabled = process.env.NEXT_PUBLIC_IMAGE_OPTIMIZATION !== "off";
 

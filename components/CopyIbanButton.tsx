@@ -1,29 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { Copy } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 
+/** IBAN kopyalama ikon butonu. Kopyalaninca kisa sure onay isaretine doner. */
 export function CopyIbanButton({
   value,
   className = "",
-  label = "Kopyala",
-  iconOnly = false,
-  mobileIconOnly = false
+  label = "IBAN'ı kopyala"
 }: {
   value: string;
   className?: string;
   label?: string;
-  iconOnly?: boolean;
-  mobileIconOnly?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
-  const currentLabel = copied ? "Kopyalandı!" : label;
+  const currentLabel = copied ? "Kopyalandı" : label;
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(value);
+      await navigator.clipboard.writeText(value.replace(/\s+/g, ""));
       setCopied(true);
-      window.setTimeout(() => setCopied(false), 1600);
+      window.setTimeout(() => setCopied(false), 1800);
     } catch {
       setCopied(false);
     }
@@ -35,10 +32,14 @@ export function CopyIbanButton({
       onClick={copy}
       aria-label={currentLabel}
       title={currentLabel}
-      className={`inline-flex items-center justify-center gap-1.5 bg-hayat-blue px-11 py-2 transition hover:bg-hayat-green ${className} !text-white [&_span]:!text-white [&_svg]:!text-white`}
+      className={`relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-hayat-blue/25 ${
+        copied
+          ? "border-hayat-green bg-hayat-green text-white"
+          : "border-[#d5e1e9] bg-white text-[#36505f] hover:border-[color:var(--bank-primary,#1593cf)] hover:text-[color:var(--bank-text,#0a3a55)] hover:shadow-[0_6px_16px_rgba(10,58,85,0.12)]"
+      } ${className}`}
     >
-      {(iconOnly || mobileIconOnly) && <Copy size={iconOnly ? 18 : 16} aria-hidden="true" className={mobileIconOnly && !iconOnly ? "sm:hidden" : ""} />}
-      {!iconOnly && <span className={mobileIconOnly ? "hidden sm:inline" : ""}>{currentLabel}</span>}
+      {copied ? <Check size={18} strokeWidth={2.6} aria-hidden="true" /> : <Copy size={17} strokeWidth={2.2} aria-hidden="true" />}
+      <span className="sr-only" aria-live="polite">{copied ? "Kopyalandı" : ""}</span>
     </button>
   );
 }

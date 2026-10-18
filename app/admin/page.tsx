@@ -1,4 +1,5 @@
 ﻿﻿import Link from "next/link";
+import { ConfirmButton } from "./ConfirmButton";
 import { prisma } from "@/lib/prisma";
 import {
   createSection,
@@ -20,10 +21,9 @@ import {
   updateSection,
   updateSectionSortOrdersBulk
 } from "./actions";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { AdminNavLink } from "./AdminNavLink";
 import { MediaField } from "./MediaField";
+import { AdminFrame } from "./AdminFrame";
 import { MediaLibraryUploader, SectionMediaUploader } from "./MediaUploadClient";
 import { normalizeMediaUrl } from "@/lib/media-url";
 import { optimizedImageSrc } from "@/lib/image-src";
@@ -173,6 +173,16 @@ function SectionEditor({ section, media }: { section: SiteSectionWithImages; med
                   <label className="text-sm font-bold text-slate-600 md:col-span-12">İçerik Metni (Açıklama)<textarea name="body" defaultValue={section.body || ""} className="mt-1 min-h-[120px] w-full rounded-xl border border-slate-200 p-3 leading-relaxed" /></label>
                 </>
               )}
+              {section.type === "CAMPAIGN" && (
+                <div className="rounded-xl border border-hayat-green/30 bg-white p-4 md:col-span-12">
+                  <p className="text-sm font-black text-hayat-dark">Kampanya İlerleme Çubuğu <span className="font-semibold text-slate-500">(opsiyonel – hedef girilmezse çubuk gösterilmez)</span></p>
+                  <div className="mt-3 grid gap-4 md:grid-cols-3">
+                    <label className="text-sm font-bold text-slate-600">Toplanan<input name="currentValue" type="number" min="0" step="any" defaultValue={section.currentValue ?? ""} placeholder="Örn: 68" className="mt-1 w-full rounded-xl border border-slate-200 p-3" /></label>
+                    <label className="text-sm font-bold text-slate-600">Hedef<input name="goalValue" type="number" min="0" step="any" defaultValue={section.goalValue ?? ""} placeholder="Örn: 100" className="mt-1 w-full rounded-xl border border-slate-200 p-3" /></label>
+                    <label className="text-sm font-bold text-slate-600">Birim<input name="goalUnit" defaultValue={section.goalUnit || ""} placeholder="Örn: hisse, koli, öğrenci, ₺" className="mt-1 w-full rounded-xl border border-slate-200 p-3" /></label>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -278,7 +288,7 @@ function SectionEditor({ section, media }: { section: SiteSectionWithImages; med
           <div className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-6">
              <label className="flex items-center gap-3 font-black text-hayat-dark"><input name="isActive" type="checkbox" defaultChecked={section.isActive} className="h-5 w-5 rounded text-hayat-green" /> Sitede Göster (Aktif)</label>
              <div className="flex gap-2">
-                <button formAction={deleteSection} className="flex items-center gap-2 rounded-xl bg-red-50 px-5 py-3.5 font-black text-red-600 transition hover:bg-red-100"><Trash2 size={16} /> Sil</button>
+                <ConfirmButton confirmMessage="Bu içerik bloğu kalıcı olarak silinecek. Emin misiniz?" formAction={deleteSection} className="flex items-center gap-2 rounded-xl bg-red-50 px-5 py-3.5 font-black text-red-600 transition hover:bg-red-100"><Trash2 size={16} /> Sil</ConfirmButton>
                 <button formAction={duplicateSection} className="flex items-center gap-2 rounded-xl bg-slate-100 px-5 py-3.5 font-black text-slate-700 transition hover:bg-slate-200"><Copy size={16} /> Kopyala</button>
                 <button className="flex items-center gap-2 rounded-xl bg-hayat-green px-8 py-3.5 font-black text-white transition hover:bg-hayat-dark"><Save size={18} /> Kaydet</button>
              </div>
@@ -347,7 +357,7 @@ function AdminUserEditor({ user }: { user: AdminUser }) {
           </div>
         </details>
         <button type="submit" className="h-10 rounded-xl bg-hayat-green px-4 text-sm font-black text-white">Kaydet</button>
-        <button formAction={deleteAdminUser} className="h-10 rounded-xl bg-red-50 px-3 text-sm font-black text-red-600">Sil</button>
+        <ConfirmButton confirmMessage="Bu kullanıcı kalıcı olarak silinecek. Emin misiniz?" formAction={deleteAdminUser} className="h-10 rounded-xl bg-red-50 px-3 text-sm font-black text-red-600">Sil</ConfirmButton>
       </div>
       <p className="text-xs font-semibold text-slate-500 lg:col-span-6">
         Son giriş: {user.lastLoginAt ? user.lastLoginAt.toLocaleString("tr-TR") : "Henüz giriş yok"} · Oluşturulma: {user.createdAt.toLocaleDateString("tr-TR")}
@@ -459,39 +469,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
   const statsSlots = Array.from({ length: Math.max(6, statsValues.length + 2) }, (_, index) => statsValues[index] || ["", ""]);
 
   return (
-    <>
-      <Header />
-      <main className="admin-mobile-scope min-h-screen overflow-x-hidden bg-slate-100 py-3 md:py-4">
-        <div className="mx-auto w-full px-3 md:px-5 xl:px-6">
-          <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)_280px]">
-            <aside className="admin-sidebar-scroll rounded-[1.4rem] bg-hayat-blue p-3 text-white shadow-soft sm:p-4 lg:sticky lg:top-3 lg:max-h-[calc(100vh-1.5rem)] lg:overflow-y-auto">
-              <div className="rounded-[1.1rem] bg-white/10 p-4">
-                <p className="flex items-center gap-2 font-black uppercase tracking-[.18em] text-white/80"><LayoutDashboard size={18} /> Yönetim Paneli</p>
-                <h1 className="mt-2 text-2xl font-black leading-tight">İçerik yönetimi</h1>
-              </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-                <div className="rounded-xl bg-white/10 p-3"><b className="block text-xl text-white">{sectionCount}</b>Alan</div>
-                <div className="rounded-xl bg-white/10 p-3"><b className="block text-xl text-white">{activeSectionCount}</b>Aktif</div>
-                <div className="rounded-xl bg-white/10 p-3"><b className="block text-xl text-white">{mediaCount}</b>Medya</div>
-                <div className="rounded-xl bg-white/10 p-3"><b className="block text-xl text-white">{announcementCount}</b>Duyuru</div>
-                <div className="rounded-xl bg-white/10 p-3"><b className="block text-xl text-white">{applicationCount}</b>Başvuru</div>
-                <div className="rounded-xl bg-white/10 p-3"><b className="block text-xl text-white">{newApplicationCount}</b>Yeni</div>
-                <div className="rounded-xl bg-white/10 p-3"><b className="block text-xl text-white">{donationCount}</b>Bağış</div>
-                <div className="rounded-xl bg-white/10 p-3"><b className="block text-xl text-white">{sacrificeCount}</b>Kurban</div>
-              </div>
-
-              <nav className="mt-4 grid gap-2 text-sm font-black sm:grid-cols-2 lg:block lg:space-y-2">
-                <Link href="/" className="flex items-center justify-center gap-2 rounded-xl bg-hayat-green px-4 py-3 text-white"><Eye size={18} /> Siteyi Gör</Link>
-                <AdminNavLink href="/admin/duyurular" className="block rounded-xl bg-white/10 px-4 py-2.5">Duyurular</AdminNavLink>
-                <AdminNavLink href="/admin/basvurular" className="block rounded-xl bg-white/10 px-4 py-2.5">Yardım Başvuruları</AdminNavLink>
-                <AdminNavLink href="/admin/bagislar" className="block rounded-xl bg-white/10 px-4 py-2.5">Bağış Listesi</AdminNavLink>
-                <AdminNavLink href="/admin/kurban" className="block rounded-xl bg-white/10 px-4 py-2.5">Kurban Organizasyonu</AdminNavLink>
-                <AdminNavLink href="/admin/hesaplar" className="block rounded-xl bg-white/10 px-4 py-2.5">Hesap / Banka Bilgileri</AdminNavLink>
-                <AdminNavLink href="/admin/politikalar" className="block rounded-xl bg-white/10 px-4 py-2.5">KVKK / Politikalar</AdminNavLink>
-              </nav>
-            </aside>
-
+    <AdminFrame active={adminPageHref(selectedAdminPage.key)} contentClassName="max-w-none">
             <div className="admin-panel-content min-w-0 space-y-4">
               <section className="rounded-[1.4rem] bg-white p-4 shadow-sm">
                 <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
@@ -543,6 +521,22 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
 
               {selectedAdminPage.key === "anasayfa" && (
                 <>
+              <nav aria-label="Ana sayfa içerik grupları" className="rounded-[1.4rem] bg-white p-3 shadow-sm">
+                <p className="px-1 pb-2 text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">İçerik grupları</p>
+                <div className="flex flex-wrap gap-2">
+                  {groups.map(({ type, title, icon: Icon }) => {
+                    const isSelected = selectedGroup.type === type;
+                    const itemCount = sections.filter((s) => s.type === type).length;
+                    return (
+                      <AdminNavLink key={type} href={tabHref(type)} aria-current={isSelected ? "page" : undefined} className={`inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-bold transition-colors ${isSelected ? "border-hayat-dark bg-hayat-dark text-white" : "border-slate-200 bg-white text-slate-600 hover:border-hayat-blue hover:text-hayat-blue"}`}>
+                        <Icon size={16} />
+                        <span>{groupLabels.find((label) => label.type === type)?.label || title}</span>
+                        <span className={`rounded-md px-1.5 py-0.5 text-[11px] font-black ${itemCount > 0 ? isSelected ? "bg-white/20" : "bg-slate-100 text-slate-500" : "bg-red-50 text-red-500"}`}>{itemCount > 0 ? itemCount : "Boş"}</span>
+                      </AdminNavLink>
+                    );
+                  })}
+                </div>
+              </nav>
               <section className="rounded-[1.4rem] bg-white p-4 shadow-sm">
                 <div className="flex flex-col justify-between gap-3 border-b border-slate-100 pb-4 md:flex-row md:items-start">
                   <div>
@@ -779,7 +773,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
                           <img src={optimizedImageSrc(m.url, 384)} alt={m.title || m.filename} loading="lazy" decoding="async" className="h-28 w-full rounded-xl object-cover" />
                         )}
                         <p className="mt-2 break-all rounded-xl bg-white p-2 text-xs font-bold text-slate-600">{m.url}</p>
-                        <form action={deleteMedia} className="mt-2"><input type="hidden" name="id" value={m.id} /><button className="w-full rounded-xl bg-red-50 px-3 py-2 text-xs font-black text-red-600">Medyayı Sil</button></form>
+                        <form action={deleteMedia} className="mt-2"><input type="hidden" name="id" value={m.id} /><ConfirmButton confirmMessage="Bu medya dosyası kalıcı olarak silinecek. Kullanıldığı yerlerde görünmez olur. Emin misiniz?" className="w-full rounded-xl bg-red-50 px-3 py-2 text-xs font-black text-red-600">Medyayı Sil</ConfirmButton></form>
                       </div>
                     ))}
                     {!safeMedia.length && <p className="text-slate-500">Henüz medya yüklenmedi.</p>}
@@ -810,60 +804,6 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
               )}
             </div>
 
-            <aside className="admin-sidebar-scroll hidden max-h-[calc(100vh-2rem)] overflow-y-auto rounded-[1.5rem] bg-white p-5 shadow-sm xl:sticky xl:top-4 xl:block">
-              <div className="mb-5 border-b border-slate-100 pb-4">
-                <h3 className="text-lg font-black text-hayat-dark">Çalışma Alanları</h3>
-                <p className="mt-1 text-xs font-semibold text-slate-500">Düzenlemek istediğiniz bölümü seçin.</p>
-              </div>
-              <nav className="flex flex-col gap-3">
-                {adminPages.map(({ key, title, icon: Icon }) => {
-                  const isSelected = selectedAdminPage.key === key;
-
-                  return (
-                    <AdminNavLink
-                      key={key}
-                      href={adminPageHref(key)}
-                      aria-current={isSelected ? "page" : undefined}
-                      className={`group flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-bold transition-all ${isSelected ? "bg-hayat-blue text-white shadow-sm" : "bg-slate-50 text-slate-600 hover:bg-hayat-soft hover:text-hayat-blue"}`}
-                    >
-                      <Icon size={18} className={isSelected ? "text-white" : "text-slate-400 group-hover:text-hayat-blue"} />
-                      <span className="truncate">{title}</span>
-                    </AdminNavLink>
-                  );
-                })}
-              </nav>
-
-              {selectedAdminPage.key === "anasayfa" && (
-                <div className="mt-8 border-t border-slate-100 pt-5">
-                  <div className="mb-5 border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-hayat-dark">İçerik Grupları</h3>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">Ana sayfadaki alanları yönetin.</p>
-                  </div>
-                  <nav className="flex flex-col gap-3">
-                    {groups.map(({ type, title, icon: Icon }) => {
-                      const isSelected = selectedGroup.type === type;
-                      const itemCount = sections.filter((s) => s.type === type).length;
-
-                      return (
-                        <AdminNavLink key={type} href={tabHref(type)} aria-current={isSelected ? "page" : undefined} className={`group flex items-center justify-between gap-2 rounded-xl px-4 py-3 text-sm font-bold transition-all ${isSelected ? "bg-hayat-blue/10 text-hayat-blue ring-1 ring-hayat-blue/20" : "bg-slate-50 text-slate-600 hover:bg-hayat-soft hover:text-hayat-blue"}`}>
-                          <div className="flex min-w-0 items-center gap-3">
-                            <Icon size={18} className={isSelected ? "text-hayat-blue" : "text-slate-400 group-hover:text-hayat-blue"} />
-                            <span className="truncate">{groupLabels.find((label) => label.type === type)?.label || title}</span>
-                          </div>
-                          <span className={`shrink-0 rounded-md px-2 py-1 text-[10px] uppercase tracking-widest ${itemCount > 0 ? isSelected ? "bg-hayat-blue text-white" : "bg-slate-200 text-slate-500" : "bg-red-50 text-red-500"}`}>
-                            {itemCount > 0 ? itemCount : "Boş"}
-                          </span>
-                        </AdminNavLink>
-                      );
-                    })}
-                  </nav>
-                </div>
-              )}
-            </aside>
-          </div>
-        </div>
-      </main>
-      <Footer />
-    </>
+    </AdminFrame>
   );
 }

@@ -6,7 +6,8 @@ import { PolicyAcceptButton } from "@/components/PolicyAcceptButton";
 import { prisma } from "@/lib/prisma";
 import { bankAccountFromRecord, defaultBankAccounts, parseBankAccountsContent, type BankAccount } from "@/lib/bank-accounts";
 import { normalizeMediaUrl } from "@/lib/media-url";
-import { DollarSign, Euro } from "lucide-react";
+import { optimizedImageSrc } from "@/lib/image-src";
+import { DollarSign, Euro, Info, ShieldCheck } from "lucide-react";
 import { unstable_cache } from "next/cache";
 import type { CSSProperties } from "react";
 
@@ -175,13 +176,6 @@ function bankCardStyle(theme: BankTheme): CSSProperties {
   } as CSSProperties;
 }
 
-function bankRowStyle(theme: BankTheme): CSSProperties {
-  return {
-    background: theme.row,
-    borderColor: `${theme.primary}33`
-  };
-}
-
 type BankAccountRecord = Parameters<typeof bankAccountFromRecord>[0];
 type PublicPolicyRecord = {
   title: string;
@@ -258,75 +252,90 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
   const displayContent = isBankPage ? bankContent?.note : content;
 
   if (isBankPage) {
+    const bankNote = displayContent?.trim() || fallback?.content || "";
+
     return (
       <>
         <Header />
-        <main className="bg-white">
-          <section className="bg-hayat-soft px-4 py-5 sm:px-4 sm:py-8 lg:px-4">
-            <div className="mx-auto max-w-[1840px]">
-              <h1 className="text-[30px] font-black leading-tight text-hayat-dark sm:text-[44px] md:text-[52px]">Hesap Numaralarımız</h1>
+        <main className="bg-[#f4f7fa]">
+          <section className="border-b border-[#e3eaf0] bg-white px-4 py-8 sm:py-12">
+            <div className="mx-auto flex max-w-[1500px] flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-3xl">
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-hayat-green">Bağış Hesapları</p>
+                <h1 className="mt-3 text-[32px] font-black leading-tight text-hayat-dark sm:text-[44px] md:text-[52px]">Hesap Numaralarımız</h1>
+                {bankNote && <p className="mt-4 max-w-2xl whitespace-pre-line text-base font-semibold leading-7 text-[#4f6370] sm:text-lg sm:leading-8">{bankNote}</p>}
+              </div>
+              <div className="flex w-full items-center gap-4 rounded-[18px] border border-[#dbe6ee] bg-[#f7fafc] px-5 py-4 sm:w-auto">
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-hayat-dark text-white">
+                  <ShieldCheck size={24} />
+                </span>
+                <div>
+                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#6b7f8c]">Alıcı / Hesap Sahibi</p>
+                  <p className="mt-0.5 text-lg font-black text-hayat-dark">Hayat Ağacı Derneği</p>
+                </div>
+              </div>
             </div>
           </section>
 
-          <section className="bg-[#f5f9fc] px-4 py-5 sm:px-4 sm:py-8 lg:px-4">
-            <div className="mx-auto grid max-w-[1840px] grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          <section className="px-4 py-8 sm:py-12">
+            <div className="mx-auto grid max-w-[1500px] grid-cols-1 gap-5 lg:grid-cols-2 2xl:grid-cols-3">
               {bankAccounts.map((account, accountIndex) => {
                 const logoUrl = normalizeMediaUrl(account.logoUrl) || account.logoUrl;
                 const ibans = visibleIbans(account);
                 const theme = bankTheme(account.bank);
 
                 return (
-                  <article key={`${account.bank}-${accountIndex}`} className="rounded-[20px] border border-[color:var(--bank-primary)]/25 p-4 shadow-[0_14px_34px_rgba(10,58,85,0.08)] ring-1 ring-white sm:p-5 sm:shadow-[0_18px_48px_rgba(10,58,85,0.1)]" style={bankCardStyle(theme)}>
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+                  <article key={`${account.bank}-${accountIndex}`} className="relative flex flex-col overflow-hidden rounded-[20px] border border-[#e1e8ee] bg-white shadow-[0_12px_32px_rgba(10,58,85,0.07)]" style={{ ...bankCardStyle(theme), background: "#ffffff" }}>
+                    <span className="h-1.5 w-full bg-[color:var(--bank-primary)]" aria-hidden="true" />
+                    <div className="flex flex-1 flex-col p-4 sm:p-6">
+                      <div className="flex items-center gap-4">
                         {logoUrl && (
-                          <img src={logoUrl} alt={account.bank || "Banka logosu"} loading="lazy" decoding="async" className="h-12 w-12 shrink-0 rounded-[14px] border border-[color:var(--bank-primary)]/25 bg-white object-contain p-2 shadow-[0_8px_18px_rgba(10,58,85,0.08)] sm:h-14 sm:w-14 sm:shadow-[0_10px_24px_rgba(10,58,85,0.08)]" />
+                          <img src={optimizedImageSrc(logoUrl, 128)} alt={account.bank || "Banka logosu"} loading="lazy" decoding="async" className="h-14 w-14 shrink-0 rounded-[14px] border border-[#e1e8ee] bg-white object-contain p-2" />
                         )}
                         <div className="min-w-0 flex-1">
-                          <h2 className="text-lg font-black leading-tight text-[color:var(--bank-text)] sm:text-2xl">{account.bank || "Banka Bilgisi"}</h2>
-                          {account.branch && <p className="mt-1 text-sm font-semibold text-[#334b5f]">{account.branch}</p>}
+                          <h2 className="text-xl font-black leading-tight text-hayat-dark sm:text-[22px]">{account.bank || "Banka Bilgisi"}</h2>
+                          {account.branch && <p className="mt-1 text-sm font-semibold text-[#5d6f7b]">{account.branch}</p>}
                         </div>
+                        {account.type && (
+                          <span className="shrink-0 rounded-full bg-[color:var(--bank-soft)] px-3 py-1.5 text-[11px] font-black uppercase tracking-wide text-[color:var(--bank-text)] ring-1 ring-[color:var(--bank-primary)]/20">
+                            {account.type}
+                          </span>
+                        )}
                       </div>
-                      {account.type && (
-                        <span className="hidden w-fit shrink-0 rounded-full bg-[color:var(--bank-soft)] px-3 py-1.5 text-xs font-black text-[color:var(--bank-primary)] ring-1 ring-[color:var(--bank-primary)]/15 sm:inline-flex">
-                          {account.type}
-                        </span>
+
+                      {account.description && (
+                        <p className="mt-4 rounded-[12px] border border-[color:var(--bank-primary)]/25 bg-[color:var(--bank-soft)] px-4 py-2.5 text-center text-sm font-black uppercase tracking-wide text-[color:var(--bank-text)]">
+                          {account.description}
+                        </p>
                       )}
-                    </div>
-                    {account.type && (
-                      <span className="mt-3 inline-flex w-fit rounded-full bg-[color:var(--bank-soft)] px-3 py-1.5 text-[11px] font-black text-[color:var(--bank-primary)] ring-1 ring-[color:var(--bank-primary)]/15 sm:hidden">
-                        {account.type}
-                      </span>
-                    )}
 
-                    {account.description && (
-                      <p className="mt-3 rounded-[14px] bg-[color:var(--bank-primary)] px-3 py-2.5 text-center text-sm font-black uppercase leading-5 tracking-wide text-white shadow-[0_10px_20px_rgba(10,58,85,0.12)] sm:mt-4 sm:px-4 sm:py-3 sm:text-base sm:leading-6 sm:shadow-[0_14px_28px_rgba(10,58,85,0.16)]">
-                        {account.description}
-                      </p>
-                    )}
-
-                    <div className="mt-3 space-y-2">
-                      {ibans.map((iban, ibanIndex) => (
-                        <div key={`${account.bank}-${iban.label}-${ibanIndex}`} className="flex min-w-0 flex-col rounded-[14px] border px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_8px_18px_rgba(10,58,85,0.04)] sm:rounded-[16px] sm:px-3.5 sm:py-2.5 sm:shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_10px_24px_rgba(10,58,85,0.05)]" style={bankRowStyle(theme)}>
-                          <div className="flex items-center gap-2.5 sm:gap-3">
-                            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[color:var(--bank-primary)] text-white shadow-[0_0_0_4px_var(--bank-soft)] [&_svg]:h-5 [&_svg]:w-5 sm:h-11 sm:w-11 sm:shadow-[0_0_0_6px_var(--bank-soft)] sm:[&_svg]:h-7 sm:[&_svg]:w-7">
-                              <CurrencyIcon label={iban.label} />
-                            </span>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-xs font-black tracking-wide text-[color:var(--bank-text)] sm:text-sm">{ibanCurrencyLabel(iban.label, ibans.length === 1)}</p>
-                              <span className="mt-1.5 block h-px w-full bg-[color:var(--bank-primary)]/20 sm:mt-2" />
+                      <div className="mt-5 divide-y divide-[#edf1f4] rounded-[16px] border border-[#e6edf2] bg-[#fafcfd]">
+                        {ibans.map((iban, ibanIndex) => (
+                          <div key={`${account.bank}-${iban.label}-${ibanIndex}`} className="px-3.5 py-3.5 sm:px-4">
+                            <div className="flex items-center gap-3">
+                              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[color:var(--bank-primary)] text-white [&_span]:!text-[17px] [&_svg]:h-[18px] [&_svg]:w-[18px]">
+                                <CurrencyIcon label={iban.label} />
+                              </span>
+                              <p className="flex-1 text-xs font-black uppercase tracking-[0.14em] text-[#5d6f7b]">{ibanCurrencyLabel(iban.label, ibans.length === 1)}</p>
+                              <CopyIbanButton value={iban.iban} label={`${ibanCurrencyLabel(iban.label, ibans.length === 1)} IBAN'ını kopyala`} />
                             </div>
+                            <p className="mt-2 overflow-x-auto whitespace-nowrap font-mono text-[15px] font-bold min-[380px]:text-[16px] tabular-nums leading-8 tracking-[-0.02em] text-[#0b1f33] [scrollbar-width:none] sm:text-[18px] sm:tracking-normal [&::-webkit-scrollbar]:hidden">{iban.iban}</p>
                           </div>
-                          <div className="mt-2 grid min-w-0 gap-2 sm:mt-2.5 sm:flex sm:items-center">
-                            <p className="min-w-0 overflow-x-auto whitespace-nowrap font-mono text-[12px] font-black leading-6 tracking-wide text-[#06122e] [scrollbar-width:none] sm:flex-1 sm:text-[14px] [&::-webkit-scrollbar]:hidden">{iban.iban}</p>
-                            <CopyIbanButton value={iban.iban} label="Kopyala" className="h-9 w-full min-w-0 justify-center rounded-[10px] bg-[color:var(--bank-primary)] px-3 py-0 text-xs font-black shadow-[0_8px_14px_rgba(10,58,85,0.14)] hover:bg-[color:var(--bank-secondary)] sm:w-auto sm:min-w-[86px] sm:shadow-[0_10px_18px_rgba(10,58,85,0.16)]" />
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </article>
                 );
               })}
+            </div>
+
+            <div className="mx-auto mt-8 flex max-w-[1500px] items-start gap-4 rounded-[18px] border border-[#dbe6ee] bg-white px-5 py-5 sm:px-6">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-hayat-mint text-hayat-green">
+                <Info size={20} />
+              </span>
+              <p className="text-sm font-semibold leading-7 text-[#4f6370] sm:text-base">
+                Havale / EFT yaparken açıklama kısmına <strong className="font-black text-hayat-dark">bağış türünü</strong> (Zekat, Fitre, Kurban vb.) ve <strong className="font-black text-hayat-dark">adınızı</strong> yazmanız, bağışınızın doğru kaydedilmesi için yeterlidir.
+              </p>
             </div>
           </section>
         </main>

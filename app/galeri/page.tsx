@@ -129,7 +129,7 @@ export default async function GalleryPage() {
             {items.length > 0 ? (
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {items.map((item) => (
-                  <article key={item.id} className="group overflow-hidden rounded-[24px] border border-[#dbe6ee] bg-white shadow-[0_18px_46px_rgba(10,58,85,0.1)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(10,58,85,0.16)]">
+                  <article key={item.id} className="group overflow-hidden [contain-intrinsic-size:auto_420px] [content-visibility:auto] rounded-[24px] border border-[#dbe6ee] bg-white shadow-[0_18px_46px_rgba(10,58,85,0.1)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(10,58,85,0.16)]">
                     <div className="relative aspect-[16/11] overflow-hidden bg-white">
                       <MediaLightboxTile
                         src={item.src}
@@ -137,6 +137,7 @@ export default async function GalleryPage() {
                         isVideo={item.kind === "video"}
                         className="h-full w-full bg-white object-cover transition duration-700 group-hover:scale-105"
                         videoClassName="h-full w-full bg-black object-cover"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, (max-width: 1536px) 33vw, 25vw"
                       />
                       <span className="pointer-events-none absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-hayat-blue shadow-[0_12px_28px_rgba(10,58,85,0.14)]">
                         {item.kind === "video" ? <Play size={14} fill="currentColor" /> : <Camera size={14} />}

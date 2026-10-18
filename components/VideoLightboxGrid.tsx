@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Play, X } from "lucide-react";
+import { LazyVideoPreview } from "@/components/LazyVideoPreview";
 
 type GalleryVideo = {
   id: string;
@@ -72,7 +73,7 @@ export function VideoLightboxGrid({ videos }: { videos: GalleryVideo[] }) {
               {externalVideoEmbedUrl(video.src) ? (
                 <div className="h-full w-full bg-black" />
               ) : (
-                <video src={video.src} className="h-full w-full object-cover" preload="metadata" muted />
+                <LazyVideoPreview src={video.src} className="h-full w-full object-cover" />
               )}
               <span className="absolute inset-0 flex items-center justify-center bg-slate-950/20 transition group-hover:bg-slate-950/35">
                 <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-hayat-blue shadow-2xl transition group-hover:scale-110 group-hover:text-hayat-green">

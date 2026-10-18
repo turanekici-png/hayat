@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Play, X } from "lucide-react";
-import { optimizedImageSrc } from "@/lib/image-src";
+import { optimizedImageSrc, optimizedImageSrcSet } from "@/lib/image-src";
+import { LazyVideoPreview } from "@/components/LazyVideoPreview";
 
 type MediaLightboxTileProps = {
   src?: string | null;
@@ -12,6 +13,7 @@ type MediaLightboxTileProps = {
   className?: string;
   videoClassName?: string;
   emptyText?: string;
+  sizes?: string;
 };
 
 function externalVideoEmbedUrl(src: string) {
@@ -48,7 +50,8 @@ export function MediaLightboxTile({
   isVideo = false,
   className = "h-full w-full bg-white object-contain",
   videoClassName,
-  emptyText = "Medya eklenmedi"
+  emptyText = "Medya eklenmedi",
+  sizes = "(max-width: 640px) 100vw, 50vw"
 }: MediaLightboxTileProps) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -90,7 +93,7 @@ export function MediaLightboxTile({
                 <Play size={42} fill="currentColor" />
               </div>
             ) : (
-              <video src={src} className={videoClassName || className} preload="metadata" muted />
+              <LazyVideoPreview src={src} className={videoClassName || className} />
             )}
             <span className="absolute inset-0 flex items-center justify-center bg-slate-950/10 transition group-hover:bg-slate-950/30">
               <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-hayat-blue shadow-2xl transition group-hover:scale-110 group-hover:text-hayat-green">
@@ -99,7 +102,7 @@ export function MediaLightboxTile({
             </span>
           </>
         ) : (
-          <img src={optimizedImageSrc(src, 1080)} alt={alt} loading="lazy" decoding="async" className={`${className} transition duration-500`} />
+          <img src={optimizedImageSrc(src, 1080)} srcSet={optimizedImageSrcSet(src, [384, 640, 828, 1080])} sizes={sizes} alt={alt} loading="lazy" decoding="async" className={`${className} transition duration-500`} />
         )}
       </button>
 

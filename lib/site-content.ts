@@ -47,6 +47,10 @@ export type HomeSection = {
   borderRadius?: number;
   borderColor?: string | null;
   backgroundColor?: string | null;
+  goalValue?: number | null;
+  currentValue?: number | null;
+  goalUnit?: string | null;
+  createdAt?: Date | string;
 };
 
 export const fallbackSections: HomeSection[] = [

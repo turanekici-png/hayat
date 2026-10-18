@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ConfirmButton } from "../ConfirmButton";
 import { prisma } from "@/lib/prisma";
 import { AdminShell } from "../AdminShell";
 import { createAnnouncement, deleteAnnouncement, seedDefaultAnnouncements, updateAnnouncement } from "../actions";
@@ -74,7 +75,7 @@ export default async function AnnouncementsAdminPage() {
                   </div>
                   <div className="flex gap-2">
                     <button className="flex items-center gap-2 rounded-xl bg-hayat-green px-4 py-2 font-black text-white"><Save size={16} /> Kaydet</button>
-                    <button formAction={deleteAnnouncement} className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 font-black text-white"><Trash2 size={16} /> Sil</button>
+                    <ConfirmButton confirmMessage="Bu duyuru kalıcı olarak silinecek. Emin misiniz?" formAction={deleteAnnouncement} className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 font-black text-white"><Trash2 size={16} /> Sil</ConfirmButton>
                   </div>
                 </div>
                 <input name="title" defaultValue={a.title} className="rounded-xl border p-3 md:col-span-4" />
