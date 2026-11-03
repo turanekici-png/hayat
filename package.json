@@ -8,6 +8,7 @@
     "start": "node scripts/start-production.mjs",
     "start:next": "next start -H 0.0.0.0 -p 3000",
     "lint": "eslint .",
+    "test:availability": "node --test tests/availability.test.mjs",
     "db:push": "prisma db push --skip-generate",
     "admin:ensure": "node scripts/ensure-admin-user.mjs",
     "media:backfill-db": "node scripts/backfill-media-db.mjs",

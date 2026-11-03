@@ -51,4 +51,7 @@ USER nextjs
 
 EXPOSE 3000
 
+HEALTHCHECK --interval=30s --timeout=8s --start-period=180s --retries=3 \
+  CMD ["node", "scripts/healthcheck.mjs"]
+
 CMD ["npm", "run", "start"]

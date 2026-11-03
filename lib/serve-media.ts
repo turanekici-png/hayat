@@ -2,7 +2,7 @@ import { createReadStream } from "fs";
 import { mkdir, rename, stat, writeFile } from "fs/promises";
 import os from "os";
 import path from "path";
-import { Readable } from "stream";
+import { ReadableStream as NodeReadableStream } from "node:stream/web";
 import { NextResponse } from "next/server";
 
 const contentTypes: Record<string, string> = {
@@ -93,12 +93,14 @@ export async function serveFile(
     headers.set("Content-Range", `bytes ${range.start}-${range.end}/${size}`);
     headers.set("Content-Length", String(range.end - range.start + 1));
     const stream = createReadStream(filePath, { start: range.start, end: range.end });
-    return new NextResponse(Readable.toWeb(stream) as ReadableStream, { status: 206, headers });
+    // Pull-based iteration also destroys the file stream when the client cancels.
+    // Readable.toWeb can enqueue after cancellation and throw ERR_INVALID_STATE.
+    return new NextResponse(NodeReadableStream.from(stream) as ReadableStream, { status: 206, headers });
   }
 
   headers.set("Content-Length", String(size));
   const stream = createReadStream(filePath);
-  return new NextResponse(Readable.toWeb(stream) as ReadableStream, { status: 200, headers });
+  return new NextResponse(NodeReadableStream.from(stream) as ReadableStream, { status: 200, headers });
 }
 
 const mediaCacheDir = path.join(process.env.HAYAT_MEDIA_CACHE_DIR?.trim() || os.tmpdir(), "hayat-media-cache");

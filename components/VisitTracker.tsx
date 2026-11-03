@@ -20,7 +20,9 @@ export function VisitTracker() {
       const key = `hayatder-visited-${today}`;
       if (window.localStorage.getItem(key)) return;
       window.localStorage.setItem(key, "1");
-      void recordVisit(pathname);
+      // An old tab may call an action from a previous deployment. Background
+      // analytics must not produce an unhandled rejection in the page.
+      void recordVisit(pathname).catch(() => {});
     } catch {
       // localStorage kullanılamıyorsa (gizli sekme/tarayıcı kısıtlaması) sessizce atlanır.
     }
