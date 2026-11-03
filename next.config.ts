@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
-
-  // Prisma kullanıyorsanız standalone deploy'da faydalı olur.
+  // Docker imaji .next, public ve uretim node_modules dizinlerini kopyalar;
+  // scripts/start-production.mjs bu standart derlemeyi next start ile baslatir.
+  // Prisma ve medya dosyalarini sunucu izleme ciktilarina dahil et.
   outputFileTracingIncludes: {
     '/*': [
       './node_modules/.prisma/client/**/*',

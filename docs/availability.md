@@ -1,5 +1,13 @@
 # Kesinti takibi ve otomatik toparlanma
 
+## Üretim başlatma yöntemi
+
+Docker imajı `.next`, `public` ve üretim `node_modules` dizinlerini içerir.
+`npm start`, veritabanı hazırlığından sonra standart `next start` sunucusunu
+başlatır. `next.config.ts` bu yöntemle uyumlu standart derleme kullanır;
+`output: "standalone"` seçeneği etkin değildir. Bu seçenek tekrar eklenirse
+başlatma komutu ve Docker dosya kopyaları da standalone düzenine geçirilmelidir.
+
 ## Derlemenin dış font sunucularından bağımsız olması
 
 Manrope ve Plus Jakarta Sans dosyaları `app/fonts` altında depoya eklenmiştir.
