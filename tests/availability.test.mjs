@@ -26,6 +26,60 @@ async function loadTypeScript(relativePath, replacements = {}) {
   return loadedModule.exports;
 }
 
+test("optional home widgets isolate database failures and recover", async (t) => {
+  const logs = [];
+  t.mock.method(console, "error", (line) => { logs.push(line); });
+  const labels = [{ id: "label", type: "NEWS", label: "Haberler" }];
+  const announcements = [{ id: "announcement", title: "Duyuru" }];
+  const popup = { id: "popup", title: "Bilgilendirme" };
+
+  for (const failingWidget of ["labels", "announcements", "popup"]) {
+    let unavailable = true;
+    const read = (widget, value) => async () => {
+      if (unavailable && widget === failingWidget) {
+        throw Object.assign(new Error("secret database connection details"), { code: "P1001" });
+      }
+      return value;
+    };
+    const prisma = {
+      sectionGroupLabel: { findMany: read("labels", labels) },
+      announcement: { findMany: read("announcements", announcements) },
+      popupSetting: { findFirst: read("popup", popup) }
+    };
+    const widgets = await loadTypeScript("lib/home-widgets.ts", {
+      "@/lib/prisma": { prisma },
+      "next/cache": { unstable_cache: (load) => load }
+    });
+    const load = () => Promise.all([widgets.getHomeGroupLabels(), widgets.getHomeAnnouncements(), widgets.getHomePopup()]);
+    assert.deepEqual(await load(), [
+      failingWidget === "labels" ? [] : labels,
+      failingWidget === "announcements" ? [] : announcements,
+      failingWidget === "popup" ? null : popup
+    ]);
+    unavailable = false;
+    assert.deepEqual(await load(), [labels, announcements, popup]);
+  }
+  assert.equal(logs.length, 3);
+  assert.ok(logs.every((line) => JSON.parse(line).event === "home_widget_unavailable"));
+  assert.doesNotMatch(logs.join("\n"), /secret/);
+});
+
+test("home widgets tolerate a complete database outage", async (t) => {
+  t.mock.method(console, "error", () => {});
+  const reject = async () => { throw new Error("database down"); };
+  const widgets = await loadTypeScript("lib/home-widgets.ts", {
+    "@/lib/prisma": { prisma: {
+      sectionGroupLabel: { findMany: reject },
+      announcement: { findMany: reject },
+      popupSetting: { findFirst: reject }
+    } },
+    "next/cache": { unstable_cache: (load) => load }
+  });
+  assert.deepEqual(await Promise.all([
+    widgets.getHomeGroupLabels(), widgets.getHomeAnnouncements(), widgets.getHomePopup()
+  ]), [[], [], null]);
+});
+
 test("media preserves complete downloads, byte ranges, HEAD and cancellation", async (t) => {
   const dir = await mkdtemp(path.join(tmpdir(), "hayat-media-test-"));
   t.after(() => rm(dir, { recursive: true, force: true }));

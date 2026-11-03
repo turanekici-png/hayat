@@ -1,5 +1,31 @@
 # Kesinti takibi ve otomatik toparlanma
 
+## Ana sayfanın veritabanı hatalarında davranışı
+
+Ana sayfadaki duyuru, açılır pencere ve bölüm başlığı sorguları başarısız
+olduğunda yalnızca ilgili isteğe bağlı içerik atlanır; sayfanın tamamı hata
+vermez. Başarısız sorgu kayıtları `home_widget_unavailable` olayıyla izlenir.
+Geçici boş sonuçlar içerik önbelleğine yazılmaz. Menü tüm sayfaları topluca
+önceden yüklemez; Next.js Link bileşeninin varsayılan davranışı kullanılır.
+
+Bu davranış bir veritabanı arızasını gizlememelidir: `/api/health` arıza
+süresince 503 döndürür. Bağış ve başvuru gibi veritabanına yazan işlemler
+ayrı değerlendirilmelidir; ana sayfanın açılması bu işlemlerin çalıştığını
+kanıtlamaz. Bağlantı kurulmadan oluşan ağ zaman aşımı da uygulama koduna
+ulaşmadığı için bu değişiklikle giderilmiş sayılmaz.
+
+Doğrulama:
+
+```sh
+npm run build
+npm run test:availability
+npm run test:home-resilience
+```
+
+Son test, üretim sunucusunu geçici bir yerel portta erişilemeyen bir test
+veritabanı adresiyle başlatır. Migration veya veri yazma işlemi çalıştırmaz.
+HTTP durumuna ek olarak ana sayfa içeriğinin gerçekten çizildiğini kontrol eder.
+
 ## Üretim başlatma yöntemi
 
 Docker imajı `.next`, `public` ve üretim `node_modules` dizinlerini içerir.

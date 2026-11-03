@@ -1,9 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { PrefetchKind } from "next/dist/client/components/router-reducer/router-reducer-types";
+import { usePathname } from "next/navigation";
 import { ClipboardList, Menu } from "lucide-react";
 import { usePublicSiteSettings } from "@/components/SiteSettingsProvider";
 import { optimizedImageSrc, optimizedImageSrcSet } from "@/lib/image-src";
@@ -24,49 +22,8 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-// Menu sayfalari sayfa acildiktan sonra, tarayici bostayken arka planda tam olarak
-// onceden yuklenir; menuye tiklandiginda sayfa sunucuyu beklemeden aninda acilir.
-// (Mobilde menu kapali oldugu icin Link'in kendi on yuklemesi devreye girmiyordu.)
-const prefetchTargets = [...nav.map((item) => item.href), "/bagis"];
-
-function usePrefetchNavigation(pathname: string) {
-  const router = useRouter();
-
-  useEffect(() => {
-    if (pathname.startsWith("/admin")) return;
-    const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
-    if (connection?.saveData || connection?.effectiveType === "2g" || connection?.effectiveType === "slow-2g") return;
-
-    const run = () => {
-      for (const href of prefetchTargets) {
-        if (href !== pathname) router.prefetch(href, { kind: PrefetchKind.FULL });
-      }
-    };
-
-    // Dar bant genisliginde sayfanin kendi gorselleriyle yarismasin diye on yukleme,
-    // sayfa tamamen yuklendikten sonra ve tarayici bostayken baslar.
-    const idle = (window as Window & { requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number }).requestIdleCallback;
-    let timer: number | undefined;
-    let idleId: number | undefined;
-    const start = () => {
-      timer = window.setTimeout(() => {
-        if (idle) idleId = idle(run, { timeout: 4000 });
-        else run();
-      }, 2500);
-    };
-    if (document.readyState === "complete") start();
-    else window.addEventListener("load", start, { once: true });
-    return () => {
-      window.removeEventListener("load", start);
-      if (timer) window.clearTimeout(timer);
-      if (idleId) window.cancelIdleCallback?.(idleId);
-    };
-  }, [pathname, router]);
-}
-
 export function Header() {
   const pathname = usePathname() || "/";
-  usePrefetchNavigation(pathname);
   const { applicationsEnabled, applicationHref, applicationIsExternal } = usePublicSiteSettings();
   const externalProps = applicationIsExternal ? { target: "_blank", rel: "noopener noreferrer" } : {};
 

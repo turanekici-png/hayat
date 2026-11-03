@@ -14,8 +14,7 @@ import { getActiveDonationTypes } from "@/lib/donation-types";
 import { getSiteSettings, parseDonationImpacts } from "@/lib/site-settings";
 import { normalizeMediaUrl } from "@/lib/media-url";
 import { optimizedImageSrc } from "@/lib/image-src";
-import { prisma } from "@/lib/prisma";
-import { unstable_cache } from "next/cache";
+import { getHomeGroupLabels, getHomeAnnouncements, getHomePopup } from "@/lib/home-widgets";
 import { ArrowRight, CalendarDays, ChevronRight, HandHeart, ImageIcon, Megaphone, PlayCircle, Quote, ShieldCheck } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 
@@ -116,35 +115,6 @@ function bodyStyle(section: any, fallbackColor = "#607081", fallbackSize = 16): 
 function formatNumber(value: number) {
   return value.toLocaleString("tr-TR", { maximumFractionDigits: 2 });
 }
-
-const getHomeGroupLabels = unstable_cache(
-  () => prisma.sectionGroupLabel.findMany(),
-  ["home-group-labels"],
-  { revalidate: 300, tags: ["site-content"] }
-);
-
-const getHomeAnnouncements = unstable_cache(
-  async () => {
-    const now = new Date();
-    return prisma.announcement.findMany({
-      where: {
-        isActive: true,
-        OR: [{ startDate: null }, { startDate: { lte: now } }],
-        AND: [{ OR: [{ endDate: null }, { endDate: { gte: now } }] }]
-      },
-      orderBy: [{ isPinned: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }],
-      take: 5
-    });
-  },
-  ["home-announcements"],
-  { revalidate: 60, tags: ["home-announcements"] }
-);
-
-const getHomePopup = unstable_cache(
-  () => prisma.popupSetting.findFirst({ where: { isActive: true }, orderBy: { updatedAt: "desc" } }),
-  ["home-popup"],
-  { revalidate: 60, tags: ["home-popup"] }
-);
 
 function announcementLabel(type: string) {
   if (type === "ACIL") return "Acil";
