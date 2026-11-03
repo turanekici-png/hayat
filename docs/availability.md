@@ -1,5 +1,12 @@
 # Kesinti takibi ve otomatik toparlanma
 
+## Derlemenin dış font sunucularından bağımsız olması
+
+Manrope ve Plus Jakarta Sans dosyaları `app/fonts` altında depoya eklenmiştir.
+`next/font/local` kullanıldığı için `npm run build` sırasında Google Fonts
+üzerinden CSS veya font indirilmez. Böylece font sunucularına erişim sorunu
+yeni sürümün dağıtımını engellemez. Font kaynakları ve lisansları aynı klasördedir.
+
 ## Sunucudan bağımsız izleme
 
 UptimeRobot'ta `https://hayatder.org.tr/` için HTTPS izleme kullanın.

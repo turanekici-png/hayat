@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { VisitTracker } from "@/components/VisitTracker";
 import { TopInfoBar } from "@/components/TopInfoBar";
@@ -8,18 +8,20 @@ import { Suspense } from "react";
 import { applicationHref, getSiteSettings, isExternalUrl, phoneHref } from "@/lib/site-settings";
 import { SiteSettingsProvider } from "@/components/SiteSettingsProvider";
 
-// Fontlar build sirasinda indirilip siteyle birlikte sunulur (Google'a ek istek yok,
-// sayfa cizimini bloklamaz).
-const manrope = Manrope({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700", "800"],
+// Fontlar depoda bulunur: sunucu derlemesinde de ziyaret sirasinda da
+// Google Fonts'a baglanti gerekmez. Dosyalar Turkce karakterleri de icerir.
+const manrope = localFont({
+  src: "./fonts/manrope-variable.ttf",
+  weight: "400 800",
+  style: "normal",
   display: "swap",
   variable: "--font-manrope"
 });
 
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin", "latin-ext"],
-  weight: ["600", "700", "800"],
+const plusJakartaSans = localFont({
+  src: "./fonts/plus-jakarta-sans-variable.ttf",
+  weight: "600 800",
+  style: "normal",
   display: "swap",
   variable: "--font-jakarta"
 });
